@@ -37,7 +37,8 @@ solve puzzles on lichess.org.
 
 %build
 
-%qmake5
+# The app reports the package version (About page, user agent).
+%qmake5 VERSION=%{version}
 
 %make_build
 

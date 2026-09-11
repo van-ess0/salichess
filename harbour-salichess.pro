@@ -5,6 +5,10 @@
 # translation file names, and Name: in rpm/harbour-salichess.spec.
 TARGET = harbour-salichess
 
+# The RPM build passes VERSION from the spec (%qmake5 VERSION=%{version}).
+isEmpty(VERSION): VERSION = 0.0
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
 CONFIG += sailfishapp
 
 QT += network svg dbus

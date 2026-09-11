@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     // the config/data paths the sandbox allows.
     app->setOrganizationName(QStringLiteral("io.github.vaness0"));
     app->setApplicationName(QStringLiteral("harbour-salichess"));
-    app->setApplicationVersion(QStringLiteral("0.1"));
+    app->setApplicationVersion(QStringLiteral(APP_VERSION)); // from the spec, via the .pro
 
     const char *uri = "harbour.salichess";
     qmlRegisterType<GameController>(uri, 1, 0, "GameController");
