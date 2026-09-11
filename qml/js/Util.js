@@ -5,11 +5,15 @@
 
 // Formats a clock value in milliseconds: "1:02:03", "4:05" or "9.4".
 function formatClock(ms) {
-    if (ms < 0)
-        ms = 0
     if (ms < 10000)
-        return (Math.floor(ms / 100) / 10).toFixed(1)
-    var total = Math.floor(ms / 1000)
+        return (Math.floor(Math.max(ms, 0) / 100) / 10).toFixed(1)
+    return formatClockSeconds(ms)
+}
+
+// Like formatClock(), but in whole seconds throughout: "1:02:03", "4:05" or
+// "0:09".
+function formatClockSeconds(ms) {
+    var total = Math.floor(Math.max(ms, 0) / 1000)
     var h = Math.floor(total / 3600)
     var m = Math.floor((total % 3600) / 60)
     var s = total % 60

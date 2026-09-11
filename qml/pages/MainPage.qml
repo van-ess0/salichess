@@ -14,7 +14,7 @@ Page {
 
     onStatusChanged: {
         if (status === PageStatus.Active && session.loggedIn)
-            ongoingGames.refresh()
+            ongoingGames.refreshIfStale()
     }
 
     SilicaFlickable {
@@ -31,6 +31,7 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
             }
             MenuItem {
+                enabled: !session.busy
                 text: session.loggedIn ? qsTr("Log out") : qsTr("Log in")
                 onClicked: {
                     if (session.loggedIn)

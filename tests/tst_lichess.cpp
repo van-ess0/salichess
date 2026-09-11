@@ -286,12 +286,38 @@ private slots:
 
         server->route("DELETE", "/api/token", 204, "");
         session->logout();
-        QVERIFY(!session->loggedIn());
+        QVERIFY(session->busy());
+        QTRY_VERIFY(!session->loggedIn());
+        QVERIFY(!session->busy());
         QVERIFY(store->token.isEmpty());
         QVERIFY(!api->hasToken());
         // The token is revoked on the server with its own credentials.
-        QTRY_COMPARE(server->requestCount("DELETE", "/api/token"), 1);
+        QCOMPARE(server->requestCount("DELETE", "/api/token"), 1);
         QCOMPARE(server->lastRequest("DELETE", "/api/token").headers.value("authorization"), QByteArray("Bearer tok"));
+    }
+
+    void sessionLogoutWaitsForRevocation()
+    {
+        logIn();
+        QSignalSpy logoutFailed(session, &Session::logoutFailed);
+        QSignalSpy loginFailed(session, &Session::loginFailed);
+
+        // Not revoked: the login stays, so that the user can try again.
+        server->route("DELETE", "/api/token", 500, R"({"error":"Server error"})");
+        session->logout();
+        QTRY_COMPARE(logoutFailed.count(), 1);
+        QVERIFY(logoutFailed.first().first().toString().contains("Server error"));
+        QVERIFY(session->loggedIn());
+        QVERIFY(!session->busy());
+        QCOMPARE(store->token, QStringLiteral("tok"));
+        QVERIFY(api->hasToken());
+
+        // Invalid already: nothing left to revoke, and not an expired login.
+        server->route("DELETE", "/api/token", 401, R"({"error":"No such token"})");
+        session->logout();
+        QTRY_VERIFY(!session->loggedIn());
+        QVERIFY(store->token.isEmpty());
+        QCOMPARE(loginFailed.count(), 0);
     }
 
     void sessionLoginRejected()
@@ -446,6 +472,118 @@ private slots:
         QCOMPARE(myTurn.first().at(0).toString(), QStringLiteral("g1"));
         QCOMPARE(myTurn.first().at(1).toString(), QStringLiteral("Friend"));
         QCOMPARE(model.myTurnOpponents().size(), 2);
+    }
+
+    void ongoingGamesUpdateRowsInPlace()
+    {
+        logIn();
+        EventStream events(api);
+        OngoingGamesModel model(api, &events);
+        auto load = [&](const char *json) {
+            server->route("GET", "/api/account/playing", 200, json);
+            model.refresh();
+            QTRY_VERIFY(!model.loading());
+        };
+        const char *twoGames = R"({"nowPlaying":[
+            {"gameId":"g1","isMyTurn":false,"opponent":{"username":"A"}},
+            {"gameId":"g2","isMyTurn":true,"opponent":{"username":"B"}}]})";
+        load(twoGames);
+        QCOMPARE(model.count(), 2);
+
+        QSignalSpy reset(&model, &QAbstractItemModel::modelReset);
+        QSignalSpy changed(&model, &QAbstractItemModel::dataChanged);
+        QSignalSpy moved(&model, &QAbstractItemModel::rowsMoved);
+        QSignalSpy inserted(&model, &QAbstractItemModel::rowsInserted);
+        QSignalSpy removed(&model, &QAbstractItemModel::rowsRemoved);
+
+        // Nothing changed: the delegates (mini boards) are left alone.
+        load(twoGames);
+        QCOMPARE(reset.count() + changed.count() + moved.count() + inserted.count() + removed.count(), 0);
+
+        // g2 moves up and changes, g3 is new, g1 stays as it is.
+        load(R"({"nowPlaying":[
+            {"gameId":"g2","isMyTurn":false,"opponent":{"username":"B"}},
+            {"gameId":"g3","isMyTurn":true,"opponent":{"username":"C"}},
+            {"gameId":"g1","isMyTurn":false,"opponent":{"username":"A"}}]})");
+        QCOMPARE(moved.count(), 1);
+        QCOMPARE(changed.count(), 1);
+        QCOMPARE(inserted.count(), 1);
+        QCOMPARE(removed.count(), 0);
+        QCOMPARE(role(model, 0, "gameId").toString(), QStringLiteral("g2"));
+        QCOMPARE(role(model, 0, "isMyTurn").toBool(), false);
+        QCOMPARE(role(model, 1, "gameId").toString(), QStringLiteral("g3"));
+        QCOMPARE(role(model, 2, "gameId").toString(), QStringLiteral("g1"));
+
+        load(R"({"nowPlaying":[{"gameId":"g3","isMyTurn":true,"opponent":{"username":"C"}}]})");
+        QCOMPARE(removed.count(), 2);
+        QCOMPARE(model.count(), 1);
+        QCOMPARE(role(model, 0, "gameId").toString(), QStringLiteral("g3"));
+        QCOMPARE(reset.count(), 0);
+    }
+
+    void ongoingGamesPolling()
+    {
+        logIn();
+        EventStream events(api);
+        OngoingGamesModel model(api, &events);
+        auto load = [&](const char *json) {
+            server->route("GET", "/api/account/playing", 200, json);
+            model.refresh();
+            QTRY_VERIFY(!model.loading());
+        };
+        const char *waiting = R"({"nowPlaying":[{"gameId":"g1","isMyTurn":false},{"gameId":"g2","isMyTurn":true}]})";
+        model.setPolling(true);
+        QCOMPARE(model.pollIntervalMs(), 60 * 1000); // until the first load
+
+        // A game waits for the opponent: every minute, slower while nothing changes.
+        for (int i = 0; i < 5; ++i)
+            load(waiting);
+        QCOMPARE(model.pollIntervalMs(), 60 * 1000);
+        load(waiting);
+        QCOMPARE(model.pollIntervalMs(), 2 * 60 * 1000);
+        load(waiting);
+        load(waiting);
+        QCOMPARE(model.pollIntervalMs(), 5 * 60 * 1000);
+        // Looking at the games again brings back full speed.
+        model.refreshIfStale();
+        QCOMPARE(model.pollIntervalMs(), 60 * 1000);
+
+        // Every game waits for me: only moves made elsewhere are left to notice.
+        load(R"({"nowPlaying":[{"gameId":"g1","isMyTurn":true},{"gameId":"g2","isMyTurn":true}]})");
+        QCOMPARE(model.pollIntervalMs(), 5 * 60 * 1000);
+        // No games: new ones are announced on the event stream.
+        load(R"({"nowPlaying":[]})");
+        QCOMPARE(model.pollIntervalMs(), 0);
+
+        load(waiting);
+        QCOMPARE(model.pollIntervalMs(), 60 * 1000);
+        model.setPolling(false);
+        QCOMPARE(model.pollIntervalMs(), 0);
+    }
+
+    void ongoingGamesRefreshWhenStreamOpens()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/stream/event");
+        server->route("GET", "/api/account/playing", 200, R"({"nowPlaying":[{"gameId":"g1","isMyTurn":false}]})");
+        EventStream events(api);
+        OngoingGamesModel model(api, &events);
+
+        // Left to the event stream, which isn't up yet.
+        model.refreshIfStale();
+        events.start();
+        QTRY_COMPARE(server->openStreams("/api/stream/event"), 1);
+        // The stream opens with all ongoing games: one refresh for the lot.
+        server->push("/api/stream/event", line(R"({"type":"gameStart","game":{"gameId":"g1"}})")
+                     + line(R"({"type":"gameStart","game":{"gameId":"g2"}})"));
+        QTRY_COMPARE(model.count(), 1);
+        QCOMPARE(server->requestCount("GET", "/api/account/playing"), 1);
+
+        // A list that recent isn't loaded again.
+        model.refreshIfStale();
+        QTest::qWait(200);
+        QCOMPARE(server->requestCount("GET", "/api/account/playing"), 1);
+        events.stop();
     }
 
     void friendsModel()

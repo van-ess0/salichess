@@ -41,6 +41,8 @@ public:
     static QString startFen();
 
     // Accepts a FEN or "startpos"/empty for the standard start position.
+    // Rejects positions with a king missing, pawns on the first or last rank
+    // or the side not to move in check. On failure the position is unchanged.
     bool setFen(const QString &fen);
     QString fen() const;
 

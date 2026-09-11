@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
 
     auto onLoginChanged = [&]() {
         if (session.loggedIn()) {
+            // When the event stream opens, it sends the current challenges
+            // and makes ongoingGames refresh.
             events.start();
-            challenges.refresh();
-            ongoingGames.refresh();
             ongoingGames.setPolling(true);
         } else {
             events.stop();
@@ -75,6 +75,11 @@ int main(int argc, char *argv[])
         }
     };
     QObject::connect(&session, &Session::loggedInChanged, onLoginChanged);
+    QObject::connect(app.data(), &QGuiApplication::applicationStateChanged, &ongoingGames,
+                     [&](Qt::ApplicationState state) {
+        if (state == Qt::ApplicationActive && session.loggedIn())
+            ongoingGames.refreshIfStale();
+    });
     QObject::connect(&outgoingChallenges, &OutgoingChallenges::challengeFinished,
                      &challenges, &ChallengesModel::removeChallenge);
 

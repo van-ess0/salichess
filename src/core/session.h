@@ -61,6 +61,8 @@ signals:
     void busyChanged();
     void accountChanged();
     void loginFailed(const QString &error);
+    // Lichess did not revoke the token, so the session stays logged in.
+    void logoutFailed(const QString &error);
 
 private:
     void setLoggedIn(bool loggedIn);

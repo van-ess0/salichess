@@ -5,6 +5,7 @@
 #define ONGOINGGAMESMODEL_H
 
 #include <QAbstractListModel>
+#include <QElapsedTimer>
 #include <QHash>
 #include <QStringList>
 #include <QTimer>
@@ -15,8 +16,10 @@ class EventStream;
 class LichessApi;
 
 // The user's ongoing games (/api/account/playing), most urgent first.
-// Exposed to QML as "ongoingGames". Polls while logged in so that
-// "your turn" in correspondence games can be noticed.
+// Exposed to QML as "ongoingGames". Games that start or end are announced on
+// the event stream, but an opponent's move is not, so the list is polled
+// while a game waits for the opponent (to notice "your turn" in
+// correspondence games), more slowly while nothing changes.
 class OngoingGamesModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -52,8 +55,13 @@ public:
     int myTurnCount() const;
     QStringList myTurnOpponents() const;
     bool loading() const { return m_loading; }
+    // The current poll interval, 0 while no poll is scheduled.
+    int pollIntervalMs() const { return m_pollTimer.isActive() ? m_pollTimer.interval() : 0; }
 
     Q_INVOKABLE void refresh();
+    // For when the user looks at the games again: refreshes unless the list
+    // is recent or a refresh is coming anyway, and polls at full speed again.
+    Q_INVOKABLE void refreshIfStale();
     void setPolling(bool enabled);
     void clear();
 
@@ -64,13 +72,21 @@ signals:
     void myTurn(const QString &gameId, const QString &opponentName);
 
 private:
-    void setGames(const QVector<QVariantMap> &games);
+    // Returns whether anything changed.
+    bool setGames(const QVector<QVariantMap> &games);
+    bool waitingForOpponent() const;
+    void schedulePoll();
 
     LichessApi *m_api;
+    EventStream *m_events;
     QVector<QVariantMap> m_games;
     QHash<QString, bool> m_lastMyTurn;
     QTimer m_pollTimer;
     QTimer m_refreshDebounce;
+    QElapsedTimer m_lastLoad;
+    int m_pollIntervalMs;
+    int m_unchangedLoads = 0;
+    bool m_polling = false;
     bool m_loading = false;
     bool m_loadedOnce = false;
 };

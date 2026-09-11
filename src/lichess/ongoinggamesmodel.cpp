@@ -11,11 +11,27 @@
 
 namespace {
 
+// Polling while a game waits for the opponent. After a few loads without any
+// change the interval doubles, up to the maximum: correspondence moves take
+// hours.
 const int PollIntervalMs = 60 * 1000;
+const int MaxPollIntervalMs = 5 * 60 * 1000;
+const int UnchangedLoadsBeforeBackoff = 5;
+// refreshIfStale() leaves a list alone that is younger than this.
+const int StaleAfterMs = 30 * 1000;
 
 QString str(const QVariantMap &map, const char *key)
 {
     return map.value(QString::fromLatin1(key)).toString();
+}
+
+int indexOfGame(const QVector<QVariantMap> &games, const QString &id, int from)
+{
+    for (int i = from; i < games.size(); ++i) {
+        if (str(games.at(i), "gameId") == id)
+            return i;
+    }
+    return -1;
 }
 
 } // namespace
@@ -23,17 +39,24 @@ QString str(const QVariantMap &map, const char *key)
 OngoingGamesModel::OngoingGamesModel(LichessApi *api, EventStream *events, QObject *parent)
     : QAbstractListModel(parent)
     , m_api(api)
+    , m_events(events)
+    , m_pollIntervalMs(PollIntervalMs)
 {
-    m_pollTimer.setInterval(PollIntervalMs);
+    m_pollTimer.setSingleShot(true);
     connect(&m_pollTimer, &QTimer::timeout, this, &OngoingGamesModel::refresh);
 
     // Event bursts (e.g. all games sent when the stream opens) cause a
-    // single refresh.
+    // single refresh. So does the stream opening: games may have ended while
+    // it was down.
     m_refreshDebounce.setSingleShot(true);
     m_refreshDebounce.setInterval(1500);
     connect(&m_refreshDebounce, &QTimer::timeout, this, &OngoingGamesModel::refresh);
     connect(events, &EventStream::gameStarted, &m_refreshDebounce, static_cast<void (QTimer::*)()>(&QTimer::start));
     connect(events, &EventStream::gameFinished, &m_refreshDebounce, static_cast<void (QTimer::*)()>(&QTimer::start));
+    connect(events, &EventStream::connectedChanged, this, [this]() {
+        if (m_events->connected())
+            m_refreshDebounce.start();
+    });
 }
 
 int OngoingGamesModel::rowCount(const QModelIndex &parent) const
@@ -117,6 +140,7 @@ void OngoingGamesModel::refresh()
 {
     if (!m_api->hasToken() || m_loading)
         return;
+    m_refreshDebounce.stop(); // this refresh covers it
     m_loading = true;
     emit loadingChanged();
 
@@ -125,21 +149,43 @@ void OngoingGamesModel::refresh()
     m_api->get(QStringLiteral("/api/account/playing"), query, this, [this](const ApiResult &result) {
         m_loading = false;
         emit loadingChanged();
-        if (!result.ok())
-            return;
-        QVector<QVariantMap> games;
-        for (const QJsonValue &value : result.json.object().value(QStringLiteral("nowPlaying")).toArray())
-            games.append(value.toObject().toVariantMap());
-        setGames(games);
+        if (result.ok()) {
+            QVector<QVariantMap> games;
+            for (const QJsonValue &value : result.json.object().value(QStringLiteral("nowPlaying")).toArray())
+                games.append(value.toObject().toVariantMap());
+            m_lastLoad.start();
+            if (setGames(games)) {
+                m_unchangedLoads = 0;
+                m_pollIntervalMs = PollIntervalMs;
+            } else if (++m_unchangedLoads >= UnchangedLoadsBeforeBackoff) {
+                m_pollIntervalMs = qMin(2 * m_pollIntervalMs, MaxPollIntervalMs);
+            }
+        }
+        schedulePoll();
     });
+}
+
+void OngoingGamesModel::refreshIfStale()
+{
+    m_unchangedLoads = 0;
+    if (m_pollIntervalMs != PollIntervalMs) {
+        m_pollIntervalMs = PollIntervalMs;
+        schedulePoll();
+    }
+    // The event stream triggers a refresh whenever it (re)connects.
+    if (m_loading || m_refreshDebounce.isActive() || !m_events->connected())
+        return;
+    if (m_lastLoad.isValid() && m_lastLoad.elapsed() < StaleAfterMs)
+        return;
+    refresh();
 }
 
 void OngoingGamesModel::setPolling(bool enabled)
 {
-    if (enabled)
-        m_pollTimer.start();
-    else
-        m_pollTimer.stop();
+    m_polling = enabled;
+    m_unchangedLoads = 0;
+    m_pollIntervalMs = PollIntervalMs;
+    schedulePoll();
 }
 
 void OngoingGamesModel::clear()
@@ -149,10 +195,33 @@ void OngoingGamesModel::clear()
     endResetModel();
     m_lastMyTurn.clear();
     m_loadedOnce = false;
+    m_lastLoad.invalidate();
     emit countChanged();
 }
 
-void OngoingGamesModel::setGames(const QVector<QVariantMap> &games)
+bool OngoingGamesModel::waitingForOpponent() const
+{
+    for (const QVariantMap &g : m_games) {
+        if (!g.value(QStringLiteral("isMyTurn")).toBool())
+            return true;
+    }
+    return false;
+}
+
+void OngoingGamesModel::schedulePoll()
+{
+    // New and finished games come from the event stream: without games
+    // there is nothing to poll for.
+    if (!m_polling || (m_loadedOnce && m_games.isEmpty())) {
+        m_pollTimer.stop();
+        return;
+    }
+    // With every game waiting for me, a poll can only notice moves I made
+    // elsewhere (on the website, or in a game page I left): rarely will do.
+    m_pollTimer.start(!m_loadedOnce || waitingForOpponent() ? m_pollIntervalMs : MaxPollIntervalMs);
+}
+
+bool OngoingGamesModel::setGames(const QVector<QVariantMap> &games)
 {
     QHash<QString, bool> turns;
     for (const QVariantMap &g : games) {
@@ -167,8 +236,43 @@ void OngoingGamesModel::setGames(const QVector<QVariantMap> &games)
     m_lastMyTurn = turns;
     m_loadedOnce = true;
 
-    beginResetModel();
-    m_games = games;
-    endResetModel();
+    if (games == m_games)
+        return false;
+
+    // Update the rows in place rather than resetting the model, so that the
+    // delegates (each draws a mini board) survive: games that ended are
+    // removed, the others moved into place and new ones inserted.
+    for (int row = m_games.size() - 1; row >= 0; --row) {
+        if (!turns.contains(str(m_games.at(row), "gameId"))) {
+            beginRemoveRows(QModelIndex(), row, row);
+            m_games.remove(row);
+            endRemoveRows();
+        }
+    }
+    for (int row = 0; row < games.size(); ++row) {
+        const int from = indexOfGame(m_games, str(games.at(row), "gameId"), row);
+        if (from < 0) {
+            beginInsertRows(QModelIndex(), row, row);
+            m_games.insert(row, games.at(row));
+            endInsertRows();
+            continue;
+        }
+        if (from != row) {
+            beginMoveRows(QModelIndex(), from, from, QModelIndex(), row);
+            m_games.move(from, row);
+            endMoveRows();
+        }
+        if (m_games.at(row) != games.at(row)) {
+            m_games[row] = games.at(row);
+            emit dataChanged(index(row), index(row));
+        }
+    }
+    // Only left over if Lichess listed a game twice.
+    if (m_games.size() > games.size()) {
+        beginRemoveRows(QModelIndex(), games.size(), m_games.size() - 1);
+        m_games.resize(games.size());
+        endRemoveRows();
+    }
     emit countChanged();
+    return true;
 }

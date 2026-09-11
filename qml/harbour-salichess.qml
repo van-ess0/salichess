@@ -139,6 +139,7 @@ ApplicationWindow {
     Connections {
         target: session
         onLoginFailed: app.notice(error)
+        onLogoutFailed: app.notice(error)
     }
 
     Connections {

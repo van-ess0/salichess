@@ -49,7 +49,11 @@ CoverBackground {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeSmall
             color: Theme.secondaryColor
-            text: cover.game ? Util.formatClock(cover.game.whiteTime) + " – " + Util.formatClock(cover.game.blackTime) : ""
+            // The clocks change five times a second. Only follow them while
+            // the cover is shown, and only redraw once a second.
+            text: cover.status !== Cover.Inactive && cover.game
+                  ? Util.formatClockSeconds(cover.game.whiteTime) + " – " + Util.formatClockSeconds(cover.game.blackTime)
+                  : ""
         }
     }
 

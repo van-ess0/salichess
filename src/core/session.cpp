@@ -14,7 +14,8 @@ Session::Session(LichessApi *api, TokenStore *tokenStore, QObject *parent)
     , m_tokenStore(tokenStore)
 {
     connect(m_api, &LichessApi::unauthorized, this, [this]() {
-        if (!m_loggedIn)
+        // While logging out, logout() handles the answers itself.
+        if (!m_loggedIn || m_busy)
             return;
         clearLocalState();
         emit loginFailed(tr("Your Lichess login has expired or was revoked. Please log in again."));
@@ -108,12 +109,20 @@ void Session::login(const QString &accessToken)
 
 void Session::logout()
 {
-    if (!m_loggedIn)
+    if (!m_loggedIn || m_busy)
         return;
-    // Revoke the token on the server; the request carries the token even
-    // though it is cleared locally right away.
-    m_api->deleteResource(QStringLiteral("/api/token"), nullptr, nullptr);
-    clearLocalState();
+    // The token is only forgotten once Lichess has revoked it (401: it was
+    // invalid already), so that it can't stay valid without the user knowing.
+    setBusy(true);
+    m_api->deleteResource(QStringLiteral("/api/token"), this, [this](const ApiResult &result) {
+        setBusy(false);
+        if (!result.ok() && result.status != 401) {
+            emit logoutFailed(tr("You are still logged in, because Lichess did not confirm the logout: %1")
+                              .arg(result.errorString));
+            return;
+        }
+        clearLocalState();
+    });
 }
 
 void Session::refreshAccount()

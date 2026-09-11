@@ -72,6 +72,31 @@ private slots:
         QCOMPARE(position.fen(), ChessPosition::startFen());
     }
 
+    void unplayableFensRejected()
+    {
+        // The rules engine reads out of bounds without both kings.
+        const char *const fens[] = {
+            "rnbq1bnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1BNR w - - 0 1",    // no kings
+            "rnbq1bnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1BNR w KQkq - 0 1", // ... with castling rights
+            "4k3/8/8/8/8/8/8/3KK3 w - - 0 1",                           // two white kings
+            "4k2P/8/8/8/8/8/8/4K3 w - - 0 1",                           // pawn on the 8th rank
+            "4k3/8/8/8/8/8/8/p3K3 b - - 0 1",                           // pawn on the 1st rank
+            "4k3/8/8/8/8/8/8/4K2r b - - 0 1",                           // side not to move in check
+            "4k3/8/8/8/8/8/4K3 w - - 0 1",                              // seven ranks
+            "garbage",
+        };
+        for (const char *fen : fens) {
+            ChessPosition position;
+            QVERIFY2(!position.setFen(QString::fromLatin1(fen)), fen);
+            QCOMPARE(position.fen(), ChessPosition::startFen()); // left unchanged
+        }
+
+        ChessGame game;
+        game.reset(QString::fromLatin1(fens[0]));
+        QCOMPARE(game.fen(), ChessPosition::startFen());
+        QVERIFY(ChessPosition().setFen(QStringLiteral("4k3/8/8/8/8/8/8/4K2r w - - 0 1"))); // in check, to move
+    }
+
     void replayPgn()
     {
         ChessGame game;

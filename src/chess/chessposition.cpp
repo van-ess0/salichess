@@ -33,6 +33,21 @@ int castlingKingTarget(const chess::Move &move)
     return rank * 8 + (to > from ? 6 : 2);
 }
 
+// As in Lichess: one king per side and no pawns on the first or last rank.
+// The rules engine relies on both kings being there.
+bool isPlayablePlacement(const QString &placement)
+{
+    if (placement.count(QLatin1Char('K')) != 1 || placement.count(QLatin1Char('k')) != 1)
+        return false;
+    const QStringList ranks = placement.split(QLatin1Char('/'));
+    if (ranks.size() != 8)
+        return false;
+    const auto hasPawn = [](const QString &rank) {
+        return rank.contains(QLatin1Char('P')) || rank.contains(QLatin1Char('p'));
+    };
+    return !hasPawn(ranks.first()) && !hasPawn(ranks.last());
+}
+
 } // namespace
 
 ChessPosition::ChessPosition()
@@ -70,7 +85,17 @@ bool ChessPosition::setFen(const QString &fen)
     const QString trimmed = fen.trimmed();
     if (trimmed.isEmpty() || trimmed == QLatin1String("startpos"))
         return m_board->setFen(chess::constants::STARTPOS);
-    return m_board->setFen(trimmed.toStdString());
+    // Checked before parsing: the parser itself looks up both kings.
+    if (!isPlayablePlacement(trimmed.section(QLatin1Char(' '), 0, 0)))
+        return false;
+    chess::Board board;
+    if (!board.setFen(trimmed.toStdString()))
+        return false;
+    // The side that just moved can't be in check, or its king could be taken.
+    if (board.isAttacked(board.kingSq(~board.sideToMove()), board.sideToMove()))
+        return false;
+    *m_board = board;
+    return true;
 }
 
 QString ChessPosition::fen() const

@@ -100,8 +100,9 @@ and only standard chess is supported for now.
 
 - The Lichess access token is kept encrypted by Sailfish OS Secrets. It sits in an
   owner-only collection that is unlocked together with the device, which is why the app asks for
-  the Sailjail `Secrets` permission. Log out in the app, or revoke the token in your
-  [Lichess settings](https://lichess.org/account/security), to invalidate it.
+  the Sailjail `Secrets` permission. Logging out in the app revokes the token on Lichess; the app
+  stays logged in until Lichess confirms that. You can also revoke it in your
+  [Lichess settings](https://lichess.org/account/security).
 - No analytics or other third-party services. Requests identify themselves to Lichess with a
   `harbour-salichess/<version>` user agent.
 

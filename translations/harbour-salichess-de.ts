@@ -1166,6 +1166,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Lichess did not return an access token.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>You are still logged in, because Lichess did not confirm the logout: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SettingsPage</name>
