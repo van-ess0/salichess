@@ -3,6 +3,15 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Fri Sep 11 2026 van-ess0 <https://github.com/van-ess0> 0.2.1-1
+- Uses less battery: ongoing games are only polled while one waits for the
+  opponent, and less often while nothing changes. The cover clock only
+  updates while the cover is shown.
+- Fewer requests at startup.
+- Logging out waits until Lichess has revoked the login, and says so if it
+  could not.
+- Invalid positions from the server are rejected instead of crashing.
+
 * Fri Sep 11 2026 van-ess0 <https://github.com/van-ess0> 0.2-1
 - Games show the material score: the pieces each side is up by and "+N".
 - Chat lines show the time they arrived.
