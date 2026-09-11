@@ -134,6 +134,39 @@ ApplicationWindow {
                 return
             app.notify(qsTr("Your turn"), qsTr("Your move against %1").arg(opponentName), "openGame", [gameId])
         }
+        onNewLobbyGame: {
+            if (Qt.application.state === Qt.ApplicationActive)
+                app.notice(qsTr("New game against %1").arg(opponentName))
+            else
+                app.notify(qsTr("New game"), qsTr("New correspondence game against %1").arg(opponentName),
+                           "openGame", [gameId])
+        }
+    }
+
+    // Outcome of the seek for a random opponent, wherever the user is now.
+    Connections {
+        target: lobbySeek
+        onGameFound: {
+            var page = pageStack.currentPage
+            if (page && page.showsSeek)
+                pageStack.replace(Qt.resolvedUrl("pages/GamePage.qml"), { gameId: gameId })
+            else
+                app.openGame(gameId)
+            if (Qt.application.state !== Qt.ApplicationActive)
+                app.notify(qsTr("Opponent found"), qsTr("Your game against %1 has started.").arg(opponent),
+                           "openGame", [gameId])
+        }
+        onStateChanged: {
+            var state = lobbySeek.state
+            if (state !== LobbySeek.Expired && state !== LobbySeek.Failed)
+                return
+            var text = state === LobbySeek.Expired ? qsTr("No opponent was found") : lobbySeek.errorString
+            var page = pageStack.currentPage
+            if (Qt.application.state !== Qt.ApplicationActive)
+                app.notify(qsTr("Random opponent"), text, "activate", [])
+            else if (!(page && page.showsSeek))
+                app.notice(text)
+        }
     }
 
     Connections {

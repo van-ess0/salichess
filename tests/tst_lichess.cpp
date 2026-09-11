@@ -24,6 +24,7 @@
 #include "lichess/eventstream.h"
 #include "lichess/friendsmodel.h"
 #include "lichess/gamecontroller.h"
+#include "lichess/lobbyseek.h"
 #include "lichess/ongoinggamesmodel.h"
 #include "lichess/outgoingchallenge.h"
 #include "lichess/outgoingchallenges.h"
@@ -606,6 +607,138 @@ private slots:
         QCOMPARE(role(model, 0, "blitzRating").toInt(), 2500);
         QCOMPARE(role(model, 1, "username").toString(), QStringLiteral("Alice"));
         QVERIFY(!model.loading());
+    }
+
+    // --- Seeks for a random opponent ---
+
+    void lobbySeekFindsGame()
+    {
+        server->route("GET", "/api/account", 200, R"({"id":"me","username":"Me","perfs":{"rapid":{"rating":1700}}})");
+        session->login(QStringLiteral("tok"));
+        QTRY_VERIFY(session->loggedIn());
+        server->streamRoute("POST", "/api/board/seek");
+        EventStream events(api);
+        LobbySeek seek(api, &events);
+        QSignalSpy found(&seek, &LobbySeek::gameFound);
+
+        seek.create({ { "minutes", 10 }, { "increment", 5 }, { "rated", true }, { "ratingDelta", 200 } });
+        QCOMPARE(seek.state(), LobbySeek::Seeking);
+        QCOMPARE(seek.description(), QStringLiteral("10+5 • Rapid • Rated"));
+        QTRY_COMPARE(server->openStreams("/api/board/seek"), 1);
+        const QUrlQuery form = server->lastRequest("POST", "/api/board/seek").form();
+        QCOMPARE(form.queryItemValue("time"), QStringLiteral("10"));
+        QCOMPARE(form.queryItemValue("increment"), QStringLiteral("5"));
+        QCOMPARE(form.queryItemValue("rated"), QStringLiteral("true"));
+        QCOMPARE(form.queryItemValue("color"), QStringLiteral("random"));
+        QCOMPARE(form.queryItemValue("ratingRange"), QStringLiteral("1500-1900"));
+        QVERIFY(!form.hasQueryItem("days"));
+
+        // Only a fresh game from the lobby or a pool, with the seek's speed.
+        emit events.gameStarted(map(R"({"gameId":"f1","source":"friend","speed":"rapid","rated":true,"hasMoved":false})"));
+        emit events.gameStarted(map(R"({"gameId":"c1","source":"lobby","speed":"classical","rated":true,"hasMoved":false})"));
+        emit events.gameStarted(map(R"({"gameId":"o1","source":"pool","speed":"rapid","rated":true,"hasMoved":true})"));
+        QCOMPARE(seek.state(), LobbySeek::Seeking);
+        emit events.gameStarted(map(R"({"gameId":"g1","source":"pool","speed":"rapid","rated":true,"hasMoved":false,
+            "opponent":{"username":"Stranger"}})"));
+        QCOMPARE(seek.state(), LobbySeek::Found);
+        QCOMPARE(found.count(), 1);
+        QCOMPARE(seek.gameId(), QStringLiteral("g1"));
+        QCOMPARE(seek.opponent(), QStringLiteral("Stranger"));
+        QTRY_COMPARE(server->openStreams("/api/board/seek"), 0); // the seek request is closed
+    }
+
+    void lobbySeekCanceledExpiredAndFailed()
+    {
+        logIn();
+        server->streamRoute("POST", "/api/board/seek");
+        EventStream events(api);
+        LobbySeek seek(api, &events);
+
+        // Closing the request cancels the seek on Lichess.
+        seek.create({ { "minutes", 15 }, { "increment", 10 }, { "ratingDelta", 100 } });
+        QTRY_COMPARE(server->openStreams("/api/board/seek"), 1);
+        const QUrlQuery form = server->lastRequest("POST", "/api/board/seek").form();
+        QCOMPARE(form.queryItemValue("rated"), QStringLiteral("false"));
+        QVERIFY(!form.hasQueryItem("ratingRange")); // no rapid rating yet
+        seek.cancel();
+        QCOMPARE(seek.state(), LobbySeek::Canceled);
+        QTRY_COMPARE(server->openStreams("/api/board/seek"), 0);
+
+        // Lichess ends the request; a game starting right after means a match.
+        seek.create({ { "minutes", 30 }, { "increment", 0 } });
+        QTRY_COMPARE(server->openStreams("/api/board/seek"), 1);
+        server->closeStreams("/api/board/seek");
+        QTest::qWait(200);
+        QCOMPARE(seek.state(), LobbySeek::Seeking);
+        emit events.gameStarted(map(R"({"gameId":"g2","source":"lobby","speed":"classical","rated":false,"hasMoved":false})"));
+        QCOMPARE(seek.state(), LobbySeek::Found);
+        QCOMPARE(seek.opponent(), QStringLiteral("Anonymous"));
+
+        // Without a game, the seek ended without an opponent.
+        seek.create({ { "minutes", 30 }, { "increment", 0 } });
+        QTRY_COMPARE(server->openStreams("/api/board/seek"), 1);
+        server->closeStreams("/api/board/seek");
+        QTRY_COMPARE(seek.state(), LobbySeek::Expired);
+
+        // Refused by Lichess.
+        server->route("POST", "/api/board/seek", 400, R"({"error":"You must also play some games as black"})");
+        seek.create({ { "minutes", 10 }, { "color", "white" } });
+        QTRY_COMPARE(seek.state(), LobbySeek::Failed);
+        QCOMPARE(seek.errorString(), QStringLiteral("You must also play some games as black"));
+        QCOMPARE(server->lastRequest("POST", "/api/board/seek").form().queryItemValue("color"), QStringLiteral("white"));
+
+        // Blitz never reaches the server.
+        const int requests = server->requests().size();
+        seek.create({ { "minutes", 5 }, { "increment", 0 } });
+        QCOMPARE(seek.state(), LobbySeek::Failed);
+        QCOMPARE(server->requests().size(), requests);
+    }
+
+    void lobbySeekCorrespondence()
+    {
+        logIn();
+        server->route("POST", "/api/board/seek", 200, R"({"id":"s1"})");
+        EventStream events(api);
+        LobbySeek seek(api, &events);
+
+        seek.create({ { "correspondence", true }, { "days", 3 } });
+        QVERIFY(seek.correspondence());
+        QTRY_COMPARE(seek.state(), LobbySeek::Posted);
+        const QUrlQuery form = server->lastRequest("POST", "/api/board/seek").form();
+        QCOMPARE(form.queryItemValue("days"), QStringLiteral("3"));
+        QVERIFY(!form.hasQueryItem("time"));
+        QCOMPARE(seek.description(), QStringLiteral("3 days • Correspondence • Casual"));
+        seek.cancel(); // only possible on lichess.org
+        QCOMPARE(seek.state(), LobbySeek::Posted);
+
+        server->route("POST", "/api/board/seek", 400, R"({"error":"Already playing too many games"})");
+        seek.create({ { "correspondence", true }, { "days", 1 } });
+        QTRY_COMPARE(seek.state(), LobbySeek::Failed);
+        QCOMPARE(seek.errorString(), QStringLiteral("Already playing too many games"));
+    }
+
+    void lobbySeekCorrespondenceJoined()
+    {
+        logIn();
+        EventStream events(api);
+        OngoingGamesModel model(api, &events);
+        QSignalSpy newGame(&model, &OngoingGamesModel::newLobbyGame);
+        QSignalSpy myTurn(&model, &OngoingGamesModel::myTurn);
+        server->route("GET", "/api/account/playing", 200, R"({"nowPlaying":[]})");
+        model.refresh();
+        QTRY_VERIFY(!model.loading());
+
+        // Someone joined my correspondence seek, and I play white.
+        server->route("GET", "/api/account/playing", 200, R"({"nowPlaying":[
+            {"gameId":"c1","isMyTurn":true,"source":"lobby","speed":"correspondence","opponent":{"username":"Joiner"}},
+            {"gameId":"f1","isMyTurn":true,"source":"friend","speed":"correspondence","opponent":{"username":"Pal"}}]})");
+        model.refresh();
+        QTRY_COMPARE(model.count(), 2);
+        QCOMPARE(newGame.count(), 1);
+        QCOMPARE(newGame.first().at(0).toString(), QStringLiteral("c1"));
+        QCOMPARE(newGame.first().at(1).toString(), QStringLiteral("Joiner"));
+        QCOMPARE(myTurn.count(), 1);
+        QCOMPARE(myTurn.first().at(0).toString(), QStringLiteral("f1"));
     }
 
     // --- Outgoing challenges ---

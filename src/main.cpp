@@ -24,6 +24,7 @@
 #include "lichess/eventstream.h"
 #include "lichess/friendsmodel.h"
 #include "lichess/gamecontroller.h"
+#include "lichess/lobbyseek.h"
 #include "lichess/ongoinggamesmodel.h"
 #include "lichess/outgoingchallenge.h"
 #include "lichess/outgoingchallenges.h"
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<PiecesModel>(uri, 1, 0, "PiecesModel", QStringLiteral("Owned by ChessGame"));
     qmlRegisterUncreatableType<ChatModel>(uri, 1, 0, "ChatModel", QStringLiteral("Owned by GameController"));
     qmlRegisterUncreatableType<OutgoingChallenge>(uri, 1, 0, "OutgoingChallenge", QStringLiteral("Use outgoingChallenges.create()"));
+    qmlRegisterUncreatableType<LobbySeek>(uri, 1, 0, "LobbySeek", QStringLiteral("Use lobbySeek"));
 
     // Services. The access token lives in Sailfish Secrets.
     AppSettings settings;
@@ -56,6 +58,7 @@ int main(int argc, char *argv[])
     OngoingGamesModel ongoingGames(&api, &events);
     FriendsModel friends(&api);
     OutgoingChallenges outgoingChallenges(&api, &events);
+    LobbySeek lobbySeek(&api, &events);
     AppActivation activation;
     Services::init(&api, &session, &settings);
 
@@ -72,6 +75,7 @@ int main(int argc, char *argv[])
             challenges.clear();
             friends.clear();
             outgoingChallenges.cancelAll();
+            lobbySeek.cancel();
         }
     };
     QObject::connect(&session, &Session::loggedInChanged, onLoginChanged);
@@ -98,6 +102,7 @@ int main(int argc, char *argv[])
     context->setContextProperty(QStringLiteral("ongoingGames"), &ongoingGames);
     context->setContextProperty(QStringLiteral("friends"), &friends);
     context->setContextProperty(QStringLiteral("outgoingChallenges"), &outgoingChallenges);
+    context->setContextProperty(QStringLiteral("lobbySeek"), &lobbySeek);
     context->setContextProperty(QStringLiteral("appActivation"), &activation);
 
     session.restore();

@@ -108,5 +108,15 @@ CoverBackground {
             color: Theme.secondaryColor
             text: qsTr("Sent, waiting: %1").arg(outgoingChallenges.pendingCount)
         }
+
+        Label {
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+            visible: lobbySeek.seeking && !lobbySeek.correspondence
+            font.pixelSize: Theme.fontSizeSmall
+            color: Theme.secondaryColor
+            text: qsTr("Looking for an opponent")
+        }
     }
 }

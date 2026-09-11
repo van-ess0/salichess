@@ -70,6 +70,9 @@ signals:
     void loadingChanged();
     // It became my turn in a game (not reported for the initial load).
     void myTurn(const QString &gameId, const QString &opponentName);
+    // A correspondence game from the lobby appeared: someone joined my seek
+    // (or I joined one on lichess.org). Reported instead of myTurn.
+    void newLobbyGame(const QString &gameId, const QString &opponentName);
 
 private:
     // Returns whether anything changed.

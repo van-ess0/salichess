@@ -41,6 +41,7 @@ HEADERS += \
     src/lichess/eventstream.h \
     src/lichess/friendsmodel.h \
     src/lichess/gamecontroller.h \
+    src/lichess/lobbyseek.h \
     src/lichess/ongoinggamesmodel.h \
     src/lichess/outgoingchallenge.h \
     src/lichess/outgoingchallenges.h \
@@ -65,6 +66,7 @@ SOURCES += \
     src/lichess/eventstream.cpp \
     src/lichess/friendsmodel.cpp \
     src/lichess/gamecontroller.cpp \
+    src/lichess/lobbyseek.cpp \
     src/lichess/ongoinggamesmodel.cpp \
     src/lichess/outgoingchallenge.cpp \
     src/lichess/outgoingchallenges.cpp \

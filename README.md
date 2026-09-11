@@ -12,6 +12,7 @@ written in C++/Qt 5 with a native Silica user interface.
   - Challenge a player you follow, or any username, with real-time (blitz and slower) or correspondence time controls, choice of colour, rated or casual.
   - Accept or decline incoming challenges. Sent challenges stay open while you use the rest of the app, and the game opens when your friend accepts.
   - Play your ongoing games: animated board with drag or tap-to-move, clocks (for correspondence, the time left for the current move), move list and history, draw and takeback offers, resign, abort, claim victory, and in-game chat.
+- **Play with random opponents:** Lichess' quick-pairing time controls, a custom clock or a correspondence seek (the Board API allows rapid and slower), rated or casual, with a rating range and choice of colour. A seek stays open while you use the rest of the app, and the game opens when an opponent is found. Correspondence seeks can only be withdrawn on lichess.org.
 - **Puzzles:** the daily puzzle, a healthy mix, or around 60 themes (forks, mates in N, endgames, …). Choose a difficulty, get a two-step hint, or view the solution. Results count towards your Lichess puzzle rating when you are logged in.
 - **Sailfish integration:**
   - Notifications for new challenges and for "your turn" in correspondence games, while the app runs.

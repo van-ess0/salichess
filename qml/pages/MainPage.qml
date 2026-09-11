@@ -75,6 +75,19 @@ Page {
             }
 
             BackgroundItem {
+                readonly property bool waiting: lobbySeek.seeking && !lobbySeek.correspondence
+                visible: session.loggedIn
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl(waiting ? "SeekWaitingPage.qml" : "SeekPage.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-shuffle"
+                    title: qsTr("Play with a random opponent")
+                    subtitle: parent.waiting ? qsTr("Looking for an opponent…")
+                                             : qsTr("Rapid, classical or correspondence")
+                }
+            }
+
+            BackgroundItem {
                 height: Theme.itemSizeMedium
                 onClicked: pageStack.push(Qt.resolvedUrl("PuzzlesPage.qml"))
                 MenuEntry {

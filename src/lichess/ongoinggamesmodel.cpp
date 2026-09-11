@@ -228,10 +228,14 @@ bool OngoingGamesModel::setGames(const QVector<QVariantMap> &games)
         const QString id = str(g, "gameId");
         const bool mine = g.value(QStringLiteral("isMyTurn")).toBool();
         turns.insert(id, mine);
-        if (m_loadedOnce && mine && !m_lastMyTurn.value(id, false)) {
-            const QString opponent = str(g.value(QStringLiteral("opponent")).toMap(), "username");
+        if (!m_loadedOnce)
+            continue;
+        const QString opponent = str(g.value(QStringLiteral("opponent")).toMap(), "username");
+        if (!m_lastMyTurn.contains(id) && str(g, "source") == QLatin1String("lobby")
+                && str(g, "speed") == QLatin1String("correspondence"))
+            emit newLobbyGame(id, opponent);
+        else if (mine && !m_lastMyTurn.value(id, false))
             emit myTurn(id, opponent);
-        }
     }
     m_lastMyTurn = turns;
     m_loadedOnce = true;

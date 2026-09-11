@@ -173,6 +173,41 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Your move in %1 games</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Looking for an opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CustomSeekDialog</name>
+    <message>
+        <source>Seek</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom time control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minutes per side</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Increment in seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blitz and bullet games can&apos;t be played with random opponents through the Lichess Board API. Add time or increment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classical game</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FriendPickerPage</name>
@@ -407,6 +442,53 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>LobbySeek</name>
+    <message>
+        <source>Rapid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Correspondence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Casual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Through the Lichess Board API, only rapid, classical and correspondence games can be played with random opponents.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not start the seek.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The connection to Lichess was lost.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Anonymous</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LoginPage</name>
     <message>
         <source>Login failed: %1</source>
@@ -577,6 +659,18 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>%1 left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play with a random opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Looking for an opponent…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid, classical or correspondence</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1157,6 +1251,164 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>SeekPage</name>
+    <message>
+        <source>Random opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid, classical or correspondence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The result affects your rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opponent rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relative to your rating in the time control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>±%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Finding an opponent may take longer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Random</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quick pairing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 • your rating %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom time control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the minutes and the increment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Correspondence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Days per move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A correspondence seek stays in the Lichess lobby until someone joins. salichess can&apos;t withdraw it; that is only possible on lichess.org.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Post seek</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SeekWaitingPage</name>
+    <message>
+        <source>Random opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Posting your seek…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Looking for an opponent…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opponent found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your seek is in the lobby</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No opponent was found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The seek was canceled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The seek failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When someone joins, the game appears under Ongoing games. The seek can only be withdrawn on lichess.org.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can leave this page: the seek stays open while salichess runs, and the game opens as soon as an opponent is found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel seek</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Try again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Session</name>
     <message>
         <source>Your Lichess login has expired or was revoked. Please log in again.</source>
@@ -1289,6 +1541,34 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Challenge to %1 failed: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New game against %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New correspondence game against %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opponent found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your game against %1 has started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No opponent was found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Random opponent</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
