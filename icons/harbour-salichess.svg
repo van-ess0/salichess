@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="86" height="86" viewBox="0 0 86 86">
+  <!-- Base shape from the Sailfish OS app icon template (CC BY 3.0):
+       85.4 px within the 86 px canvas, two opposite rounded corners. -->
+  <defs>
+    <linearGradient id="bg" gradientUnits="userSpaceOnUse" x1="0.7169" y1="85.2831" x2="85.2831" y2="0.7169">
+      <stop offset="0" stop-color="#000000"/>
+      <stop offset="1" stop-color="#3a3a3a"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#bg)" d="M84.277,0.3H43C19.417,0.3,0.3,19.418,0.3,43v41.277c0,0.786,0.637,1.423,1.423,1.423H43
+    c23.583,0,42.7-19.118,42.7-42.7V1.723C85.7,0.937,85.063,0.3,84.277,0.3z"/>
+  <!-- White knight from the cburnett piece set (Colin M.L. Burnett, GPLv2+) -->
+  <g transform="translate(9.560 8.040) scale(1.52)">
+    <g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path fill="#fff" d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path fill="#fff" d="M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.042-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4.003 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-.994-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.992 2.5-3c1 0 1 3 1 3"/><path fill="#000" d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 1 1 1 0m5.433-9.75a.5 1.5 30 1 1-.866-.5.5 1.5 30 1 1 .866.5"/></g>
+  </g>
+</svg>

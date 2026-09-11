@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-salichess
+Exec=harbour-salichess
+Name=salichess
+Name[de]=salichess
+
+[X-Sailjail]
+OrganizationName=io.github.vaness0
+ApplicationName=harbour-salichess
+Permissions=Internet

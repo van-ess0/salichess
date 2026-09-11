@@ -1,0 +1,25 @@
+// SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef TESTDATA_H
+#define TESTDATA_H
+
+// Daily puzzle example from the Lichess API documentation.
+static const char DailyPuzzle[] = R"({
+  "game": {
+    "id": "HxbFI25U",
+    "pgn": "c4 Nf6 Nc3 g6 Nf3 Bg7 g3 d6 Bg2 O-O O-O e5 d3 Nbd7 Rb1 c6 e4 a5 a3 Nh5 Bg5 f6 Be3 Nc5 b4 Ne6 b5 Bd7 a4 Qe8 Qd2 f5 exf5 gxf5 Bh6 Rf7 Nh4 f4 Bxg7 Rxg7 Nf5 Rg5 Nxd6 Qg6 Nce4 fxg3 fxg3 Nef4 gxf4 Nxf4 Rxf4 exf4 Nxg5 Qxg5 Rf1 Qc5+ Kh1 Qxd6 bxc6 Bxc6 Rxf4 Qe5 Rg4+ Kh8 d4 Bxg2+ Rxg2 Qe4 Kg1 Qb1+ Kf2 Rf8+ Ke3"
+  },
+  "puzzle": {
+    "id": "1Sqyb",
+    "rating": 1857,
+    "plays": 60048,
+    "solution": ["b1b3", "d2d3", "f8f3", "e3f3", "b3d3"],
+    "themes": ["deflection", "endgame", "crushing", "attraction", "long"],
+    "initialPly": 72
+  }
+})";
+
+static const char DailyPuzzleFen[] = "5r1k/1p5p/8/p7/P1PP4/4K3/3Q2RP/1q6 b - -";
+
+#endif // TESTDATA_H

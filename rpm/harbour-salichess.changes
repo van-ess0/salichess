@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Newest entries first. The version-release must match the spec.
+
+* Fri Sep 11 2026 van-ess0 <https://github.com/van-ess0> 0.1-1
+- First release: log in with Lichess, play games with friends (challenges,
+  clocks, draw/takeback offers, chat) and solve puzzles (daily puzzle,
+  themes, difficulty, hints).

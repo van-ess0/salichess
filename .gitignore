@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Per-user Qt Creator state
+*.pro.user
+*.pro.user.*
+
+# Local test builds (see tests/tests.pro)
+build-tests/
+
+# Local notes for AI coding assistants (contain machine-specific paths)
+CLAUDE.md

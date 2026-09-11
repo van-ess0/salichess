@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Licensing of files that cannot carry a header (https://reuse.software).
+# Check with: uvx reuse lint
+
+version = 1
+SPDX-PackageName = "salichess"
+SPDX-PackageSupplier = "van-ess0 <https://github.com/van-ess0>"
+SPDX-PackageDownloadLocation = "https://github.com/van-ess0/salichess"
+
+[[annotations]]
+path = ["translations/*.ts", ".gitattributes", "README.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 van-ess0 <https://github.com/van-ess0>"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# The launcher icon: the cburnett knight on the base shape of the
+# Sailfish OS app icon template.
+[[annotations]]
+path = ["icons/harbour-salichess.svg", "icons/*/harbour-salichess.png"]
+precedence = "override"
+SPDX-FileCopyrightText = [
+    "2026 van-ess0 <https://github.com/van-ess0>",
+    "Colin M.L. Burnett",
+    "Jolla Ltd.",
+]
+SPDX-License-Identifier = "GPL-2.0-or-later AND CC-BY-3.0"
+
+# Chess pieces, as distributed with Lichess (lichess-org/lila, public/piece/cburnett).
+[[annotations]]
+path = "qml/images/pieces/cburnett/*.svg"
+precedence = "override"
+SPDX-FileCopyrightText = "Colin M.L. Burnett"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Vendored rules engine: https://github.com/Disservin/chess-library
+[[annotations]]
+path = "3rdparty/chess-library/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2023 disservin"
+SPDX-License-Identifier = "MIT"
