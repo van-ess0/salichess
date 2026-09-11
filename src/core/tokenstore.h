@@ -7,8 +7,8 @@
 #include <QString>
 
 // Persists the Lichess OAuth access token. Session only talks to this
-// interface, so the storage backend (plain config file today, Sailfish
-// Secrets later) can be swapped in main.cpp without touching anything else.
+// interface, so the storage backend (SecretsTokenStore on the device, an
+// in-memory one in tests) is chosen without touching anything else.
 class TokenStore
 {
 public:

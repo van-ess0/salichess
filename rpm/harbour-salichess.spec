@@ -6,10 +6,17 @@ Name:       harbour-salichess
 Summary:    Unofficial Lichess client for Sailfish OS
 Version:    0.1
 Release:    1
+Group:      Qt/Qt
 License:    GPLv3+
 URL:        https://github.com/van-ess0/salichess
 Source0:    %{name}-%{version}.tar.bz2
+# Providers of the QML modules the app imports, and the Secrets storage
+# plugin that keeps the login token.
 Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   amber-web-authorization
+Requires:   nemo-qml-plugin-notifications-qt5
+Requires:   libkeepalive
+Requires:   sailfishsecretsdaemon-secretsplugins-default
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
@@ -17,6 +24,7 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Svg)
 BuildRequires:  pkgconfig(Qt5DBus)
+BuildRequires:  pkgconfig(sailfishsecrets)
 BuildRequires:  desktop-file-utils
 
 %description
@@ -25,7 +33,7 @@ solve puzzles on lichess.org.
 
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 

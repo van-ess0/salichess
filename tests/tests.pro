@@ -29,7 +29,6 @@ HEADERS += \
     $$SRC/core/ndjsonstream.h \
     $$SRC/core/services.h \
     $$SRC/core/session.h \
-    $$SRC/core/settingstokenstore.h \
     $$SRC/core/tokenstore.h \
     $$SRC/lichess/challengesmodel.h \
     $$SRC/lichess/chatmodel.h \
@@ -56,7 +55,6 @@ SOURCES += \
     $$SRC/core/ndjsonstream.cpp \
     $$SRC/core/services.cpp \
     $$SRC/core/session.cpp \
-    $$SRC/core/settingstokenstore.cpp \
     $$SRC/lichess/challengesmodel.cpp \
     $$SRC/lichess/chatmodel.cpp \
     $$SRC/lichess/eventstream.cpp \

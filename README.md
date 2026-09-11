@@ -11,7 +11,7 @@ written in C++/Qt 5 with a native Silica user interface.
 - **Play with friends**
   - Challenge a player you follow, or any username, with real-time (blitz and slower) or correspondence time controls, choice of colour, rated or casual.
   - Accept or decline incoming challenges. Sent challenges stay open while you use the rest of the app, and the game opens when your friend accepts.
-  - Play your ongoing games: animated board with drag or tap-to-move, clocks, move list and history, draw and takeback offers, resign, abort, claim victory, and in-game chat.
+  - Play your ongoing games: animated board with drag or tap-to-move, clocks (for correspondence, the time left for the current move), move list and history, draw and takeback offers, resign, abort, claim victory, and in-game chat.
 - **Puzzles:** the daily puzzle, a healthy mix, or around 60 themes (forks, mates in N, endgames, …). Choose a difficulty, get a two-step hint, or view the solution. Results count towards your Lichess puzzle rating when you are logged in.
 - **Sailfish integration:**
   - Notifications for new challenges and for "your turn" in correspondence games, while the app runs.
@@ -25,8 +25,8 @@ There is no store release yet. Build the RPM yourself (see below) and install it
 example with `sfdk deploy --sdk`.
 
 salichess is developed against the Sailfish OS 5.1 SDK target and tested on Sailfish OS 5.2. It
-needs Sailjail, so older releases without it won't work. It only requests the Sailjail `Internet`
-permission, and it talks to lichess.org only.
+needs Sailjail, so older releases without it won't work. It requests the Sailjail permissions
+`Internet` and `Secrets` (for the login token), and it talks to lichess.org only.
 
 ## Building
 
@@ -82,9 +82,10 @@ and only standard chess is supported for now.
 
 ## Privacy
 
-- The Lichess access token is stored unencrypted in the app's Sailjail-private config directory
-  (`~/.config/io.github.vaness0/harbour-salichess/`). Log out in the app, or revoke the token in
-  your [Lichess settings](https://lichess.org/account/security), to invalidate it.
+- The Lichess access token is kept encrypted by Sailfish OS Secrets. It sits in an
+  owner-only collection that is unlocked together with the device, which is why the app asks for
+  the Sailjail `Secrets` permission. Log out in the app, or revoke the token in your
+  [Lichess settings](https://lichess.org/account/security), to invalidate it.
 - No analytics or other third-party services. Requests identify themselves to Lichess with a
   `harbour-salichess/<version>` user agent.
 

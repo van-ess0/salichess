@@ -12,4 +12,4 @@ Name[de]=salichess
 [X-Sailjail]
 OrganizationName=io.github.vaness0
 ApplicationName=harbour-salichess
-Permissions=Internet
+Permissions=Internet;Secrets

@@ -52,7 +52,6 @@ GameController::GameController(QObject *parent)
     m_reconnectTimer.setSingleShot(true);
     connect(&m_reconnectTimer, &QTimer::timeout, this, &GameController::connectStream);
 
-    m_clockTimer.setInterval(200);
     connect(&m_clockTimer, &QTimer::timeout, this, &GameController::clockChanged);
 
     connect(m_game, &ChessGame::movesChanged, this, &GameController::stateChanged);
@@ -99,7 +98,7 @@ int GameController::blackTime() const
 QString GameController::runningClock() const
 {
     // Lichess starts the clocks once both players have moved.
-    if (!m_hasClock || gameOver() || m_game->ply() < 2 || !m_clockStamp.isValid())
+    if ((!m_hasClock && !hasTurnTimer()) || gameOver() || m_game->ply() < 2 || !m_clockStamp.isValid())
         return QString();
     return whiteToMove() ? QStringLiteral("white") : QStringLiteral("black");
 }
@@ -453,9 +452,13 @@ void GameController::post(const QString &action, const QUrlQuery &form)
 
 void GameController::updateClockTimer()
 {
-    if (runningClock().isEmpty())
+    if (runningClock().isEmpty()) {
         m_clockTimer.stop();
-    else if (!m_clockTimer.isActive())
+        return;
+    }
+    // A correspondence turn is counted in days: once a second is plenty.
+    m_clockTimer.setInterval(m_hasClock ? 200 : 1000);
+    if (!m_clockTimer.isActive())
         m_clockTimer.start();
 }
 

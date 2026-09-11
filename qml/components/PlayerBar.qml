@@ -3,6 +3,7 @@
 
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import "../js/Time.js" as Time
 import "../js/Util.js" as Util
 
 // Player name, rating and clock above or below the board.
@@ -12,6 +13,9 @@ Item {
     property var player: ({})
     property bool showClock: true
     property int timeMs: 0
+    // Correspondence: timeMs is the time left for the current move.
+    property bool turnTimer: false
+    readonly property int lowTimeMs: turnTimer ? 3 * 3600 * 1000 : 10000
     property bool running: false
     property bool toMove: false
     property string extraText
@@ -80,7 +84,7 @@ Item {
         color: {
             if (!bar.running)
                 return Theme.rgba(Theme.primaryColor, 0.1)
-            if (bar.timeMs < 10000)
+            if (bar.timeMs < bar.lowTimeMs)
                 return Theme.rgba(Theme.errorColor, 0.6)
             return Theme.rgba(Theme.highlightBackgroundColor, 0.6)
         }
@@ -88,7 +92,7 @@ Item {
         Label {
             id: clockLabel
             anchors.centerIn: parent
-            text: Util.formatClock(bar.timeMs)
+            text: bar.turnTimer ? Time.formatTurnTime(bar.timeMs) : Util.formatClock(bar.timeMs)
             font.pixelSize: Theme.fontSizeLarge
             font.family: Theme.fontFamilyHeading
             color: bar.running ? Theme.primaryColor : Theme.secondaryColor

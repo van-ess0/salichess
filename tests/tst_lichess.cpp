@@ -17,7 +17,6 @@
 #include "core/ndjsonstream.h"
 #include "core/services.h"
 #include "core/session.h"
-#include "core/settingstokenstore.h"
 #include "core/tokenstore.h"
 #include "fakelichess.h"
 #include "lichess/challengesmodel.h"
@@ -322,17 +321,6 @@ private slots:
     {
         const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
         QDir(dir).removeRecursively();
-
-        {
-            SettingsTokenStore tokens;
-            QVERIFY(tokens.load().isEmpty());
-            QVERIFY(tokens.save(QStringLiteral("secret")));
-            QCOMPARE(SettingsTokenStore().load(), QStringLiteral("secret"));
-            const QFile::Permissions permissions = QFile::permissions(dir + "/auth.conf");
-            QVERIFY(!(permissions & (QFile::ReadGroup | QFile::ReadOther)));
-            tokens.clear();
-            QVERIFY(SettingsTokenStore().load().isEmpty());
-        }
 
         {
             AppSettings settings;
@@ -655,6 +643,29 @@ private slots:
         QVERIFY(game.resultText().contains(QStringLiteral("White is victorious")));
     }
 
+    void gameControllerCorrespondence()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/board/game/stream/c1");
+        server->route("GET", "/api/board/game/c1/chat", 200, "[]");
+        GameController game;
+        game.setGameId(QStringLiteral("c1"));
+        QTRY_COMPARE(server->openStreams("/api/board/game/stream/c1"), 1);
+        // No clock; wtime/btime are the time left for the current move.
+        server->push("/api/board/game/stream/c1", line(R"({"type":"gameFull","id":"c1",
+            "white":{"id":"me","name":"Me"},"black":{"id":"pal","name":"Pal"},
+            "speed":"correspondence","perf":{"name":"Correspondence"},"daysPerTurn":3,"initialFen":"startpos",
+            "state":{"type":"gameState","moves":"e2e4 e7e5","wtime":259200000,"btime":200000000,
+                     "winc":0,"binc":0,"status":"started"}})"));
+        QTRY_COMPARE(game.myColor(), QStringLiteral("white"));
+        QVERIFY(!game.hasClock());
+        QVERIFY(game.hasTurnTimer());
+        QCOMPARE(game.daysPerTurn(), 3);
+        QCOMPARE(game.runningClock(), QStringLiteral("white"));
+        QVERIFY(game.whiteTime() <= 259200000 && game.whiteTime() > 259100000);
+        QCOMPARE(game.blackTime(), 200000000);
+    }
+
     void gameControllerSpectatorAndErrors()
     {
         logIn();
@@ -669,6 +680,8 @@ private slots:
         QCOMPARE(game.myColor(), QString());
         QVERIFY(!game.isMyTurn());
         QVERIFY(!game.hasClock());
+        QVERIFY(!game.hasTurnTimer()); // no days per move either
+        QCOMPARE(game.runningClock(), QString());
         QCOMPARE(game.black().value("name").toString(), QStringLiteral("Stockfish level 3"));
 
         // A game the Board API refuses: shown as an error, no reconnect loop.

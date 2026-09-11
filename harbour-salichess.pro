@@ -9,6 +9,11 @@ CONFIG += sailfishapp
 
 QT += network svg dbus
 
+# Sailfish Secrets keeps the Lichess access token. (No explicit
+# link_pkgconfig: sailfishapp.prf adds it after its own PKGCONFIG entry.)
+PKGCONFIG += sailfishsecrets
+INCLUDEPATH += /usr/include/Sailfish
+
 # chess-library (3rdparty/chess-library/chess.hpp) needs C++17.
 QMAKE_CXXFLAGS += -std=gnu++17
 
@@ -20,9 +25,9 @@ HEADERS += \
     src/core/lichessapi.h \
     src/core/ndjsonstream.h \
     src/core/pieceimageprovider.h \
+    src/core/secretstokenstore.h \
     src/core/services.h \
     src/core/session.h \
-    src/core/settingstokenstore.h \
     src/core/tokenstore.h \
     src/chess/chessgame.h \
     src/chess/chessposition.h \
@@ -45,9 +50,9 @@ SOURCES += \
     src/core/lichessapi.cpp \
     src/core/ndjsonstream.cpp \
     src/core/pieceimageprovider.cpp \
+    src/core/secretstokenstore.cpp \
     src/core/services.cpp \
     src/core/session.cpp \
-    src/core/settingstokenstore.cpp \
     src/chess/chessgame.cpp \
     src/chess/chessposition.cpp \
     src/chess/piecesmodel.cpp \
@@ -68,8 +73,7 @@ DISTFILES += \
     qml/pages/*.qml \
     qml/components/*.qml \
     qml/js/*.js \
-    rpm/harbour-salichess.changes.in \
-    rpm/harbour-salichess.changes.run.in \
+    rpm/harbour-salichess.changes \
     rpm/harbour-salichess.spec \
     translations/*.ts \
     harbour-salichess.desktop

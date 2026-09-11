@@ -575,6 +575,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>No games or challenges right now</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%1 left</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewChallengeDialog</name>
@@ -1227,6 +1231,17 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Incoming challenges and your turn in correspondence games, while salichess is running</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Time</name>
+    <message>
+        <source>%1d %2h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1h %2m</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

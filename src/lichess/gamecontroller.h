@@ -39,6 +39,9 @@ class GameController : public QObject
     Q_PROPERTY(QString variantName READ variantName NOTIFY infoChanged)
     Q_PROPERTY(bool hasClock READ hasClock NOTIFY infoChanged)
     Q_PROPERTY(int daysPerTurn READ daysPerTurn NOTIFY infoChanged)
+    // Correspondence games: whiteTime/blackTime are the time left for the
+    // current move instead of a game clock.
+    Q_PROPERTY(bool hasTurnTimer READ hasTurnTimer NOTIFY infoChanged)
 
     Q_PROPERTY(int whiteTime READ whiteTime NOTIFY clockChanged) // ms
     Q_PROPERTY(int blackTime READ blackTime NOTIFY clockChanged)
@@ -80,6 +83,7 @@ public:
     QString variantName() const { return m_variantName; }
     bool hasClock() const { return m_hasClock; }
     int daysPerTurn() const { return m_daysPerTurn; }
+    bool hasTurnTimer() const { return !m_hasClock && m_daysPerTurn > 0; }
 
     int whiteTime() const;
     int blackTime() const;

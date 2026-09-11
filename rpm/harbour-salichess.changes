@@ -7,3 +7,5 @@
 - First release: log in with Lichess, play games with friends (challenges,
   clocks, draw/takeback offers, chat) and solve puzzles (daily puzzle,
   themes, difficulty, hints).
+- The login token is kept in Sailfish Secrets.
+- Correspondence games show the time left for the current move.

@@ -4,6 +4,7 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
 import "../components"
+import "../js/Time.js" as Time
 import "../js/Util.js" as Util
 
 Page {
@@ -257,7 +258,13 @@ Page {
                             truncationMode: TruncationMode.Fade
                             font.pixelSize: Theme.fontSizeSmall
                             color: model.isMyTurn ? Theme.highlightColor : Theme.secondaryColor
-                            text: model.isMyTurn ? qsTr("Your turn") : qsTr("Waiting for opponent")
+                            text: {
+                                var turn = model.isMyTurn ? qsTr("Your turn") : qsTr("Waiting for opponent")
+                                // Correspondence: how long the current move may still take.
+                                if (model.speed === "correspondence" && model.secondsLeft > 0)
+                                    turn += " • " + qsTr("%1 left").arg(Time.formatTurnTime(model.secondsLeft * 1000))
+                                return turn
+                            }
                         }
                         Label {
                             width: parent.width

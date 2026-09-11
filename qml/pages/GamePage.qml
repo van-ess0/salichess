@@ -134,7 +134,8 @@ Page {
                     readonly property string color: page.whiteOrBlackPlayer(true)
                     width: parent.width
                     player: color === "white" ? controller.white : controller.black
-                    showClock: controller.hasClock
+                    showClock: controller.hasClock || controller.hasTurnTimer
+                    turnTimer: controller.hasTurnTimer
                     timeMs: color === "white" ? controller.whiteTime : controller.blackTime
                     running: controller.runningClock === color
                     toMove: !controller.gameOver && controller.game.sideToMove === color
@@ -154,7 +155,8 @@ Page {
                     readonly property string color: page.whiteOrBlackPlayer(false)
                     width: parent.width
                     player: color === "white" ? controller.white : controller.black
-                    showClock: controller.hasClock
+                    showClock: controller.hasClock || controller.hasTurnTimer
+                    turnTimer: controller.hasTurnTimer
                     timeMs: color === "white" ? controller.whiteTime : controller.blackTime
                     running: controller.runningClock === color
                     toMove: !controller.gameOver && controller.game.sideToMove === color

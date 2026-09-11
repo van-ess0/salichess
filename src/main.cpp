@@ -18,7 +18,7 @@
 #include "core/pieceimageprovider.h"
 #include "core/services.h"
 #include "core/session.h"
-#include "core/settingstokenstore.h"
+#include "core/secretstokenstore.h"
 #include "lichess/challengesmodel.h"
 #include "lichess/chatmodel.h"
 #include "lichess/eventstream.h"
@@ -46,10 +46,9 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<ChatModel>(uri, 1, 0, "ChatModel", QStringLiteral("Owned by GameController"));
     qmlRegisterUncreatableType<OutgoingChallenge>(uri, 1, 0, "OutgoingChallenge", QStringLiteral("Use outgoingChallenges.create()"));
 
-    // Services. Swap SettingsTokenStore for another TokenStore to change
-    // where the access token is kept.
+    // Services. The access token lives in Sailfish Secrets.
     AppSettings settings;
-    SettingsTokenStore tokenStore;
+    SecretsTokenStore tokenStore;
     LichessApi api;
     Session session(&api, &tokenStore);
     EventStream events(&api);
