@@ -3,11 +3,13 @@
 #
 # Builds the RPMs for the phone and emulator architectures with the Sailfish
 # OS Platform SDK in Docker, using https://github.com/CODeRUS/github-sfos-build
-# (its "sfos5" branch handles target releases 5.0 and newer).
+# (its "sfos5" branch handles target releases 5.0 and newer). Alongside, the
+# host tests in tests/ run against the desktop Qt 5 from Ubuntu.
 #
-# Pushing a tag vX.Y-Z also publishes a GitHub release with the RPMs. The spec
-# is the source of the version: bump Version/Release and the changelog in
-# rpm/, commit, then tag. A tag that doesn't match the spec fails the build.
+# Pushing a tag vX.Y-Z also publishes a GitHub release with the RPMs, once the
+# build and the tests pass. The spec is the source of the version: bump
+# Version/Release and the changelog in rpm/, commit, then tag. A tag that
+# doesn't match the spec fails the build.
 
 name: Build RPMs
 
@@ -86,8 +88,32 @@ jobs:
           path: RPMS/*.rpm
           if-no-files-found: error
 
+  # Everything below the QML layer, built for the desktop. Network code talks
+  # to a local fake Lichess server, so no SDK and no internet are needed.
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Qt 5
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qtbase5-dev qtdeclarative5-dev
+
+      - name: Build the tests
+        run: |
+          mkdir build-tests
+          cd build-tests
+          qmake ../tests
+          make -j"$(nproc)"
+
+      - name: Run the tests
+        working-directory: build-tests
+        run: ./tst_salichess
+
   release:
-    needs: build
+    needs: [build, test]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     permissions:

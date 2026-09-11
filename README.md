@@ -46,8 +46,8 @@ The target ships Qt 5.6 and GCC 13: C++17 is fine, but Qt APIs newer than 5.6 an
 in QML are not available.
 
 GitHub Actions (`.github/workflows/build.yml`) builds the aarch64, armv7hl and i486 RPMs with the
-Sailfish OS Platform SDK in Docker for every push and pull request. The RPMs are attached to each
-run as an artifact.
+Sailfish OS Platform SDK in Docker for every push and pull request, and runs the [tests](#tests)
+against Ubuntu's desktop Qt 5. The RPMs are attached to each run as an artifact.
 
 ### Releasing
 
@@ -57,8 +57,8 @@ The spec is the source of the version.
    `version-release` at the top of `rpm/harbour-salichess.changes`.
 2. Commit, then tag and push: `git tag v0.2-1 && git push origin v0.2-1`.
 
-The workflow checks that the tag matches the spec and the changelog, builds the RPMs, and publishes a
-GitHub release with them attached. The release notes come from the changelog entry. The app's About
+The workflow checks that the tag matches the spec and the changelog, builds the RPMs, runs the tests,
+and publishes a GitHub release with the RPMs attached. The release notes come from the changelog entry. The app's About
 page and user agent take their version from the spec too.
 
 ## Tests
