@@ -19,6 +19,10 @@ Item {
     property bool running: false
     property bool toMove: false
     property string extraText
+    // Pieces this side is up by (ChessGame.whiteMaterial/blackMaterial) and
+    // its material score; "+N" is shown for the side that is ahead.
+    property var material: []
+    property int materialScore: 0
 
     width: parent ? parent.width : 0
     height: Theme.itemSizeSmall
@@ -50,7 +54,9 @@ Item {
         Label {
             id: nameLabel
             anchors.verticalCenter: parent.verticalCenter
-            width: Math.min(implicitWidth, parent.width - x - ratingLabel.width - Theme.paddingSmall)
+            width: Math.min(implicitWidth, parent.width - x - ratingLabel.width - Theme.paddingSmall
+                            - (materialRow.visible ? materialRow.width + parent.spacing : 0)
+                            - (scoreLabel.visible ? scoreLabel.width + parent.spacing : 0))
             text: bar.player && bar.player.name ? bar.player.name : ""
             truncationMode: TruncationMode.Fade
             color: bar.toMove ? Theme.highlightColor : Theme.primaryColor
@@ -65,6 +71,45 @@ Item {
                     return ""
                 return bar.player.rating + (bar.player.provisional ? "?" : "")
             }
+            color: Theme.secondaryColor
+            font.pixelSize: Theme.fontSizeSmall
+        }
+        Row {
+            id: materialRow
+            anchors.verticalCenter: parent.verticalCenter
+            visible: bar.material.length > 0
+            Repeater {
+                model: bar.material
+                // Pieces of the same type overlap, like on Lichess; types are
+                // kept apart so each stays recognisable.
+                Item {
+                    readonly property real size: Theme.iconSizeExtraSmall
+                    readonly property bool startsGroup: index > 0 && bar.material[index - 1] !== modelData
+                    readonly property bool groupContinues: index + 1 < bar.material.length
+                                                           && bar.material[index + 1] === modelData
+                    width: (startsGroup ? Theme.paddingSmall : 0) + (groupContinues ? size * 0.45 : size)
+                    height: size
+
+                    // Silhouettes in the ambience colour, like other Silica
+                    // icons, so they read on any background.
+                    HighlightImage {
+                        x: parent.startsGroup ? Theme.paddingSmall : 0
+                        width: parent.size
+                        height: parent.size
+                        sourceSize.width: width
+                        sourceSize.height: height
+                        source: "image://pieces/" + appSettings.pieceSet + "/" + modelData
+                        color: Theme.secondaryColor
+                        colorWeight: 1.0
+                    }
+                }
+            }
+        }
+        Label {
+            id: scoreLabel
+            anchors.verticalCenter: parent.verticalCenter
+            visible: bar.materialScore > 0
+            text: "+" + bar.materialScore
             color: Theme.secondaryColor
             font.pixelSize: Theme.fontSizeSmall
         }

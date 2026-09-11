@@ -27,6 +27,13 @@ class ChessGame : public QObject
     Q_PROPERTY(int lastMoveFrom READ lastMoveFrom NOTIFY positionChanged)
     Q_PROPERTY(int lastMoveTo READ lastMoveTo NOTIFY positionChanged)
     Q_PROPERTY(int checkSquare READ checkSquare NOTIFY positionChanged)
+    // Material balance as on Lichess: the pieces each side is up by, compared
+    // type by type (so promotions count), and the score from white's point of
+    // view with P=1, N=B=3, R=5, Q=9. Pieces are listed in the opponent's
+    // colour, like captured pieces: whiteMaterial holds "bQ", "bP", ...
+    Q_PROPERTY(QStringList whiteMaterial READ whiteMaterial NOTIFY positionChanged)
+    Q_PROPERTY(QStringList blackMaterial READ blackMaterial NOTIFY positionChanged)
+    Q_PROPERTY(int materialScore READ materialScore NOTIFY positionChanged)
 
     // State of the latest position.
     Q_PROPERTY(int ply READ ply NOTIFY movesChanged)
@@ -49,6 +56,9 @@ public:
     int lastMoveFrom() const;
     int lastMoveTo() const;
     int checkSquare() const;
+    QStringList whiteMaterial() const { return materialAdvantage(true); }
+    QStringList blackMaterial() const { return materialAdvantage(false); }
+    int materialScore() const;
 
     int ply() const { return m_moves.size(); }
     QString sideToMove() const;
@@ -102,6 +112,8 @@ private:
     bool appendMove(const QString &uci);
     Snapshot snapshotOf(const ChessPosition &position) const;
     void setView(int ply);
+    const std::array<char, 64> &viewedPieces() const;
+    QStringList materialAdvantage(bool white) const;
 
     PiecesModel *m_pieces;
     ChessPosition m_start;

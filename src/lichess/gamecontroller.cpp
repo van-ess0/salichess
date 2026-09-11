@@ -10,6 +10,7 @@
 #include "core/services.h"
 #include "core/session.h"
 
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QRegularExpression>
@@ -317,7 +318,8 @@ void GameController::onMessage(const QJsonObject &message)
     } else if (type == QLatin1String("chatLine")) {
         if (message.value(QStringLiteral("room")).toString() == QLatin1String("player"))
             m_chat->append(message.value(QStringLiteral("username")).toString(),
-                           message.value(QStringLiteral("text")).toString());
+                           message.value(QStringLiteral("text")).toString(),
+                           QDateTime::currentDateTime());
     } else if (type == QLatin1String("opponentGone")) {
         m_opponentGone = message.value(QStringLiteral("gone")).toBool();
         m_claimWinInSeconds = message.value(QStringLiteral("claimWinInSeconds")).toInt();

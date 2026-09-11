@@ -307,6 +307,35 @@ private slots:
         QCOMPARE(game.sanMoves().last(), QStringLiteral("O-O+")); // the rook checks the king on f7
     }
 
+    void materialBalance()
+    {
+        ChessGame game;
+        QVERIFY(game.whiteMaterial().isEmpty());
+        QVERIFY(game.blackMaterial().isEmpty());
+        QCOMPARE(game.materialScore(), 0);
+
+        QVERIFY(game.setUciMoves({ "e2e4", "d7d5", "e4d5" }));
+        QCOMPARE(game.whiteMaterial(), QStringList({ "bP" }));
+        QVERIFY(game.blackMaterial().isEmpty());
+        QCOMPARE(game.materialScore(), 1);
+
+        // It follows the position being viewed.
+        game.viewPrevious();
+        QCOMPARE(game.materialScore(), 0);
+        game.viewLatest();
+
+        // Types are compared one by one, so promotions count.
+        game.reset(QStringLiteral("4k3/pp6/8/8/8/8/8/QQ2K3 w - - 0 1"));
+        QCOMPARE(game.whiteMaterial(), QStringList({ "bQ", "bQ" }));
+        QCOMPARE(game.blackMaterial(), QStringList({ "wP", "wP" }));
+        QCOMPARE(game.materialScore(), 16);
+
+        game.reset(QStringLiteral("r3k3/8/8/8/8/8/8/1N2K3 w - - 0 1"));
+        QCOMPARE(game.whiteMaterial(), QStringList({ "bN" }));
+        QCOMPARE(game.blackMaterial(), QStringList({ "wR" }));
+        QCOMPARE(game.materialScore(), -2);
+    }
+
     void uciForBoardInput()
     {
         ChessGame game;

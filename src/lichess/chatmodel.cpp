@@ -23,6 +23,7 @@ QVariant ChatModel::data(const QModelIndex &index, int role) const
     case TextRole: return line.text;
     case MineRole: return !m_myName.isEmpty() && line.username.compare(m_myName, Qt::CaseInsensitive) == 0;
     case SystemRole: return line.username.compare(QLatin1String("lichess"), Qt::CaseInsensitive) == 0;
+    case TimeRole: return line.time.isValid() ? QVariant(line.time) : QVariant();
     default: return QVariant();
     }
 }
@@ -34,13 +35,14 @@ QHash<int, QByteArray> ChatModel::roleNames() const
         { TextRole, "text" },
         { MineRole, "mine" },
         { SystemRole, "system" },
+        { TimeRole, "time" },
     };
 }
 
-void ChatModel::append(const QString &username, const QString &text)
+void ChatModel::append(const QString &username, const QString &text, const QDateTime &time)
 {
     beginInsertRows(QModelIndex(), m_lines.size(), m_lines.size());
-    m_lines.append(Line { username, text });
+    m_lines.append(Line { username, text, time });
     endInsertRows();
     emit countChanged();
 }

@@ -5,6 +5,7 @@
 #define CHATMODEL_H
 
 #include <QAbstractListModel>
+#include <QDateTime>
 #include <QVector>
 
 // Chat lines of a game.
@@ -17,7 +18,8 @@ public:
         UsernameRole = Qt::UserRole + 1,
         TextRole,
         MineRole,
-        SystemRole // messages from "lichess" (e.g. "White offers draw")
+        SystemRole, // messages from "lichess" (e.g. "White offers draw")
+        TimeRole    // when the line arrived; undefined for chat history
     };
 
     explicit ChatModel(QObject *parent = nullptr);
@@ -29,7 +31,9 @@ public:
     int count() const { return m_lines.size(); }
 
     void setMyName(const QString &name) { m_myName = name; }
-    void append(const QString &username, const QString &text);
+    // Lichess sends no timestamps, so live lines carry their arrival time
+    // and lines from the history none.
+    void append(const QString &username, const QString &text, const QDateTime &time = QDateTime());
     void clear();
 
 signals:
@@ -39,6 +43,7 @@ private:
     struct Line {
         QString username;
         QString text;
+        QDateTime time;
     };
     QVector<Line> m_lines;
     QString m_myName;

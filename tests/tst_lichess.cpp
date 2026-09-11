@@ -643,6 +643,31 @@ private slots:
         QVERIFY(game.resultText().contains(QStringLiteral("White is victorious")));
     }
 
+    void chatTimestamps()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/board/game/stream/t1");
+        server->route("GET", "/api/board/game/t1/chat", 200, R"([{"text":"earlier","user":"Pal"}])");
+        GameController game;
+        game.setGameId(QStringLiteral("t1"));
+        QTRY_COMPARE(server->openStreams("/api/board/game/stream/t1"), 1);
+        server->push("/api/board/game/stream/t1", line(R"({"type":"gameFull","id":"t1",
+            "white":{"id":"me","name":"Me"},"black":{"id":"pal","name":"Pal"},"initialFen":"startpos",
+            "state":{"type":"gameState","moves":"","wtime":0,"btime":0,"winc":0,"binc":0,"status":"started"}})"));
+        QTRY_COMPARE(game.chat()->count(), 1); // the history
+
+        const QDateTime before = QDateTime::currentDateTime();
+        server->push("/api/board/game/stream/t1", line(R"({"type":"chatLine","room":"player","username":"Pal","text":"now"})"));
+        QTRY_COMPARE(game.chat()->count(), 2);
+
+        // Lichess sends no times: history lines have none, live lines the arrival time.
+        QVERIFY(!role(*game.chat(), 0, "time").isValid());
+        const QDateTime arrived = role(*game.chat(), 1, "time").toDateTime();
+        QVERIFY(arrived.isValid());
+        QVERIFY(arrived >= before.addSecs(-1) && arrived <= QDateTime::currentDateTime());
+        QCOMPARE(role(*game.chat(), 1, "text").toString(), QStringLiteral("now"));
+    }
+
     void gameControllerCorrespondence()
     {
         logIn();

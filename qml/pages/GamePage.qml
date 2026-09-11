@@ -136,6 +136,8 @@ Page {
                     player: color === "white" ? controller.white : controller.black
                     showClock: controller.hasClock || controller.hasTurnTimer
                     turnTimer: controller.hasTurnTimer
+                    material: color === "white" ? controller.game.whiteMaterial : controller.game.blackMaterial
+                    materialScore: color === "white" ? controller.game.materialScore : -controller.game.materialScore
                     timeMs: color === "white" ? controller.whiteTime : controller.blackTime
                     running: controller.runningClock === color
                     toMove: !controller.gameOver && controller.game.sideToMove === color
@@ -157,6 +159,8 @@ Page {
                     player: color === "white" ? controller.white : controller.black
                     showClock: controller.hasClock || controller.hasTurnTimer
                     turnTimer: controller.hasTurnTimer
+                    material: color === "white" ? controller.game.whiteMaterial : controller.game.blackMaterial
+                    materialScore: color === "white" ? controller.game.materialScore : -controller.game.materialScore
                     timeMs: color === "white" ? controller.whiteTime : controller.blackTime
                     running: controller.runningClock === color
                     toMove: !controller.gameOver && controller.game.sideToMove === color

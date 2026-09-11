@@ -33,7 +33,7 @@ Page {
 
         delegate: Item {
             width: list.width
-            height: bubble.height + Theme.paddingSmall
+            height: bubble.height + (timeLabel.visible ? timeLabel.height : 0) + Theme.paddingMedium
 
             Label {
                 id: bubble
@@ -48,6 +48,21 @@ Page {
                 text: (model.mine || model.system ? "" : "<b>" + Util.escapeHtml(model.username) + "</b>: ")
                       + Util.escapeHtml(model.text)
                 textFormat: Text.StyledText
+            }
+
+            // Lichess sends no timestamps: this is when the line arrived, so
+            // lines from the history (loaded when the game opens) have none.
+            Label {
+                id: timeLabel
+                visible: model.time !== undefined
+                anchors {
+                    top: bubble.bottom
+                    left: model.mine ? undefined : bubble.left
+                    right: model.mine ? bubble.right : undefined
+                }
+                font.pixelSize: Theme.fontSizeTiny
+                color: Theme.secondaryColor
+                text: visible ? Format.formatDate(model.time, Formatter.TimeValue) : ""
             }
         }
 

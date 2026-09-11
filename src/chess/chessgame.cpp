@@ -7,6 +7,8 @@
 
 #include <QRegularExpression>
 
+#include <algorithm>
+
 ChessGame::ChessGame(QObject *parent)
     : QObject(parent)
     , m_pieces(new PiecesModel(this))
@@ -33,6 +35,49 @@ int ChessGame::lastMoveTo() const
 int ChessGame::checkSquare() const
 {
     return m_viewPly == 0 ? m_startSnapshot.check : m_moves.at(m_viewPly - 1).check;
+}
+
+namespace {
+
+// Piece types in display order, with their usual values.
+const char MaterialTypes[] = { 'Q', 'R', 'B', 'N', 'P' };
+const int MaterialValues[] = { 9, 5, 3, 3, 1 };
+
+int countPieces(const std::array<char, 64> &pieces, char code)
+{
+    return int(std::count(pieces.begin(), pieces.end(), code));
+}
+
+} // namespace
+
+QStringList ChessGame::materialAdvantage(bool white) const
+{
+    const std::array<char, 64> &pieces = viewedPieces();
+    QStringList result;
+    for (char type : MaterialTypes) {
+        const char own = white ? type : char(type + ('a' - 'A'));
+        const char other = white ? char(type + ('a' - 'A')) : type;
+        const int extra = countPieces(pieces, own) - countPieces(pieces, other);
+        for (int i = 0; i < extra; ++i)
+            result.append(QString(QChar(white ? 'b' : 'w')) + QChar(type));
+    }
+    return result;
+}
+
+int ChessGame::materialScore() const
+{
+    const std::array<char, 64> &pieces = viewedPieces();
+    int score = 0;
+    for (int i = 0; i < 5; ++i) {
+        const char type = MaterialTypes[i];
+        score += MaterialValues[i] * (countPieces(pieces, type) - countPieces(pieces, char(type + ('a' - 'A'))));
+    }
+    return score;
+}
+
+const std::array<char, 64> &ChessGame::viewedPieces() const
+{
+    return m_viewPly == 0 ? m_startSnapshot.pieces : m_moves.at(m_viewPly - 1).pieces;
 }
 
 QString ChessGame::sideToMove() const
@@ -265,6 +310,6 @@ void ChessGame::setView(int ply)
     // Emits even if the ply number is unchanged: after setUciMoves() the
     // position at the same ply may differ.
     m_viewPly = qBound(qMin(m_firstViewablePly, this->ply()), ply, this->ply());
-    m_pieces->setPosition(m_viewPly == 0 ? m_startSnapshot.pieces : m_moves.at(m_viewPly - 1).pieces);
+    m_pieces->setPosition(viewedPieces());
     emit positionChanged();
 }
