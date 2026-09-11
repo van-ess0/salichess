@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Builds the RPMs for the phone and emulator architectures with the Sailfish
+# OS Platform SDK in Docker, using https://github.com/CODeRUS/github-sfos-build
+# (its "sfos5" branch handles target releases 5.0 and newer).
+
+name: Build RPMs
+
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # Sailfish OS target release, same as the SDK target used for development.
+  # Available releases: https://hub.docker.com/r/coderus/sailfishos-platform-sdk/tags
+  RELEASE: 5.1.0.11
+
+# A newer push to the same branch or pull request replaces a running build.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # One job builds all architectures, so the ~5 GB SDK image is pulled once.
+      # The third-party action is pinned to a commit of its sfos5 branch.
+      - name: Build aarch64
+        uses: coderus/github-sfos-build@67702884a1b192d1dfdb2fc5ec6e908e9e274855 # sfos5
+        with:
+          release: ${{ env.RELEASE }}
+          arch: aarch64
+
+      - name: Build armv7hl
+        uses: coderus/github-sfos-build@67702884a1b192d1dfdb2fc5ec6e908e9e274855 # sfos5
+        with:
+          release: ${{ env.RELEASE }}
+          arch: armv7hl
+
+      - name: Build i486 (emulator)
+        uses: coderus/github-sfos-build@67702884a1b192d1dfdb2fc5ec6e908e9e274855 # sfos5
+        with:
+          release: ${{ env.RELEASE }}
+          arch: i486
+
+      - name: Upload RPMs
+        uses: actions/upload-artifact@v7
+        with:
+          name: harbour-salichess-rpms
+          path: RPMS/*.rpm
+          if-no-files-found: error

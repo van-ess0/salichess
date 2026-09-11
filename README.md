@@ -45,6 +45,10 @@ sfdk deploy --sdk
 The target ships Qt 5.6 and GCC 13: C++17 is fine, but Qt APIs newer than 5.6 and ES6 JavaScript
 in QML are not available.
 
+GitHub Actions (`.github/workflows/build.yml`) builds the aarch64, armv7hl and i486 RPMs with the
+Sailfish OS Platform SDK in Docker for every push and pull request. The RPMs are attached to each
+run as an artifact.
+
 ## Tests
 
 Everything below the QML layer is covered by host-side tests. They need a desktop Qt 5 and no
