@@ -21,6 +21,8 @@ class AppSettings : public QObject
     Q_PROPERTY(bool notifications READ notifications WRITE setNotifications NOTIFY notificationsChanged)
     // "easiest", "easier", "normal", "harder", "hardest"
     Q_PROPERTY(QString puzzleDifficulty READ puzzleDifficulty WRITE setPuzzleDifficulty NOTIFY puzzleDifficultyChanged)
+    // How many puzzles PuzzleStore keeps on the phone for offline play.
+    Q_PROPERTY(int offlinePuzzles READ offlinePuzzles WRITE setOfflinePuzzles NOTIFY offlinePuzzlesChanged)
 
 public:
     explicit AppSettings(QObject *parent = nullptr);
@@ -41,6 +43,12 @@ public:
     void setNotifications(bool enabled);
     QString puzzleDifficulty() const;
     void setPuzzleDifficulty(const QString &difficulty);
+    int offlinePuzzles() const;
+    void setOfflinePuzzles(int count);
+
+    // The most puzzles that can be kept, so a slip of the finger cannot ask
+    // Lichess for thousands.
+    static int maxOfflinePuzzles() { return 100; }
 
 signals:
     void boardThemeChanged();
@@ -51,6 +59,7 @@ signals:
     void keepScreenOnChanged();
     void notificationsChanged();
     void puzzleDifficultyChanged();
+    void offlinePuzzlesChanged();
 
 private:
     bool store(const char *key, const QVariant &value);

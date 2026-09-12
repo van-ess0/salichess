@@ -6,6 +6,15 @@
 TARGET = harbour-salichess
 
 # The RPM build passes VERSION from the spec (%qmake5 VERSION=%{version}).
+# Qt Creator and "sfdk make-install" call qmake without it, so read the same
+# Version: line here: the About page shows it.
+isEmpty(VERSION) {
+    SPEC_LINES = $$cat($$PWD/rpm/harbour-salichess.spec, lines)
+    for (line, SPEC_LINES) {
+        stripped = $$replace(line, "^Version:[ \\t]*", "")
+        !equals(stripped, $$line): VERSION = $$stripped
+    }
+}
 isEmpty(VERSION): VERSION = 0.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
@@ -46,6 +55,7 @@ HEADERS += \
     src/lichess/outgoingchallenge.h \
     src/lichess/outgoingchallenges.h \
     src/lichess/puzzlecontroller.h \
+    src/lichess/puzzlestore.h \
     src/lichess/puzzlelogic.h
 
 SOURCES += \
@@ -71,6 +81,7 @@ SOURCES += \
     src/lichess/outgoingchallenge.cpp \
     src/lichess/outgoingchallenges.cpp \
     src/lichess/puzzlecontroller.cpp \
+    src/lichess/puzzlestore.cpp \
     src/lichess/puzzlelogic.cpp
 
 DISTFILES += \

@@ -40,6 +40,7 @@ HEADERS += \
     $$SRC/lichess/outgoingchallenge.h \
     $$SRC/lichess/outgoingchallenges.h \
     $$SRC/lichess/puzzlecontroller.h \
+    $$SRC/lichess/puzzlestore.h \
     $$SRC/lichess/puzzlelogic.h
 
 SOURCES += \
@@ -66,4 +67,5 @@ SOURCES += \
     $$SRC/lichess/outgoingchallenge.cpp \
     $$SRC/lichess/outgoingchallenges.cpp \
     $$SRC/lichess/puzzlecontroller.cpp \
+    $$SRC/lichess/puzzlestore.cpp \
     $$SRC/lichess/puzzlelogic.cpp

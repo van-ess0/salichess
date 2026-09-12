@@ -28,7 +28,7 @@ private slots:
     void livePuzzles()
     {
         LichessApi api;
-        Services::init(&api, nullptr, nullptr);
+        Services::init(&api, nullptr, nullptr, nullptr);
 
         PuzzleController controller;
         controller.loadDaily();
@@ -45,7 +45,7 @@ private slots:
         controller.viewSolution();
         QTRY_COMPARE_WITH_TIMEOUT(controller.state(), PuzzleController::Finished, 20000);
         QCOMPARE(controller.game()->outcome(), QStringLiteral("checkmate"));
-        Services::init(nullptr, nullptr, nullptr);
+        Services::init(nullptr, nullptr, nullptr, nullptr);
     }
 
     void liveStream()

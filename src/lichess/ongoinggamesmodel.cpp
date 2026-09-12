@@ -6,8 +6,10 @@
 #include "eventstream.h"
 #include "core/lichessapi.h"
 
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QSet>
 
 namespace {
 
@@ -23,6 +25,11 @@ const int StaleAfterMs = 30 * 1000;
 QString str(const QVariantMap &map, const char *key)
 {
     return map.value(QString::fromLatin1(key)).toString();
+}
+
+bool isCorrespondence(const QVariantMap &game)
+{
+    return str(game, "speed") == QLatin1String("correspondence");
 }
 
 int indexOfGame(const QVector<QVariantMap> &games, const QString &id, int from)
@@ -83,7 +90,7 @@ QVariant OngoingGamesModel::data(const QModelIndex &index, int role) const
     case FenRole: return str(g, "fen");
     case LastMoveRole: return str(g, "lastMove");
     case IsMyTurnRole: return g.value(QStringLiteral("isMyTurn")).toBool();
-    case SecondsLeftRole: return g.value(QStringLiteral("secondsLeft")).toInt();
+    case TurnDeadlineRole: return m_deadlines.value(str(g, "gameId")).deadlineMs;
     case SpeedRole: return str(g, "speed");
     case PerfRole: return str(g, "perf");
     case RatedRole: return g.value(QStringLiteral("rated")).toBool();
@@ -106,7 +113,7 @@ QHash<int, QByteArray> OngoingGamesModel::roleNames() const
         { FenRole, "fen" },
         { LastMoveRole, "lastMove" },
         { IsMyTurnRole, "isMyTurn" },
-        { SecondsLeftRole, "secondsLeft" },
+        { TurnDeadlineRole, "turnDeadline" },
         { SpeedRole, "speed" },
         { PerfRole, "perf" },
         { RatedRole, "rated" },
@@ -160,6 +167,7 @@ void OngoingGamesModel::refresh()
             } else if (++m_unchangedLoads >= UnchangedLoadsBeforeBackoff) {
                 m_pollIntervalMs = qMin(2 * m_pollIntervalMs, MaxPollIntervalMs);
             }
+            updateDeadlines();
         }
         schedulePoll();
     });
@@ -194,6 +202,7 @@ void OngoingGamesModel::clear()
     m_games.clear();
     endResetModel();
     m_lastMyTurn.clear();
+    m_deadlines.clear();
     m_loadedOnce = false;
     m_lastLoad.invalidate();
     emit countChanged();
@@ -232,7 +241,7 @@ bool OngoingGamesModel::setGames(const QVector<QVariantMap> &games)
             continue;
         const QString opponent = str(g.value(QStringLiteral("opponent")).toMap(), "username");
         if (!m_lastMyTurn.contains(id) && str(g, "source") == QLatin1String("lobby")
-                && str(g, "speed") == QLatin1String("correspondence"))
+                && isCorrespondence(g))
             emit newLobbyGame(id, opponent);
         else if (mine && !m_lastMyTurn.value(id, false))
             emit myTurn(id, opponent);
@@ -279,4 +288,77 @@ bool OngoingGamesModel::setGames(const QVector<QVariantMap> &games)
     }
     emit countChanged();
     return true;
+}
+
+void OngoingGamesModel::updateDeadlines()
+{
+    const qint64 now = QDateTime::currentMSecsSinceEpoch();
+    QSet<QString> listed;
+    for (const QVariantMap &g : m_games) {
+        const QString id = str(g, "gameId");
+        listed.insert(id);
+        if (!isCorrespondence(g))
+            continue;
+        const QString move = str(g, "lastMove");
+        const auto known = m_deadlines.constFind(id);
+        if (known != m_deadlines.constEnd() && known->resolved && known->move == move)
+            continue; // still the same move: the deadline stands
+        if (g.value(QStringLiteral("isMyTurn")).toBool()) {
+            // My own time is in the list: "secondsLeft" is what is left of it
+            // while I am the one to move.
+            const int seconds = g.value(QStringLiteral("secondsLeft")).toInt();
+            setDeadline(id, move, seconds > 0 ? now + qint64(seconds) * 1000 : 0);
+        } else if (known == m_deadlines.constEnd() || known->pendingMove != move) {
+            fetchDeadline(id, move);
+        }
+    }
+    // Games that ended.
+    for (auto it = m_deadlines.begin(); it != m_deadlines.end(); ) {
+        if (listed.contains(it.key()))
+            ++it;
+        else
+            it = m_deadlines.erase(it);
+    }
+}
+
+void OngoingGamesModel::fetchDeadline(const QString &gameId, const QString &move)
+{
+    // While the opponent is to move, their time is not in /api/account/playing:
+    // "secondsLeft" is then my own full allowance for the move after theirs.
+    // The game itself carries "lastMoveAt", which is what the correspondence
+    // clock counts from.
+    m_deadlines[gameId].pendingMove = move;
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("moves"), QStringLiteral("false"));
+    query.addQueryItem(QStringLiteral("tags"), QStringLiteral("false"));
+    query.addQueryItem(QStringLiteral("clocks"), QStringLiteral("false"));
+    query.addQueryItem(QStringLiteral("evals"), QStringLiteral("false"));
+    query.addQueryItem(QStringLiteral("opening"), QStringLiteral("false"));
+    m_api->get(QStringLiteral("/game/export/%1").arg(gameId), query, this,
+               [this, gameId, move](const ApiResult &result) {
+        const auto it = m_deadlines.find(gameId);
+        if (it == m_deadlines.end() || it->pendingMove != move)
+            return; // the game ended, or moved on while we were asking
+        it->pendingMove.clear();
+        if (!result.ok())
+            return; // the next poll tries again
+        const QJsonObject game = result.json.object();
+        const qint64 movedAt = qint64(game.value(QStringLiteral("lastMoveAt")).toDouble());
+        // Without "daysPerTurn" the game has no time limit.
+        const int days = game.value(QStringLiteral("daysPerTurn")).toInt();
+        setDeadline(gameId, move,
+                    days > 0 && movedAt > 0 ? movedAt + qint64(days) * 24 * 3600 * 1000 : 0);
+    });
+}
+
+void OngoingGamesModel::setDeadline(const QString &gameId, const QString &move, qint64 deadlineMs)
+{
+    TurnDeadline &deadline = m_deadlines[gameId];
+    const bool changed = !deadline.resolved || deadline.deadlineMs != deadlineMs;
+    deadline.move = move;
+    deadline.resolved = true;
+    deadline.deadlineMs = deadlineMs;
+    const int row = indexOfGame(m_games, gameId, 0);
+    if (changed && row >= 0)
+        emit dataChanged(index(row), index(row), QVector<int>() << TurnDeadlineRole);
 }

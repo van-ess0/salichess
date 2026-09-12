@@ -69,6 +69,41 @@ Page {
             }
 
             SectionHeader {
+                text: qsTr("Puzzles")
+            }
+
+            Slider {
+                width: parent.width
+                minimumValue: 0
+                maximumValue: 100
+                stepSize: 10
+                value: appSettings.offlinePuzzles
+                label: qsTr("Puzzles kept for offline play")
+                valueText: value > 0 ? qsTr("%n puzzle(s)", "", Math.round(value)) : qsTr("Off")
+                onValueChanged: appSettings.offlinePuzzles = Math.round(value)
+            }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: {
+                    if (appSettings.offlinePuzzles === 0)
+                        return qsTr("The healthy mix is downloaded ahead of time so it can be played without a connection.")
+                    var lines = [qsTr("%n of %1 downloaded", "", puzzleStore.count).arg(puzzleStore.target)]
+                    if (puzzleStore.filling)
+                        lines.push(qsTr("Downloading…"))
+                    else if (connection.offline && puzzleStore.count < puzzleStore.target)
+                        lines.push(qsTr("Waiting for a connection"))
+                    if (puzzleStore.pendingResults > 0)
+                        lines.push(qsTr("%n result(s) to send", "", puzzleStore.pendingResults))
+                    return lines.join(" • ")
+                }
+            }
+
+            SectionHeader {
                 text: qsTr("General")
             }
 

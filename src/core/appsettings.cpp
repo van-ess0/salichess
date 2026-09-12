@@ -121,3 +121,15 @@ void AppSettings::setPuzzleDifficulty(const QString &difficulty)
     if (store("puzzles/difficulty", difficulty))
         emit puzzleDifficultyChanged();
 }
+
+int AppSettings::offlinePuzzles() const
+{
+    return qBound(0, m_settings.value(QStringLiteral("puzzles/offlineCount"), 20).toInt(),
+                  maxOfflinePuzzles());
+}
+
+void AppSettings::setOfflinePuzzles(int count)
+{
+    if (store("puzzles/offlineCount", qBound(0, count, maxOfflinePuzzles())))
+        emit offlinePuzzlesChanged();
+}

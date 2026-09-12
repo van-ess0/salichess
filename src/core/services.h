@@ -6,6 +6,7 @@
 
 class AppSettings;
 class LichessApi;
+class PuzzleStore;
 class Session;
 
 // App-wide service objects, created in main(). QML-instantiated controllers
@@ -13,11 +14,12 @@ class Session;
 // look their dependencies up here instead of receiving them.
 namespace Services {
 
-void init(LichessApi *api, Session *session, AppSettings *settings);
+void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles);
 
 LichessApi *api();
 Session *session();
 AppSettings *settings();
+PuzzleStore *puzzles();
 
 } // namespace Services
 

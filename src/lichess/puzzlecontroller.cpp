@@ -9,6 +9,7 @@
 #include "core/lichessapi.h"
 #include "core/services.h"
 #include "core/session.h"
+#include "puzzlestore.h"
 
 #include <QJsonArray>
 #include <QRegularExpression>
@@ -91,6 +92,15 @@ void PuzzleController::loadNext()
     if (!m_queue.isEmpty()) {
         startPuzzle(m_queue.dequeue(), false);
         return;
+    }
+    // Puzzles kept for offline play are the ones played first; the store
+    // downloads new ones in their place whenever the app is online.
+    if (PuzzleStore *store = Services::puzzles()) {
+        const QJsonObject stored = store->take(m_angle, effectiveDifficulty());
+        if (!stored.isEmpty()) {
+            startPuzzle(stored, false);
+            return;
+        }
     }
     fetchBatch();
 }
@@ -276,7 +286,9 @@ void PuzzleController::fetchBatch()
         if (key != m_queueKey)
             return; // theme or difficulty changed meanwhile
         if (!result.ok()) {
-            setError(result.errorString);
+            setError(Services::api()->offline()
+                     ? tr("You are offline, and no puzzles are stored for offline play.")
+                     : result.errorString);
             return;
         }
         for (const QJsonValue &value : result.json.object().value(QStringLiteral("puzzles")).toArray())
@@ -338,21 +350,35 @@ void PuzzleController::submitResult(bool win)
     if (!session || !session->loggedIn() || m_puzzleId.isEmpty())
         return;
 
+    PuzzleStore *store = Services::puzzles();
+    const QString resultAngle = m_isDaily ? QStringLiteral("mix") : m_angle;
+    // A hint makes the attempt casual, so the rating stays untouched.
+    const bool rated = !m_hintUsed;
+    if (store && Services::api()->offline()) {
+        store->queueResult(resultAngle, m_puzzleId, win, rated);
+        return;
+    }
+
     QJsonObject solution;
     solution.insert(QStringLiteral("id"), m_puzzleId);
     solution.insert(QStringLiteral("win"), win);
-    // A hint makes the attempt casual, so the rating stays untouched.
-    solution.insert(QStringLiteral("rated"), !m_hintUsed);
+    solution.insert(QStringLiteral("rated"), rated);
     QJsonObject body;
     body.insert(QStringLiteral("solutions"), QJsonArray { solution });
 
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("nb"), QStringLiteral("0"));
-    const QString angle = m_isDaily ? QStringLiteral("mix") : m_angle;
     const QString puzzleId = m_puzzleId;
-    Services::api()->postJson(QStringLiteral("/api/puzzle/batch/") + angle, query, QJsonDocument(body), this,
-                              [this, puzzleId](const ApiResult &result) {
-        if (!result.ok() || puzzleId != m_puzzleId)
+    Services::api()->postJson(QStringLiteral("/api/puzzle/batch/") + resultAngle, query,
+                              QJsonDocument(body), this,
+                              [this, puzzleId, resultAngle, win, rated, store](const ApiResult &result) {
+        if (!result.ok()) {
+            // The connection went down between playing and sending.
+            if (store && result.status == 0)
+                store->queueResult(resultAngle, puzzleId, win, rated);
+            return;
+        }
+        if (puzzleId != m_puzzleId)
             return;
         const QJsonObject response = result.json.object();
         for (const QJsonValue &value : response.value(QStringLiteral("rounds")).toArray()) {

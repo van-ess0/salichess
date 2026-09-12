@@ -29,6 +29,7 @@
 #include "lichess/outgoingchallenge.h"
 #include "lichess/outgoingchallenges.h"
 #include "lichess/puzzlecontroller.h"
+#include "lichess/puzzlestore.h"
 
 int main(int argc, char *argv[])
 {
@@ -60,7 +61,8 @@ int main(int argc, char *argv[])
     OutgoingChallenges outgoingChallenges(&api, &events);
     LobbySeek lobbySeek(&api, &events);
     AppActivation activation;
-    Services::init(&api, &session, &settings);
+    PuzzleStore puzzleStore(&api, &session, &settings);
+    Services::init(&api, &session, &settings, &puzzleStore);
 
     auto onLoginChanged = [&]() {
         if (session.loggedIn()) {
@@ -104,8 +106,14 @@ int main(int argc, char *argv[])
     context->setContextProperty(QStringLiteral("outgoingChallenges"), &outgoingChallenges);
     context->setContextProperty(QStringLiteral("lobbySeek"), &lobbySeek);
     context->setContextProperty(QStringLiteral("appActivation"), &activation);
+    context->setContextProperty(QStringLiteral("puzzleStore"), &puzzleStore);
+    // LichessApi: only its "offline" and "rateLimited" properties are visible
+    // from QML.
+    context->setContextProperty(QStringLiteral("connection"), &api);
 
     session.restore();
+    // Top the offline puzzles up (does nothing while the app is offline).
+    puzzleStore.refill();
 
     view->setSource(SailfishApp::pathToMainQml());
     view->show();

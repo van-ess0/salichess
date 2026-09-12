@@ -12,9 +12,21 @@ Page {
 
     allowedOrientations: Orientation.All
 
+    // Correspondence countdowns are drawn against this, so that they keep
+    // running between the polls that load the games.
+    property double now: Date.now()
+
     onStatusChanged: {
         if (status === PageStatus.Active && session.loggedIn)
             ongoingGames.refreshIfStale()
+    }
+
+    Timer {
+        running: page.status === PageStatus.Active && ongoingGames.count > 0
+        interval: 30 * 1000
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: page.now = Date.now()
     }
 
     SilicaFlickable {
@@ -60,6 +72,12 @@ Page {
                 description: session.loggedIn
                              ? Util.playerName(session.username, session.title)
                              : qsTr("Not logged in")
+            }
+
+            OfflineBanner {
+                description: puzzleStore.count > 0
+                             ? qsTr("%n puzzle(s) are ready to play offline", "", puzzleStore.count)
+                             : qsTr("Games and puzzles need a connection")
             }
 
             // Entry points
@@ -274,9 +292,11 @@ Page {
                             color: model.isMyTurn ? Theme.highlightColor : Theme.secondaryColor
                             text: {
                                 var turn = model.isMyTurn ? qsTr("Your turn") : qsTr("Waiting for opponent")
-                                // Correspondence: how long the current move may still take.
-                                if (model.speed === "correspondence" && model.secondsLeft > 0)
-                                    turn += " • " + qsTr("%1 left").arg(Time.formatTurnTime(model.secondsLeft * 1000))
+                                // Correspondence: how long the side to move
+                                // still has for it.
+                                var left = model.turnDeadline > 0 ? model.turnDeadline - page.now : 0
+                                if (left > 0)
+                                    turn += " • " + qsTr("%1 left").arg(Time.formatTurnTime(left))
                                 return turn
                             }
                         }

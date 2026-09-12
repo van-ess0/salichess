@@ -147,6 +147,12 @@ Page {
                 width: page.isPortrait ? page.width : page.width - board.width
                 spacing: Theme.paddingMedium
 
+                OfflineBanner {
+                    description: session.loggedIn
+                                 ? qsTr("Your results are sent when the connection is back")
+                                 : qsTr("Stored puzzles can still be played")
+                }
+
                 Label {
                     visible: !page.isPortrait && puzzle.puzzleId !== ""
                     x: Theme.horizontalPageMargin

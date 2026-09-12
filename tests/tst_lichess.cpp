@@ -29,6 +29,7 @@
 #include "lichess/outgoingchallenge.h"
 #include "lichess/outgoingchallenges.h"
 #include "lichess/puzzlecontroller.h"
+#include "lichess/puzzlestore.h"
 #include "testdata.h"
 
 namespace {
@@ -59,6 +60,28 @@ QVariantMap map(const char *text)
     return QJsonDocument::fromJson(text).object().toVariantMap();
 }
 
+// A puzzle batch: the daily puzzle under each of |ids|.
+QByteArray puzzleBatch(const QStringList &ids)
+{
+    QJsonArray puzzles;
+    for (const QString &id : ids) {
+        QJsonObject entry = QJsonDocument::fromJson(DailyPuzzle).object();
+        QJsonObject puzzle = entry.value(QStringLiteral("puzzle")).toObject();
+        puzzle.insert(QStringLiteral("id"), id);
+        entry.insert(QStringLiteral("puzzle"), puzzle);
+        puzzles.append(entry);
+    }
+    QJsonObject body;
+    body.insert(QStringLiteral("puzzles"), puzzles);
+    return QJsonDocument(body).toJson(QJsonDocument::Compact);
+}
+
+QString offlinePuzzlePath()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+            + QStringLiteral("/offline-puzzles.json");
+}
+
 QVariant role(QAbstractItemModel &model, int row, const char *name)
 {
     const QHash<int, QByteArray> roles = model.roleNames();
@@ -77,6 +100,8 @@ private:
     LichessApi *api = nullptr;
     MemoryTokenStore *store = nullptr;
     Session *session = nullptr;
+    AppSettings *settings = nullptr;
+    PuzzleStore *puzzles = nullptr;
 
     void logIn()
     {
@@ -110,12 +135,20 @@ private slots:
         api->setServerUrl(server->url());
         store = new MemoryTokenStore;
         session = new Session(api, store);
-        Services::init(api, session, nullptr);
+        settings = new AppSettings;
+        // Each test starts without stored puzzles, and only asks for them
+        // where it says so.
+        settings->setOfflinePuzzles(0);
+        QFile::remove(offlinePuzzlePath());
+        puzzles = new PuzzleStore(api, session, settings);
+        Services::init(api, session, settings, puzzles);
     }
 
     void cleanup()
     {
-        Services::init(nullptr, nullptr, nullptr);
+        Services::init(nullptr, nullptr, nullptr, nullptr);
+        delete puzzles;
+        delete settings;
         delete session;
         delete store;
         delete api;
@@ -473,6 +506,50 @@ private slots:
         QCOMPARE(myTurn.first().at(0).toString(), QStringLiteral("g1"));
         QCOMPARE(myTurn.first().at(1).toString(), QStringLiteral("Friend"));
         QCOMPARE(model.myTurnOpponents().size(), 2);
+    }
+
+    void ongoingGamesTurnDeadline()
+    {
+        logIn();
+        EventStream events(api);
+        OngoingGamesModel model(api, &events);
+        auto load = [&](const char *json) {
+            server->route("GET", "/api/account/playing", 200, json);
+            model.refresh();
+            QTRY_VERIFY(!model.loading());
+        };
+        // g1 waits for the opponent: the list only holds my own allowance for
+        // the move after theirs, so the game itself is asked for.
+        server->route("GET", "/game/export/g1", 200,
+                      R"({"id":"g1","lastMoveAt":1700000000000,"daysPerTurn":3})");
+        load(R"({"nowPlaying":[
+            {"gameId":"g1","isMyTurn":false,"lastMove":"e2e4","speed":"correspondence","secondsLeft":259200},
+            {"gameId":"g2","isMyTurn":true,"lastMove":"d7d5","speed":"correspondence","secondsLeft":3600},
+            {"gameId":"g3","isMyTurn":false,"speed":"rapid","secondsLeft":600}]})");
+        QCOMPARE(model.count(), 3);
+        QTRY_COMPARE(role(model, 0, "turnDeadline").toLongLong(), Q_INT64_C(1700259200000));
+        QCOMPARE(server->lastRequest("GET", "/game/export/g1").query.queryItemValue("moves"),
+                 QStringLiteral("false"));
+        // My own turn is counted from the load; a game with a clock has no
+        // turn deadline.
+        const qint64 mine = role(model, 1, "turnDeadline").toLongLong();
+        QVERIFY(qAbs(mine - (QDateTime::currentMSecsSinceEpoch() + 3600 * 1000)) < 5000);
+        QCOMPARE(role(model, 2, "turnDeadline").toLongLong(), Q_INT64_C(0));
+
+        // The same move is not asked about again.
+        load(R"({"nowPlaying":[
+            {"gameId":"g1","isMyTurn":false,"lastMove":"e2e4","speed":"correspondence","secondsLeft":259200}]})");
+        QTest::qWait(100);
+        QCOMPARE(server->requestCount("GET", "/game/export/g1"), 1);
+        QCOMPARE(role(model, 0, "turnDeadline").toLongLong(), Q_INT64_C(1700259200000));
+
+        // The opponent moved: a new deadline.
+        server->route("GET", "/game/export/g1", 200,
+                      R"({"id":"g1","lastMoveAt":1700100000000,"daysPerTurn":3})");
+        load(R"({"nowPlaying":[
+            {"gameId":"g1","isMyTurn":false,"lastMove":"g1f3","speed":"correspondence","secondsLeft":259200}]})");
+        QTRY_COMPARE(role(model, 0, "turnDeadline").toLongLong(), Q_INT64_C(1700359200000));
+        QCOMPARE(server->requestCount("GET", "/game/export/g1"), 2);
     }
 
     void ongoingGamesUpdateRowsInPlace()
@@ -1030,6 +1107,82 @@ private slots:
                 .object().value("solutions").toArray().first().toObject();
         QCOMPARE(second.value("win").toBool(), false);
         QCOMPARE(second.value("rated").toBool(), false);
+    }
+
+    void offlineIsNoticed()
+    {
+        // Nothing listens there, so the request never reaches Lichess.
+        api->setServerUrl(QStringLiteral("http://127.0.0.1:1"));
+        QString error;
+        api->get(QStringLiteral("/api/account"), QUrlQuery(), this,
+                 [&error](const ApiResult &result) { error = result.errorString; });
+        QTRY_VERIFY(api->offline());
+        QCOMPARE(error, QStringLiteral("No internet connection"));
+
+        // An answer means the connection is back.
+        server->route("GET", "/api/account", 200, AccountJson);
+        api->setServerUrl(server->url());
+        api->get(QStringLiteral("/api/account"), QUrlQuery(), this, [](const ApiResult &) {});
+        QTRY_VERIFY(!api->offline());
+    }
+
+    void offlinePuzzles()
+    {
+        logIn();
+        server->route("GET", "/api/puzzle/batch/mix", 200, puzzleBatch({ "p1", "p2", "p3" }));
+        settings->setOfflinePuzzles(3);
+        QTRY_COMPARE(puzzles->count(), 3);
+        QCOMPARE(server->lastRequest("GET", "/api/puzzle/batch/mix").query.queryItemValue("nb"),
+                 QStringLiteral("3"));
+
+        // Puzzles are played out of the pool, which fills up again.
+        server->route("GET", "/api/puzzle/batch/mix", 200, puzzleBatch({ "p4" }));
+        PuzzleController controller;
+        controller.loadNext();
+        QTRY_COMPARE(controller.state(), PuzzleController::Playing);
+        QCOMPARE(controller.puzzleId(), QStringLiteral("p1"));
+        QTRY_COMPARE(puzzles->count(), 3);
+
+        // Solved without a connection: the result waits for one.
+        api->setServerUrl(QStringLiteral("http://127.0.0.1:1"));
+        solve(controller);
+        QTRY_VERIFY(api->offline());
+        QTRY_COMPARE(puzzles->pendingResults(), 1);
+        QVERIFY(!controller.resultSubmitted());
+
+        // The next puzzle comes from the pool while offline.
+        controller.loadNext();
+        QTRY_COMPARE(controller.state(), PuzzleController::Playing);
+        QCOMPARE(controller.puzzleId(), QStringLiteral("p2"));
+
+        // Back online, the stored results are sent.
+        server->route("POST", "/api/puzzle/batch/mix", 200, R"({"rounds":[]})");
+        api->setServerUrl(server->url());
+        api->get(QStringLiteral("/api/account"), QUrlQuery(), this, [](const ApiResult &) {});
+        QTRY_COMPARE(puzzles->pendingResults(), 0);
+        const QJsonObject sent = QJsonDocument::fromJson(server->lastRequest("POST", "/api/puzzle/batch/mix").body)
+                .object().value("solutions").toArray().first().toObject();
+        QCOMPARE(sent.value("id").toString(), QStringLiteral("p1"));
+        QCOMPARE(sent.value("win").toBool(), true);
+
+        // Another difficulty needs other puzzles.
+        settings->setPuzzleDifficulty(QStringLiteral("harder"));
+        QCOMPARE(puzzles->count(), 0);
+        QTRY_COMPARE(server->lastRequest("GET", "/api/puzzle/batch/mix").query.queryItemValue("difficulty"),
+                     QStringLiteral("harder"));
+        settings->setPuzzleDifficulty(QString());
+    }
+
+    void offlinePuzzlesWithoutStock()
+    {
+        logIn();
+        // Nothing stored and no connection: the puzzle page says so.
+        api->setServerUrl(QStringLiteral("http://127.0.0.1:1"));
+        PuzzleController controller;
+        controller.loadNext();
+        QTRY_COMPARE(controller.state(), PuzzleController::Error);
+        QVERIFY(api->offline());
+        QVERIFY(controller.errorString().contains(QStringLiteral("offline")));
     }
 
     void puzzleDailyAndErrors()

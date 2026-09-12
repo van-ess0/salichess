@@ -31,13 +31,21 @@ Page {
                              : (session.loggedIn ? "" : qsTr("Log in to record your progress"))
             }
 
+            OfflineBanner {
+                description: puzzleStore.count > 0
+                             ? qsTr("%n puzzle(s) are ready to play offline", "", puzzleStore.count)
+                             : qsTr("Keep puzzles on the phone in the settings")
+            }
+
             BackgroundItem {
                 height: Theme.itemSizeMedium
                 onClicked: page.start("mix")
                 MenuEntry {
                     icon: "image://theme/icon-m-wizard"
                     title: Themes.name("mix")
-                    subtitle: qsTr("A bit of everything")
+                    subtitle: puzzleStore.count > 0
+                              ? qsTr("A bit of everything • %n stored", "", puzzleStore.count)
+                              : qsTr("A bit of everything")
                 }
             }
 

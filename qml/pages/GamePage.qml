@@ -174,6 +174,10 @@ Page {
                 width: page.isPortrait ? page.width : page.width - boardColumn.width
                 spacing: Theme.paddingMedium
 
+                OfflineBanner {
+                    description: qsTr("Your moves reach Lichess once it is back")
+                }
+
                 MoveList {
                     width: parent.width
                     game: controller.game

@@ -7,15 +7,17 @@ namespace {
 LichessApi *s_api = nullptr;
 Session *s_session = nullptr;
 AppSettings *s_settings = nullptr;
+PuzzleStore *s_puzzles = nullptr;
 }
 
 namespace Services {
 
-void init(LichessApi *api, Session *session, AppSettings *settings)
+void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles)
 {
     s_api = api;
     s_session = session;
     s_settings = settings;
+    s_puzzles = puzzles;
 }
 
 LichessApi *api()
@@ -31,6 +33,11 @@ Session *session()
 AppSettings *settings()
 {
     return s_settings;
+}
+
+PuzzleStore *puzzles()
+{
+    return s_puzzles;
 }
 
 } // namespace Services

@@ -37,6 +37,9 @@ class LichessApi : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool rateLimited READ rateLimited NOTIFY rateLimitedChanged)
+    // No request has reached lichess.org since the last one failed to leave
+    // the phone. Exposed to QML as "connection".
+    Q_PROPERTY(bool offline READ offline NOTIFY offlineChanged)
 public:
     using Callback = std::function<void(const ApiResult &)>;
 
@@ -53,6 +56,7 @@ public:
     void setToken(const QString &token);
     bool hasToken() const { return !m_token.isEmpty(); }
     bool rateLimited() const { return m_rateLimited; }
+    bool offline() const { return m_offline; }
     QNetworkAccessManager *networkAccessManager() const { return m_nam; }
 
     // |context| guards the callback: it is not called if context was deleted.
@@ -70,6 +74,7 @@ public:
 
 signals:
     void rateLimitedChanged();
+    void offlineChanged();
     // A request was rejected with 401: the token is invalid or was revoked.
     void unauthorized();
 
@@ -88,6 +93,7 @@ private:
                  QObject *context, Callback callback);
     void startNext();
     void onReplyFinished(QNetworkReply *reply);
+    void setOffline(bool offline);
 
     QNetworkAccessManager *m_nam;
     QString m_serverUrl;
@@ -98,6 +104,7 @@ private:
     QTimer m_timeoutTimer;
     QTimer m_rateLimitTimer;
     bool m_rateLimited = false;
+    bool m_offline = false;
 };
 
 #endif // LICHESSAPI_H

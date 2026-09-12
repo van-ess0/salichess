@@ -38,7 +38,8 @@ public:
         FenRole,
         LastMoveRole,
         IsMyTurnRole,
-        SecondsLeftRole,
+        TurnDeadlineRole,   // correspondence: when the current move is due,
+                            // in ms since the epoch; 0 if there is no limit
         SpeedRole,
         PerfRole,
         RatedRole,
@@ -75,8 +76,21 @@ signals:
     void newLobbyGame(const QString &gameId, const QString &opponentName);
 
 private:
+    // When the side to move runs out of time, and the move it belongs to.
+    struct TurnDeadline {
+        QString move;        // the game's lastMove this was worked out for
+        QString pendingMove; // the lastMove a request is on its way for
+        qint64 deadlineMs = 0;
+        bool resolved = false; // a deadline of 0 means "no time limit"
+    };
+
     // Returns whether anything changed.
     bool setGames(const QVector<QVariantMap> &games);
+    // Works out when the current move is due in every correspondence game,
+    // asking Lichess for the games where it is the opponent's turn.
+    void updateDeadlines();
+    void fetchDeadline(const QString &gameId, const QString &move);
+    void setDeadline(const QString &gameId, const QString &move, qint64 deadlineMs);
     bool waitingForOpponent() const;
     void schedulePoll();
 
@@ -84,6 +98,7 @@ private:
     EventStream *m_events;
     QVector<QVariantMap> m_games;
     QHash<QString, bool> m_lastMyTurn;
+    QHash<QString, TurnDeadline> m_deadlines;
     QTimer m_pollTimer;
     QTimer m_refreshDebounce;
     QElapsedTimer m_lastLoad;

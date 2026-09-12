@@ -25,6 +25,25 @@ QByteArray userAgent()
             .toUtf8();
 }
 
+// The request never got as far as lichess.org.
+bool isConnectivityError(QNetworkReply::NetworkError error)
+{
+    switch (error) {
+    case QNetworkReply::ConnectionRefusedError:
+    case QNetworkReply::RemoteHostClosedError:
+    case QNetworkReply::HostNotFoundError:
+    case QNetworkReply::TimeoutError:
+    case QNetworkReply::TemporaryNetworkFailureError:
+    case QNetworkReply::NetworkSessionFailedError:
+    case QNetworkReply::UnknownNetworkError:
+    case QNetworkReply::ProxyConnectionRefusedError:
+    case QNetworkReply::ProxyNotFoundError:
+        return true;
+    default:
+        return false;
+    }
+}
+
 QString errorFromBody(const QJsonDocument &json)
 {
     const QJsonValue error = json.object().value(QStringLiteral("error"));
@@ -52,8 +71,11 @@ LichessApi::LichessApi(QObject *parent)
     , m_serverUrl(siteUrl())
 {
     // Qt 5.6's bearer management can leave QNAM stuck in "not accessible"
-    // after connectivity changes on Sailfish. Keep trying; a real outage
-    // still shows up as a network error.
+    // after connectivity changes on Sailfish, and it then answers every
+    // request with a disabled reply instead of trying. Keep trying; a real
+    // outage still shows up as a network error, which is what offline() is
+    // based on.
+    m_nam->setNetworkAccessible(QNetworkAccessManager::Accessible);
     connect(m_nam, &QNetworkAccessManager::networkAccessibleChanged, this,
             [this](QNetworkAccessManager::NetworkAccessibility accessible) {
         if (accessible == QNetworkAccessManager::NotAccessible)
@@ -176,12 +198,21 @@ void LichessApi::onReplyFinished(QNetworkReply *reply)
     ApiResult result;
     result.status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     result.json = QJsonDocument::fromJson(reply->readAll());
+    const bool unreachable = result.status == 0 && isConnectivityError(reply->error());
+    if (result.status > 0)
+        setOffline(false);
+    else if (unreachable)
+        setOffline(true);
     if (!result.ok()) {
         result.errorString = errorFromBody(result.json);
-        if (result.errorString.isEmpty())
-            result.errorString = reply->error() == QNetworkReply::OperationCanceledError
-                    ? tr("The request timed out")
-                    : reply->errorString();
+        if (result.errorString.isEmpty()) {
+            if (unreachable)
+                result.errorString = tr("No internet connection");
+            else if (reply->error() == QNetworkReply::OperationCanceledError)
+                result.errorString = tr("The request timed out");
+            else
+                result.errorString = reply->errorString();
+        }
     }
 
     Pending finished = std::move(m_current);
@@ -201,4 +232,12 @@ void LichessApi::onReplyFinished(QNetworkReply *reply)
         finished.callback(result);
 
     startNext();
+}
+
+void LichessApi::setOffline(bool offline)
+{
+    if (m_offline == offline)
+        return;
+    m_offline = offline;
+    emit offlineChanged();
 }

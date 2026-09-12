@@ -429,6 +429,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Proposing takeback</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Your moves reach Lichess once it is back</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LichessApi</name>
@@ -438,6 +442,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Too many requests. Please wait a minute.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No internet connection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -673,6 +681,16 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Rapid, classical or correspondence</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <source>%n puzzle(s) are ready to play offline</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Games and puzzles need a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewChallengeDialog</name>
@@ -781,6 +799,21 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>OfflineBanner</name>
+    <message>
+        <source>No internet connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess is asking salichess to slow down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Requests continue in a minute</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OngoingGamesModel</name>
     <message>
         <source>Anonymous</source>
@@ -814,6 +847,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>No more puzzles available for this theme.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are offline, and no puzzles are stored for offline play.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -913,6 +950,14 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Link copied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your results are sent when the connection is back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stored puzzles can still be played</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1249,6 +1294,22 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Relative to your puzzle rating</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <source>%n puzzle(s) are ready to play offline</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Keep puzzles on the phone in the settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>A bit of everything • %n stored</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
 </context>
 <context>
     <name>SeekPage</name>
@@ -1488,6 +1549,48 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Incoming challenges and your turn in correspondence games, while salichess is running</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Puzzles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Puzzles kept for offline play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n puzzle(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The healthy mix is downloaded ahead of time so it can be played without a connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n of %1 downloaded</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Downloading…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n result(s) to send</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
 </context>
 <context>
