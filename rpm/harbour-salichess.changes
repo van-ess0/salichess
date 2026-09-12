@@ -3,6 +3,16 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Sat Sep 12 2026 van-ess0 <https://github.com/van-ess0> 0.3-1
+- Puzzles can be kept on the phone and solved without a connection; how many
+  is up to you in the settings. Results reach Lichess once it is reachable
+  again.
+- The app says when it has no connection, on every page that needs one,
+  instead of quietly doing nothing.
+- Correspondence games on the main page show how long the player to move
+  still has, instead of always the full time a move may take.
+- The About page shows the version in every build.
+
 * Fri Sep 11 2026 van-ess0 <https://github.com/van-ess0> 0.2.1-1
 - Uses less battery: ongoing games are only polled while one waits for the
   opponent, and less often while nothing changes. The cover clock only
