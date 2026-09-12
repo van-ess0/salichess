@@ -5,6 +5,9 @@
 *.pro.user
 *.pro.user.*
 
+# Per-project IDE state
+.idea/
+
 # Local test builds (see tests/tests.pro)
 build-tests/
 
