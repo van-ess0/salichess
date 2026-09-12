@@ -1,0 +1,88 @@
+# SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# CodeQL, GitHub's own analyzer. Free on public repositories; findings land in
+# the repository's Security tab (Code scanning), not in the build log, and an
+# alert never fails a build.
+#
+# Two languages are analysed:
+#
+#   c-cpp    build-mode "manual": CodeQL watches a real compilation, so it sees
+#            what the compiler sees. There is no Sailfish SDK here, so the
+#            build is the host test suite (tests/tests.pro), the same one the
+#            Build RPMs workflow runs. That covers every file in src/ except
+#            main.cpp, appactivation.cpp, pieceimageprovider.cpp and
+#            secretstokenstore.cpp, which need SDK-only headers. Switching to
+#            build-mode "none" would cover those four as well, at the cost of
+#            precision everywhere else - the trade is not worth it while the
+#            four files are this small.
+#   actions  The workflow files themselves.
+#
+# qml/js/*.js is left out on purpose: three small helper libraries, nothing
+# for the JavaScript queries to find.
+
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # The queries keep improving even when the code stands still.
+  schedule:
+    - cron: '37 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze ${{ matrix.language }}
+    runs-on: ubuntu-24.04
+    permissions:
+      security-events: write # upload the results to the Security tab
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: c-cpp
+            build-mode: manual
+          - language: actions
+            build-mode: none
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # Adds the maintainability queries to the security ones.
+          queries: security-and-quality
+
+      # The build for the c-cpp database. Desktop Qt 5, no SDK and no network:
+      # the network tests talk to a local fake Lichess server.
+      - name: Install Qt 5
+        if: matrix.build-mode == 'manual'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qtbase5-dev qtdeclarative5-dev
+
+      - name: Build the host tests
+        if: matrix.build-mode == 'manual'
+        run: |
+          mkdir build-codeql
+          cd build-codeql
+          qmake ../tests
+          make -j"$(nproc)"
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}

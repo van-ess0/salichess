@@ -77,6 +77,14 @@ SALICHESS_NETWORK_TESTS=1 ./tst_salichess    # also runs a few read-only tests a
 The suite covers the chess rules and move history, puzzle solving, the HTTP client (request queue,
 rate limiting, ndjson streams), login, challenges, the game controller and the models.
 
+### Static analysis
+
+[CodeQL](.github/workflows/codeql.yml) runs on every push and pull request, over the C++ sources and
+the workflow files. It needs no Sailfish SDK: the C++ database is built from the host tests, which
+means the four files that need SDK-only headers (`main.cpp`, `appactivation.cpp`,
+`pieceimageprovider.cpp`, `secretstokenstore.cpp`) are not covered. Findings go to the repository's
+Security tab, not into the build log, and never fail a build.
+
 ## How it is put together
 
 The C++ core owns all logic and state. QML only presents it.
