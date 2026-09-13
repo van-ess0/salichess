@@ -37,6 +37,10 @@ class PuzzleController : public QObject
     Q_PROPERTY(QString playerColor READ playerColor NOTIFY puzzleChanged)
     Q_PROPERTY(QString puzzleUrl READ puzzleUrl NOTIFY puzzleChanged)
     Q_PROPERTY(QString gameUrl READ gameUrl NOTIFY puzzleChanged)
+    // The game the puzzle was taken from, and the ply it starts at, so it
+    // can be opened in the analysis board.
+    Q_PROPERTY(QString gameId READ gameId NOTIFY puzzleChanged)
+    Q_PROPERTY(int gamePly READ gamePly NOTIFY puzzleChanged)
     Q_PROPERTY(bool isDaily READ isDaily NOTIFY puzzleChanged)
 
     Q_PROPERTY(bool solved READ solved NOTIFY stateChanged)       // finished without mistakes
@@ -73,6 +77,8 @@ public:
     QString playerColor() const { return m_playerColor; }
     QString puzzleUrl() const;
     QString gameUrl() const;
+    QString gameId() const { return m_gameId; }
+    int gamePly() const { return m_initialPly + 1; }
     bool isDaily() const { return m_isDaily; }
 
     bool solved() const { return m_state == Finished && !m_logic.failed(); }

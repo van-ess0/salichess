@@ -35,6 +35,140 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>AnalysisPage</name>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Try again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Casual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Evaluations need a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading game…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Best: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess cloud evaluation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Promote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request a computer analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading Stockfish… %1%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn Stockfish off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (75 MB download)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Game summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess is analysing the game…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish, depth %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish, depth %1 — done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not analysed by Lichess</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish is waiting for its networks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish is starting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AnalysisSummaryPage</name>
+    <message>
+        <source>%1% accuracy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 average centipawn loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 inaccuracies, %2 mistakes, %3 blunders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess is analysing the game. This takes a minute or two.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess has not analysed this game.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChallengeWaitingPage</name>
     <message>
         <source>Copy challenge link</source>
@@ -241,15 +375,132 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>GameAnalysis</name>
+    <message>
+        <source>This game does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not load the game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>salichess cannot show %1 games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This game could not be replayed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess would not take the request. The game can be analysed on the website.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not ask for an analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess is taking a long time. Try again later.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GameController</name>
     <message>
-        <source>Stockfish level %1</source>
+        <source>This game cannot be played in salichess.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Anonymous</source>
+        <source>Connection lost. Reconnecting…</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>GameFilterDialog</name>
+    <message>
+        <source>Any</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UltraBullet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bullet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blitz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Correspondence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Colour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Kind</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Casual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analysed games only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games Lichess has already looked at with a computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GameInfo</name>
     <message>
         <source>White is victorious</source>
         <translation type="unfinished"></translation>
@@ -304,14 +555,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Game over</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This game cannot be played in salichess.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connection lost. Reconnecting…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -431,6 +674,72 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Your moves reach Lichess once it is back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GamesHistoryModel</name>
+    <message>
+        <source>No such player</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GamesHistoryPage</name>
+    <message>
+        <source>Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Past games need a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Game over</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Casual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log in to see your games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No games match the filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No games played yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change it in the pull-down menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -691,6 +1000,14 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Games and puzzles need a connection</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Look back at the games you played</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewChallengeDialog</name>
@@ -784,6 +1101,21 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Correspondence game</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NnueWeights</name>
+    <message>
+        <source>No network access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The downloaded network is not usable</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1591,6 +1923,73 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <source>%1 MB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 kB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analyse with Stockfish</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading… %1%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On the analysis board, using %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Needs a one-off download of about 75 MB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop the download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete the engine data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deleting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Variations shown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deeper is stronger, and costs more battery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Processor cores</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Memory for the engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StockfishEngine</name>
+    <message>
+        <source>The engine networks are missing</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

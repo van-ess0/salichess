@@ -18,6 +18,9 @@
 #            four files are this small.
 #   actions  The workflow files themselves.
 #
+# 3rdparty/ is left out of the results: the vendored rules engine and
+# Stockfish are upstream code, and their alerts would bury ours.
+#
 # qml/js/*.js is left out on purpose: three small helper libraries, nothing
 # for the JavaScript queries to find.
 
@@ -65,6 +68,9 @@ jobs:
           build-mode: ${{ matrix.build-mode }}
           # Adds the maintainability queries to the security ones.
           queries: security-and-quality
+          config: |
+            paths-ignore:
+              - 3rdparty
 
       # The build for the c-cpp database. Desktop Qt 5, no SDK and no network:
       # the network tests talk to a local fake Lichess server.

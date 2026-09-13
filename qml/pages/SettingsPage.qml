@@ -8,6 +8,12 @@ import "../components"
 Page {
     id: page
 
+    function sizeText(bytes) {
+        if (bytes >= 1024 * 1024)
+            return qsTr("%1 MB").arg(Math.round(bytes / (1024 * 1024)))
+        return qsTr("%1 kB").arg(Math.round(bytes / 1024))
+    }
+
     readonly property var themeKeys: ["brown", "blue", "green", "ambience"]
 
     allowedOrientations: Orientation.All
@@ -101,6 +107,97 @@ Page {
                         lines.push(qsTr("%n result(s) to send", "", puzzleStore.pendingResults))
                     return lines.join(" • ")
                 }
+            }
+
+            SectionHeader {
+                text: qsTr("Engine")
+            }
+
+            TextSwitch {
+                text: qsTr("Analyse with Stockfish")
+                description: {
+                    if (engineWeights.downloading)
+                        return qsTr("Downloading… %1%").arg(Math.round(engineWeights.progress * 100))
+                    if (engineWeights.errorString !== "")
+                        return engineWeights.errorString
+                    if (engineWeights.ready)
+                        return qsTr("On the analysis board, using %1").arg(sizeText(engineWeights.storedBytes))
+                    return qsTr("Needs a one-off download of about 75 MB")
+                }
+                automaticCheck: false
+                checked: appSettings.engineEnabled
+                onClicked: {
+                    if (appSettings.engineEnabled)
+                        appSettings.engineEnabled = false
+                    else
+                        engine.enableWithDownload()
+                }
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: engineWeights.downloading
+                text: qsTr("Stop the download")
+                onClicked: engineWeights.cancel()
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: engineWeights.ready && !engineWeights.downloading
+                text: qsTr("Delete the engine data")
+                onClicked: Remorse.popupAction(page, qsTr("Deleting"), function() {
+                    appSettings.engineEnabled = false
+                    engineWeights.remove()
+                })
+            }
+
+            Slider {
+                width: parent.width
+                visible: appSettings.engineEnabled
+                minimumValue: 1
+                maximumValue: 5
+                stepSize: 1
+                value: appSettings.engineLines
+                label: qsTr("Variations shown")
+                valueText: value
+                onSliderValueChanged: appSettings.engineLines = value
+            }
+
+            Slider {
+                width: parent.width
+                visible: appSettings.engineEnabled
+                minimumValue: 6
+                maximumValue: 30
+                stepSize: 1
+                value: appSettings.engineDepth
+                label: qsTr("Search depth")
+                description: qsTr("Deeper is stronger, and costs more battery")
+                valueText: value
+                onSliderValueChanged: appSettings.engineDepth = value
+            }
+
+            Slider {
+                width: parent.width
+                visible: appSettings.engineEnabled
+                minimumValue: 1
+                maximumValue: 4
+                stepSize: 1
+                value: appSettings.engineThreads
+                label: qsTr("Processor cores")
+                valueText: value
+                onSliderValueChanged: appSettings.engineThreads = value
+            }
+
+            Slider {
+                width: parent.width
+                visible: appSettings.engineEnabled
+                minimumValue: 8
+                maximumValue: 128
+                stepSize: 8
+                value: appSettings.engineHash
+                label: qsTr("Memory for the engine")
+                valueText: value + " MB"
+                onSliderValueChanged: appSettings.engineHash = value
             }
 
             SectionHeader {

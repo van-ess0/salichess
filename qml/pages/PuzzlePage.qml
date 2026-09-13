@@ -92,9 +92,12 @@ Page {
                 }
             }
             MenuItem {
-                visible: page.finished && puzzle.gameUrl !== ""
+                visible: page.finished && puzzle.gameId !== ""
                 text: qsTr("View the original game")
-                onClicked: Qt.openUrlExternally(puzzle.gameUrl)
+                onClicked: pageStack.push(Qt.resolvedUrl("AnalysisPage.qml"),
+                                          { gameId: puzzle.gameId,
+                                            myColor: puzzle.playerColor,
+                                            startPly: puzzle.gamePly })
             }
             MenuItem {
                 visible: page.playing && !page.daily

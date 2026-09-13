@@ -11,6 +11,7 @@
 #include <sailfishapp.h>
 
 #include "chess/chessgame.h"
+#include "chess/movetree.h"
 #include "chess/piecesmodel.h"
 #include "core/appsettings.h"
 #include "core/appactivation.h"
@@ -19,11 +20,15 @@
 #include "core/services.h"
 #include "core/session.h"
 #include "core/secretstokenstore.h"
+#include "engine/enginecontroller.h"
+#include "engine/nnueweights.h"
 #include "lichess/challengesmodel.h"
 #include "lichess/chatmodel.h"
 #include "lichess/eventstream.h"
 #include "lichess/friendsmodel.h"
+#include "lichess/gameanalysis.h"
 #include "lichess/gamecontroller.h"
+#include "lichess/gameshistorymodel.h"
 #include "lichess/lobbyseek.h"
 #include "lichess/ongoinggamesmodel.h"
 #include "lichess/outgoingchallenge.h"
@@ -42,7 +47,12 @@ int main(int argc, char *argv[])
 
     const char *uri = "harbour.salichess";
     qmlRegisterType<GameController>(uri, 1, 0, "GameController");
+    qmlRegisterType<GameAnalysis>(uri, 1, 0, "GameAnalysis");
+    qmlRegisterType<GamesHistoryModel>(uri, 1, 0, "GamesHistoryModel");
     qmlRegisterType<PuzzleController>(uri, 1, 0, "PuzzleController");
+    // Registered as MoveTreeModel: qml/components/MoveTree.qml is the view
+    // that uses it, and a QML file shadows a type of the same name.
+    qmlRegisterType<MoveTree>(uri, 1, 0, "MoveTreeModel");
     qmlRegisterUncreatableType<ChessGame>(uri, 1, 0, "ChessGame", QStringLiteral("Owned by controllers"));
     qmlRegisterUncreatableType<PiecesModel>(uri, 1, 0, "PiecesModel", QStringLiteral("Owned by ChessGame"));
     qmlRegisterUncreatableType<ChatModel>(uri, 1, 0, "ChatModel", QStringLiteral("Owned by GameController"));
@@ -63,6 +73,11 @@ int main(int argc, char *argv[])
     AppActivation activation;
     PuzzleStore puzzleStore(&api, &session, &settings);
     Services::init(&api, &session, &settings, &puzzleStore);
+    // Stockfish and its networks. One engine for the whole app: a phone can
+    // only usefully run one, and the analysis page hands it the board it is
+    // showing.
+    NnueWeights engineWeights;
+    EngineController engine(&settings, &engineWeights);
 
     auto onLoginChanged = [&]() {
         if (session.loggedIn()) {
@@ -85,6 +100,10 @@ int main(int argc, char *argv[])
                      [&](Qt::ApplicationState state) {
         if (state == Qt::ApplicationActive && session.loggedIn())
             ongoingGames.refreshIfStale();
+        // The engine rests while the app is away and takes the same board up
+        // again when it comes back; dropping the board here instead would
+        // leave it stopped for good, since nothing hands it back.
+        engine.setApplicationActive(state == Qt::ApplicationActive);
     });
     QObject::connect(&outgoingChallenges, &OutgoingChallenges::challengeFinished,
                      &challenges, &ChallengesModel::removeChallenge);
@@ -107,6 +126,8 @@ int main(int argc, char *argv[])
     context->setContextProperty(QStringLiteral("lobbySeek"), &lobbySeek);
     context->setContextProperty(QStringLiteral("appActivation"), &activation);
     context->setContextProperty(QStringLiteral("puzzleStore"), &puzzleStore);
+    context->setContextProperty(QStringLiteral("engine"), &engine);
+    context->setContextProperty(QStringLiteral("engineWeights"), &engineWeights);
     // LichessApi: only its "offline" and "rateLimited" properties are visible
     // from QML.
     context->setContextProperty(QStringLiteral("connection"), &api);

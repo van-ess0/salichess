@@ -85,3 +85,43 @@ function boardColors(theme, Theme) {
         return { light: "#f0d9b5", dark: "#b58863" }
     }
 }
+
+// Lichess marks a move it faulted with "?!", "?" or "??".
+function judgmentGlyph(judgment) {
+    switch (judgment) {
+    case "Inaccuracy": return "?!"
+    case "Mistake": return "?"
+    case "Blunder": return "??"
+    default: return ""
+    }
+}
+
+// The colours lichess.org gives those marks, which stand out on any ambience.
+function judgmentColor(judgment) {
+    switch (judgment) {
+    case "Inaccuracy": return "#56b4e9"
+    case "Mistake": return "#e69f00"
+    case "Blunder": return "#df5353"
+    default: return ""
+    }
+}
+
+// An evaluation in centipawns as Lichess writes it: "+1.25", "-0.40", "#3".
+function formatEval(centipawns, mate) {
+    if (mate)
+        return (mate > 0 ? "#" : "-#") + Math.abs(mate)
+    var pawns = centipawns / 100
+    return (pawns > 0 ? "+" : pawns < 0 ? "\u2212" : "") + Math.abs(pawns).toFixed(2)
+}
+
+// The day a game was played; a game from today is given as a time instead.
+function formatGameDate(ms) {
+    if (!ms)
+        return ""
+    var date = new Date(ms)
+    var today = new Date()
+    var days = Math.floor((today.setHours(0, 0, 0, 0) - new Date(ms).setHours(0, 0, 0, 0)) / 86400000)
+    if (days === 0)
+        return Qt.formatTime(date, Qt.DefaultLocaleShortDate)
+    return Qt.formatDate(date, days < 365 ? "d MMM" : "d MMM yyyy")
+}

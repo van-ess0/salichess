@@ -14,9 +14,15 @@ Item {
     property QtObject game
     property bool flipped: false
     property bool interactive: false
-    property string movableColor: ""   // "white", "black" or "" for none
+    // "white", "black", "both" (whoever is to move, for the analysis board)
+    // or "" for none.
+    property string movableColor: ""
     property int hintSquare: -1
     property int hintTarget: -1
+    // Moves to point at, e.g. the ones the engine likes. Each is
+    // {"from", "to", "weight"}, where the weight (0..1) is how strongly it
+    // is drawn: the best move solid, the runners-up faint.
+    property var arrows: []
 
     signal moveRequested(string uci)
 
@@ -57,14 +63,26 @@ Item {
         return rank * 8 + file
     }
 
+    // The side that may move in the position on show. With variations a
+    // move from an earlier position starts a side line, so browsing does not
+    // stand in the way; without them only the latest position can be played.
+    function movingColor() {
+        if (!game)
+            return ""
+        return movableColor === "both" ? game.viewSideToMove : movableColor
+    }
+
     function canMove() {
-        return interactive && game && movableColor !== ""
-                && game.atLatest && game.sideToMove === movableColor
+        if (!interactive || !game || movableColor === "")
+            return false
+        if (!game.atLatest && !game.allowVariations)
+            return false
+        return game.viewSideToMove === movingColor()
     }
 
     function ownPiece(sq) {
         var piece = game.pieceAt(sq)
-        return piece !== "" && piece.charAt(0) === movableColor.charAt(0)
+        return piece !== "" && piece.charAt(0) === movingColor().charAt(0)
     }
 
     function select(sq) {
@@ -195,6 +213,91 @@ Item {
         }
     }
 
+    // The suggested moves
+    Canvas {
+        id: arrowCanvas
+        anchors.fill: parent
+        z: 12
+        visible: board.arrows.length > 0 && board.squareSize > 0
+        // Immediate, not Cooperative: the arrows never reached the screen in
+        // Cooperative mode on the device, and it is the mode that cannot be
+        // read back either, so a drawing bug there cannot even be seen. The
+        // drawing is a few lines, so painting it on the spot costs nothing.
+        renderStrategy: Canvas.Immediate
+
+        // A string, not a colour: Canvas takes CSS colours, and a QML colour
+        // value assigned to strokeStyle or fillStyle leaves it invalid, which
+        // paints nothing at all.
+        readonly property string arrowColor: "#3692e7"
+
+        onVisibleChanged: requestPaint()
+        onWidthChanged: requestPaint()
+
+        Connections {
+            target: board
+            onArrowsChanged: arrowCanvas.requestPaint()
+            onFlippedChanged: arrowCanvas.requestPaint()
+        }
+
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.reset()
+            ctx.clearRect(0, 0, width, height)
+            if (!visible)
+                return
+
+            // Drawn weakest first, so the best move ends up on top.
+            var moves = board.arrows.slice().sort(function(a, b) {
+                return (a.weight === undefined ? 1 : a.weight) - (b.weight === undefined ? 1 : b.weight)
+            })
+            for (var i = 0; i < moves.length; ++i)
+                paintArrow(ctx, moves[i])
+        }
+
+        function paintArrow(ctx, move) {
+            if (move.from < 0 || move.to < 0 || move.from === move.to)
+                return
+            var weight = move.weight === undefined ? 1 : move.weight
+            var size = board.squareSize
+            var centreX = board.squareX(move.from) + size / 2
+            var centreY = board.squareY(move.from) + size / 2
+            var targetX = board.squareX(move.to) + size / 2
+            var targetY = board.squareY(move.to) + size / 2
+
+            var dx = targetX - centreX
+            var dy = targetY - centreY
+            var length = Math.sqrt(dx * dx + dy * dy)
+            if (length < 1)
+                return
+            var ux = dx / length
+            var uy = dy / length
+            var head = size * (0.26 + 0.12 * weight)
+            // Start and end a little inside the squares, so the arrow points
+            // at the pieces rather than covering them.
+            var startX = centreX + ux * size * 0.22
+            var startY = centreY + uy * size * 0.22
+            var endX = targetX - ux * size * 0.18
+            var endY = targetY - uy * size * 0.18
+
+            ctx.strokeStyle = arrowColor
+            ctx.fillStyle = arrowColor
+            ctx.globalAlpha = 0.25 + 0.5 * weight
+            ctx.lineWidth = size * (0.07 + 0.09 * weight)
+            ctx.lineCap = "round"
+            ctx.beginPath()
+            ctx.moveTo(startX, startY)
+            ctx.lineTo(endX - ux * head * 0.6, endY - uy * head * 0.6)
+            ctx.stroke()
+
+            ctx.beginPath()
+            ctx.moveTo(endX, endY)
+            ctx.lineTo(endX - ux * head + uy * head * 0.5, endY - uy * head - ux * head * 0.5)
+            ctx.lineTo(endX - ux * head - uy * head * 0.5, endY - uy * head + ux * head * 0.5)
+            ctx.closePath()
+            ctx.fill()
+        }
+    }
+
     // King in check
     Rectangle {
         visible: board.game !== null && board.game.checkSquare >= 0
@@ -276,7 +379,9 @@ Item {
 
         onPressed: {
             var sq = board.squareAt(mouse.x, mouse.y)
-            if (!board.game.atLatest) {
+            // Tapping an earlier position brings the game back to the end,
+            // unless side lines are allowed: there the tap is a move.
+            if (!board.game.atLatest && !board.game.allowVariations) {
                 board.game.viewLatest()
                 return
             }
@@ -363,7 +468,7 @@ Item {
                         sourceSize.width: width
                         sourceSize.height: height
                         source: "image://pieces/" + appSettings.pieceSet + "/"
-                                + board.movableColor.charAt(0) + modelData.toUpperCase()
+                                + board.movingColor().charAt(0) + modelData.toUpperCase()
                     }
                     MouseArea {
                         id: promoArea

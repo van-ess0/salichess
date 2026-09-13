@@ -5,6 +5,7 @@
 
 #include "chatmodel.h"
 #include "chess/chessgame.h"
+#include "gameinfo.h"
 #include "core/lichessapi.h"
 #include "core/ndjsonstream.h"
 #include "core/services.h"
@@ -19,23 +20,6 @@ namespace {
 
 const int IdleTimeoutMs = 30 * 1000;
 const int MaxBackoffMs = 30 * 1000;
-
-QVariantMap playerInfo(const QJsonObject &player)
-{
-    QVariantMap info;
-    info.insert(QStringLiteral("id"), player.value(QStringLiteral("id")).toString());
-    QString name = player.value(QStringLiteral("name")).toString();
-    const int aiLevel = player.value(QStringLiteral("aiLevel")).toInt();
-    if (name.isEmpty() && aiLevel > 0)
-        name = GameController::tr("Stockfish level %1").arg(aiLevel);
-    else if (name.isEmpty())
-        name = GameController::tr("Anonymous");
-    info.insert(QStringLiteral("name"), name);
-    info.insert(QStringLiteral("rating"), player.value(QStringLiteral("rating")).toInt());
-    info.insert(QStringLiteral("title"), player.value(QStringLiteral("title")).toString());
-    info.insert(QStringLiteral("provisional"), player.value(QStringLiteral("provisional")).toBool());
-    return info;
-}
 
 QStringList splitMoves(const QString &moves)
 {
@@ -106,53 +90,14 @@ QString GameController::runningClock() const
 
 bool GameController::gameOver() const
 {
-    return !m_status.isEmpty() && m_status != QLatin1String("created")
-            && m_status != QLatin1String("started");
+    return GameInfo::isOver(m_status);
 }
 
 QString GameController::resultText() const
 {
-    if (!gameOver())
-        return QString();
-
-    const QString whiteName = m_white.value(QStringLiteral("name")).toString();
-    const QString blackName = m_black.value(QStringLiteral("name")).toString();
-    const QString loser = m_winner == QLatin1String("white") ? blackName : whiteName;
-    QString verdict;
-    if (m_winner == QLatin1String("white"))
-        verdict = tr("White is victorious");
-    else if (m_winner == QLatin1String("black"))
-        verdict = tr("Black is victorious");
-
-    QString reason;
-    if (m_status == QLatin1String("mate"))
-        reason = tr("Checkmate");
-    else if (m_status == QLatin1String("resign"))
-        reason = tr("%1 resigned").arg(loser);
-    else if (m_status == QLatin1String("stalemate"))
-        reason = tr("Stalemate");
-    else if (m_status == QLatin1String("timeout"))
-        reason = tr("%1 left the game").arg(loser);
-    else if (m_status == QLatin1String("draw"))
-        reason = tr("Draw");
-    else if (m_status == QLatin1String("outoftime"))
-        reason = m_winner.isEmpty() ? tr("Time out") : tr("%1 ran out of time").arg(loser);
-    else if (m_status == QLatin1String("aborted"))
-        reason = tr("Game aborted");
-    else if (m_status == QLatin1String("noStart"))
-        reason = tr("%1 didn't move").arg(loser);
-    else if (m_status == QLatin1String("cheat"))
-        reason = tr("Cheat detected");
-    else if (m_status == QLatin1String("insufficientMaterialClaim"))
-        reason = tr("Insufficient material");
-    else
-        reason = tr("Game over");
-
-    if (verdict.isEmpty() && m_status != QLatin1String("aborted"))
-        verdict = tr("Draw");
-    if (verdict.isEmpty() || reason == verdict)
-        return reason;
-    return reason + QStringLiteral(" • ") + verdict;
+    return GameInfo::resultText(m_status, m_winner,
+                            m_white.value(QStringLiteral("name")).toString(),
+                            m_black.value(QStringLiteral("name")).toString());
 }
 
 bool GameController::isMyTurn() const
@@ -352,8 +297,8 @@ void GameController::onStreamFinished(int status, const QString &error)
 
 void GameController::applyGameFull(const QJsonObject &full)
 {
-    m_white = playerInfo(full.value(QStringLiteral("white")).toObject());
-    m_black = playerInfo(full.value(QStringLiteral("black")).toObject());
+    m_white = GameInfo::streamPlayer(full.value(QStringLiteral("white")).toObject());
+    m_black = GameInfo::streamPlayer(full.value(QStringLiteral("black")).toObject());
 
     const QString me = Services::session() ? Services::session()->userId() : QString();
     if (!me.isEmpty() && m_white.value(QStringLiteral("id")).toString() == me)

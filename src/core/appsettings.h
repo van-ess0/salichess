@@ -24,6 +24,16 @@ class AppSettings : public QObject
     // How many puzzles PuzzleStore keeps on the phone for offline play.
     Q_PROPERTY(int offlinePuzzles READ offlinePuzzles WRITE setOfflinePuzzles NOTIFY offlinePuzzlesChanged)
 
+    // Stockfish on the analysis board. Off until the user asks for it: the
+    // networks have to be downloaded first, and searching costs battery.
+    Q_PROPERTY(bool engineEnabled READ engineEnabled WRITE setEngineEnabled NOTIFY engineEnabledChanged)
+    // How many variations the engine shows at once.
+    Q_PROPERTY(int engineLines READ engineLines WRITE setEngineLines NOTIFY engineLinesChanged)
+    Q_PROPERTY(int engineDepth READ engineDepth WRITE setEngineDepth NOTIFY engineDepthChanged)
+    Q_PROPERTY(int engineThreads READ engineThreads WRITE setEngineThreads NOTIFY engineThreadsChanged)
+    // Transposition table size in MB.
+    Q_PROPERTY(int engineHash READ engineHash WRITE setEngineHash NOTIFY engineHashChanged)
+
 public:
     explicit AppSettings(QObject *parent = nullptr);
 
@@ -46,6 +56,24 @@ public:
     int offlinePuzzles() const;
     void setOfflinePuzzles(int count);
 
+    bool engineEnabled() const;
+    void setEngineEnabled(bool enabled);
+    int engineLines() const;
+    void setEngineLines(int lines);
+    int engineDepth() const;
+    void setEngineDepth(int depth);
+    int engineThreads() const;
+    void setEngineThreads(int threads);
+    int engineHash() const;
+    void setEngineHash(int megabytes);
+
+    // What the engine settings may be set to. The ceilings are what a phone
+    // can spend without the battery noticing too much.
+    static int maxEngineLines() { return 5; }
+    static int maxEngineDepth() { return 30; }
+    static int maxEngineThreads() { return 4; }
+    static int maxEngineHash() { return 128; }
+
     // The most puzzles that can be kept, so a slip of the finger cannot ask
     // Lichess for thousands.
     static int maxOfflinePuzzles() { return 100; }
@@ -60,6 +88,11 @@ signals:
     void notificationsChanged();
     void puzzleDifficultyChanged();
     void offlinePuzzlesChanged();
+    void engineEnabledChanged();
+    void engineLinesChanged();
+    void engineDepthChanged();
+    void engineThreadsChanged();
+    void engineHashChanged();
 
 private:
     bool store(const char *key, const QVariant &value);

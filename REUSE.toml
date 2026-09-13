@@ -40,3 +40,21 @@ path = "3rdparty/chess-library/**"
 precedence = "override"
 SPDX-FileCopyrightText = "2023 disservin"
 SPDX-License-Identifier = "MIT"
+
+# Vendored engine: https://github.com/official-stockfish/Stockfish (tag sf_17.1),
+# without its main.cpp and Makefile. Its own files carry the licence in words
+# but not as an SPDX tag.
+[[annotations]]
+path = "3rdparty/stockfish/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2004-2025 The Stockfish developers (see 3rdparty/stockfish/AUTHORS)"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# incbin, which Stockfish uses to build a network into the binary. salichess
+# downloads the networks instead, so nothing of it is compiled in, but the
+# header comes with the engine.
+[[annotations]]
+path = "3rdparty/stockfish/incbin/**"
+precedence = "override"
+SPDX-FileCopyrightText = "Dale Weiler"
+SPDX-License-Identifier = "Unlicense"

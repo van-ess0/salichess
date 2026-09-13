@@ -32,8 +32,14 @@ QMAKE_CXXFLAGS += -std=gnu++17
 
 INCLUDEPATH += src 3rdparty/chess-library
 
+# Stockfish, for analysing positions on the phone.
+include($$PWD/3rdparty/stockfish.pri)
+
 HEADERS += \
     src/core/appsettings.h \
+    src/engine/enginecontroller.h \
+    src/engine/nnueweights.h \
+    src/engine/stockfishengine.h \
     src/core/appactivation.h \
     src/core/lichessapi.h \
     src/core/ndjsonstream.h \
@@ -44,12 +50,16 @@ HEADERS += \
     src/core/tokenstore.h \
     src/chess/chessgame.h \
     src/chess/chessposition.h \
+    src/chess/movetree.h \
     src/chess/piecesmodel.h \
     src/lichess/challengesmodel.h \
     src/lichess/chatmodel.h \
     src/lichess/eventstream.h \
     src/lichess/friendsmodel.h \
+    src/lichess/gameanalysis.h \
     src/lichess/gamecontroller.h \
+    src/lichess/gameinfo.h \
+    src/lichess/gameshistorymodel.h \
     src/lichess/lobbyseek.h \
     src/lichess/ongoinggamesmodel.h \
     src/lichess/outgoingchallenge.h \
@@ -61,6 +71,9 @@ HEADERS += \
 SOURCES += \
     src/main.cpp \
     src/core/appsettings.cpp \
+    src/engine/enginecontroller.cpp \
+    src/engine/nnueweights.cpp \
+    src/engine/stockfishengine.cpp \
     src/core/appactivation.cpp \
     src/core/lichessapi.cpp \
     src/core/ndjsonstream.cpp \
@@ -70,12 +83,16 @@ SOURCES += \
     src/core/session.cpp \
     src/chess/chessgame.cpp \
     src/chess/chessposition.cpp \
+    src/chess/movetree.cpp \
     src/chess/piecesmodel.cpp \
     src/lichess/challengesmodel.cpp \
     src/lichess/chatmodel.cpp \
     src/lichess/eventstream.cpp \
     src/lichess/friendsmodel.cpp \
+    src/lichess/gameanalysis.cpp \
     src/lichess/gamecontroller.cpp \
+    src/lichess/gameinfo.cpp \
+    src/lichess/gameshistorymodel.cpp \
     src/lichess/lobbyseek.cpp \
     src/lichess/ongoinggamesmodel.cpp \
     src/lichess/outgoingchallenge.cpp \

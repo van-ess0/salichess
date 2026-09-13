@@ -3,12 +3,16 @@
 
 import QtQuick 2.6
 import Sailfish.Silica 1.0
+import "../js/Util.js" as Util
 
 // Horizontal strip of moves; tap a move to view that position.
 SilicaListView {
     id: list
 
     property QtObject game
+    // Lichess judgments, one per ply (GameAnalysis.judgments()). Left empty
+    // where a game has not been analysed, and by the pages that only play.
+    property var annotations: []
 
     orientation: ListView.Horizontal
     height: Theme.itemSizeExtraSmall
@@ -26,6 +30,8 @@ SilicaListView {
     delegate: BackgroundItem {
         readonly property bool current: game && game.viewPly === index + 1
         readonly property bool hidden: game && index + 1 < game.firstViewablePly
+        readonly property string judgment: index < list.annotations.length
+                                           ? list.annotations[index] : ""
         width: moveLabel.implicitWidth + 2 * Theme.paddingSmall
         height: list.height
         enabled: !hidden
@@ -35,11 +41,19 @@ SilicaListView {
             id: moveLabel
             anchors.centerIn: parent
             text: (index % 2 === 0 ? (Math.floor(index / 2) + 1) + ". " : "") + modelData
-            color: parent.current ? Theme.highlightColor
-                                  : (parent.hidden ? Theme.secondaryColor : Theme.primaryColor)
+                  + Util.judgmentGlyph(parent.judgment)
+            color: {
+                if (parent.current)
+                    return Theme.highlightColor
+                if (parent.hidden)
+                    return Theme.secondaryColor
+                if (parent.judgment !== "")
+                    return Util.judgmentColor(parent.judgment)
+                return Theme.primaryColor
+            }
             font.pixelSize: Theme.fontSizeSmall
         }
-        onClicked: game.viewPly(index + 1)
+        onClicked: game.goToPly(index + 1)
     }
 
     HorizontalScrollDecorator {}

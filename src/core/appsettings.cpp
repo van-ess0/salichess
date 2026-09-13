@@ -133,3 +133,58 @@ void AppSettings::setOfflinePuzzles(int count)
     if (store("puzzles/offlineCount", qBound(0, count, maxOfflinePuzzles())))
         emit offlinePuzzlesChanged();
 }
+
+bool AppSettings::engineEnabled() const
+{
+    return m_settings.value(QStringLiteral("engine/enabled"), false).toBool();
+}
+
+void AppSettings::setEngineEnabled(bool enabled)
+{
+    if (store("engine/enabled", enabled))
+        emit engineEnabledChanged();
+}
+
+int AppSettings::engineLines() const
+{
+    return qBound(1, m_settings.value(QStringLiteral("engine/lines"), 2).toInt(), maxEngineLines());
+}
+
+void AppSettings::setEngineLines(int lines)
+{
+    if (store("engine/lines", qBound(1, lines, maxEngineLines())))
+        emit engineLinesChanged();
+}
+
+int AppSettings::engineDepth() const
+{
+    return qBound(6, m_settings.value(QStringLiteral("engine/depth"), 18).toInt(), maxEngineDepth());
+}
+
+void AppSettings::setEngineDepth(int depth)
+{
+    if (store("engine/depth", qBound(6, depth, maxEngineDepth())))
+        emit engineDepthChanged();
+}
+
+int AppSettings::engineThreads() const
+{
+    return qBound(1, m_settings.value(QStringLiteral("engine/threads"), 2).toInt(), maxEngineThreads());
+}
+
+void AppSettings::setEngineThreads(int threads)
+{
+    if (store("engine/threads", qBound(1, threads, maxEngineThreads())))
+        emit engineThreadsChanged();
+}
+
+int AppSettings::engineHash() const
+{
+    return qBound(8, m_settings.value(QStringLiteral("engine/hash"), 32).toInt(), maxEngineHash());
+}
+
+void AppSettings::setEngineHash(int megabytes)
+{
+    if (store("engine/hash", qBound(8, megabytes, maxEngineHash())))
+        emit engineHashChanged();
+}

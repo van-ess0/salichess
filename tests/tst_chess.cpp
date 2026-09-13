@@ -7,6 +7,7 @@
 
 #include "chess/chessgame.h"
 #include "chess/chessposition.h"
+#include "chess/movetree.h"
 #include "chess/piecesmodel.h"
 #include "lichess/puzzlecontroller.h"
 #include "lichess/puzzlelogic.h"
@@ -296,7 +297,7 @@ private slots:
         QCOMPARE(game.viewPly(), 2);
         game.viewPrevious();
         QCOMPARE(game.viewPly(), 2);
-        game.viewPly(0);
+        game.goToPly(0);
         QCOMPARE(game.viewPly(), 2);
         game.viewLatest();
         QCOMPARE(game.viewPly(), 4);
@@ -369,6 +370,238 @@ private slots:
         QCOMPARE(game.legalTargets(e2).size(), 2);
         QCOMPARE(game.uciForMove(e2, ChessPosition::squareFromName("e4")), QStringLiteral("e2e4"));
         QVERIFY(game.uciForMove(e2, ChessPosition::squareFromName("e5")).isEmpty());
+    }
+
+    // --- Side lines ---
+
+    void variationsAreOffByDefault()
+    {
+        // A game or a puzzle board: a move is always the next move of the
+        // game, even while an earlier position is on show.
+        ChessGame game;
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5", "g1f3" }));
+        game.goToPly(1);
+        QVERIFY(game.playUci("b8c6"));
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5", "Nf3", "Nc6" }));
+        QVERIFY(!game.inVariation());
+        // The view stays where it was put.
+        QCOMPARE(game.viewPly(), 1);
+    }
+
+    void variationBranchesAndReturns()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5", "g1f3", "b8c6" }));
+
+        // Playing something else at move two starts a side line, and the
+        // board follows it.
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+        QVERIFY(game.inVariation());
+        QCOMPARE(game.variationStartPly(), 2);
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "c5" }));
+        QCOMPARE(game.viewPly(), 2);
+        QCOMPARE(game.ply(), 2);
+
+        // The side line carries on.
+        QVERIFY(game.playUci("g1f3"));
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "c5", "Nf3" }));
+
+        // The game itself is untouched underneath.
+        game.exitVariation();
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5", "Nf3", "Nc6" }));
+        QCOMPARE(game.viewPly(), 1);
+    }
+
+    void variationPlayedTwiceIsTheSameLine()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5" }));
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+        const int nodes = game.nodeCount();
+
+        // Going back and playing the same move again re-enters the line
+        // rather than adding a second copy of it.
+        game.exitVariation();
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+        QCOMPARE(game.nodeCount(), nodes);
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "c5" }));
+
+        // Replaying the game's own move just follows the game.
+        game.exitVariation();
+        game.goToPly(1);
+        QVERIFY(game.playUci("e7e5"));
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.nodeCount(), nodes);
+    }
+
+    void variationCanBePromotedAndDeleted()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5", "g1f3" }));
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+        QVERIFY(game.playUci("g1f3"));
+
+        // Promoting makes the side line the game, and the game the side line.
+        game.promoteVariation();
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "c5", "Nf3" }));
+        game.goToPly(1);
+        QVERIFY(game.playUci("e7e5"));
+        QVERIFY(game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5", "Nf3" }));
+
+        // Deleting throws the line away and goes back to the game.
+        game.deleteVariation();
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "c5", "Nf3" }));
+        QCOMPARE(game.viewPly(), 1);
+
+        // The deleted nodes are reused rather than leaked.
+        const int nodes = game.nodeCount();
+        game.goToPly(1);
+        QVERIFY(game.playUci("e7e6"));
+        QCOMPARE(game.nodeCount(), nodes);
+    }
+
+    void variationsSurviveAGameUpdate()
+    {
+        // A side line hangs off a move that a takeback removes: the game is
+        // what the server says, so the line goes with it.
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5", "g1f3" }));
+        game.goToPly(2);
+        QVERIFY(game.playUci("d2d4"));
+        QVERIFY(game.inVariation());
+
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5" }));
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5" }));
+        QCOMPARE(game.ply(), 2);
+    }
+
+    void boardInputFollowsTheViewedPosition()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5", "g1f3" }));
+        const int e2 = ChessPosition::squareFromName("e2");
+        const int e4 = ChessPosition::squareFromName("e4");
+
+        // At the end of the game the pawn stands on e4.
+        QCOMPARE(game.pieceAt(e4), QStringLiteral("wP"));
+        QVERIFY(game.pieceAt(e2).isEmpty());
+        QCOMPARE(game.viewSideToMove(), QStringLiteral("black"));
+
+        // Back at the start it stands on e2 again and can move there.
+        game.viewFirst();
+        QCOMPARE(game.pieceAt(e2), QStringLiteral("wP"));
+        QCOMPARE(game.viewSideToMove(), QStringLiteral("white"));
+        QCOMPARE(game.uciForMove(e2, e4), QStringLiteral("e2e4"));
+        // sideToMove stays the side to move in the game itself.
+        QCOMPARE(game.sideToMove(), QStringLiteral("black"));
+    }
+
+    void moveTreeIsWalkable()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5" }));
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+
+        const QVector<int> firstMoves = game.nodeChildren(ChessGame::rootNode());
+        QCOMPARE(firstMoves.size(), 1);
+        const QVector<int> replies = game.nodeChildren(firstMoves.first());
+        QCOMPARE(replies.size(), 2);
+        QCOMPARE(game.nodeSan(replies.at(0)), QStringLiteral("e5"));  // the game
+        QCOMPARE(game.nodeSan(replies.at(1)), QStringLiteral("c5"));  // the side line
+        QCOMPARE(game.nodeDepth(replies.at(1)), 2);
+        QCOMPARE(game.nodeParent(replies.at(1)), firstMoves.first());
+
+        // Jumping to a node switches to its line.
+        game.goToNode(replies.at(0));
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5" }));
+        game.goToNode(replies.at(1));
+        QVERIFY(game.inVariation());
+        QCOMPARE(game.viewPly(), 2);
+        QCOMPARE(game.currentNode(), replies.at(1));
+    }
+
+
+    void moveTreeReadsLikeAPgn()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        MoveTree tree;
+        tree.setGame(&game);
+
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5", "g1f3" }));
+        QCOMPARE(tree.paragraphs().size(), 1);
+        QVERIFY(!tree.hasVariations());
+        QVariantMap run = tree.paragraphs().first().toMap();
+        QCOMPARE(run.value("depth").toInt(), 0);
+        QCOMPARE(run.value("moves").toList().size(), 3);
+        QVariantMap first = run.value("moves").toList().first().toMap();
+        QCOMPARE(first.value("san").toString(), QStringLiteral("e4"));
+        QCOMPARE(first.value("ply").toInt(), 1);
+        QVERIFY(first.value("white").toBool());
+        QVERIFY(first.value("first").toBool());
+
+        // A side line becomes a run of its own, one step further in.
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+        QVERIFY(game.playUci("g1f3"));
+        QCOMPARE(tree.paragraphs().size(), 2);
+        QVERIFY(tree.hasVariations());
+        const QVariantMap side = tree.paragraphs().at(1).toMap();
+        QCOMPARE(side.value("depth").toInt(), 1);
+        QCOMPARE(side.value("moves").toList().size(), 2);
+        QCOMPARE(side.value("moves").toList().first().toMap().value("san").toString(),
+                 QStringLiteral("c5"));
+
+        // The move on the board is reported apart from the tree, so stepping
+        // through the game does not rebuild it.
+        const int sideNode = side.value("moves").toList().first().toMap().value("node").toInt();
+        QSignalSpy rebuilds(&tree, &MoveTree::paragraphsChanged);
+        QSignalSpy current(&tree, &MoveTree::currentNodeChanged);
+        game.viewPrevious(); // from Nf3 of the side line back to c5
+        QCOMPARE(rebuilds.count(), 0);
+        QVERIFY(current.count() > 0);
+        QCOMPARE(tree.currentNode(), sideNode);
+
+        // Jumping to the game's own second move leaves the side line.
+        const int gameSecond = run.value("moves").toList().at(1).toMap().value("node").toInt();
+        game.goToNode(gameSecond);
+        QCOMPARE(tree.currentNode(), gameSecond);
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5", "Nf3" }));
+    }
+
+    void undoRemovesOnlyTheLastMove()
+    {
+        ChessGame game;
+        game.setAllowVariations(true);
+        QVERIFY(game.setUciMoves({ "e2e4", "e7e5" }));
+        game.goToPly(1);
+        QVERIFY(game.playUci("c7c5"));
+        QVERIFY(game.playUci("g1f3"));
+
+        game.undo();
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "c5" }));
+        game.undo();
+        // Back on the game, since the side line is gone.
+        QVERIFY(!game.inVariation());
+        QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5" }));
     }
 };
 

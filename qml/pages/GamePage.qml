@@ -92,6 +92,12 @@ Page {
                 onClicked: pageStack.push(Qt.resolvedUrl("ChatPage.qml"), { controller: controller })
             }
             MenuItem {
+                visible: controller.gameOver
+                text: qsTr("Analysis")
+                onClicked: pageStack.push(Qt.resolvedUrl("AnalysisPage.qml"),
+                                          { gameId: page.gameId, myColor: controller.myColor })
+            }
+            MenuItem {
                 text: qsTr("Open in browser")
                 onClicked: Qt.openUrlExternally("https://lichess.org/" + page.gameId)
             }

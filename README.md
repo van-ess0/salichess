@@ -13,6 +13,9 @@ written in C++/Qt 5 with a native Silica user interface.
   - Accept or decline incoming challenges. Sent challenges stay open while you use the rest of the app, and the game opens when your friend accepts.
   - Play your ongoing games: animated board with drag or tap-to-move, clocks (for correspondence, the time left for the current move), move list and history, draw and takeback offers, resign, abort, claim victory, and in-game chat.
 - **Play with random opponents:** Lichess' quick-pairing time controls, a custom clock or a correspondence seek (the Board API allows rapid and slower), rated or casual, with a rating range and choice of colour. A seek stays open while you use the rest of the app, and the game opens when an opponent is found. Correspondence seeks can only be withdrawn on lichess.org.
+- **Games history:** your finished games, newest first, with the final position, the result and the rating change. Filter by time control, colour, rated or casual, opponent, or only the games Lichess has analysed.
+- **Analysis board:** replay a finished game with Lichess' computer analysis where it has one — evaluations, inaccuracies, mistakes and blunders marked in the moves, accuracy and average centipawn loss per player, and a graph of how the game went. Ask Lichess for an analysis if the game has none. Play your own moves from any position to try a side line, with a move tree you can navigate, promote or throw away.
+- **Stockfish on the phone:** switch the engine on to have the position analysed as you look at it, with an evaluation bar, the best lines and an arrow for the move it likes. The neural networks it needs (about 75 MB) are downloaded once, on request, and can be deleted again in the settings.
 - **Puzzles:** the daily puzzle, a healthy mix, or around 60 themes (forks, mates in N, endgames, …). Choose a difficulty, get a two-step hint, or view the solution. Results count towards your Lichess puzzle rating when you are logged in.
 - **Sailfish integration:**
   - Notifications for new challenges and for "your turn" in correspondence games, while the app runs.
@@ -136,6 +139,10 @@ It includes:
 
 - [chess-library](https://github.com/Disservin/chess-library) by Disservin (MIT),
   in `3rdparty/chess-library/`
+- [Stockfish](https://github.com/official-stockfish/Stockfish) by the Stockfish developers
+  (GPL-3.0-or-later), in `3rdparty/stockfish/`, with [incbin](https://github.com/graphitemaster/incbin)
+  by Dale Weiler (Unlicense). Its neural networks are not part of this repository or the package;
+  the app downloads them from stockfishchess.org when you switch the engine on.
 - the "cburnett" chess pieces by Colin M.L. Burnett (GPL-2.0-or-later), as used on Lichess
 - an app icon that combines the cburnett knight with the base shape from Jolla's Sailfish OS app icon
   template (CC BY 3.0)

@@ -55,7 +55,7 @@ Page {
                 anchors {
                     left: dot.right
                     leftMargin: Theme.paddingMedium
-                    right: status.left
+                    right: presence.left
                     rightMargin: Theme.paddingMedium
                     verticalCenter: parent.verticalCenter
                 }
@@ -65,7 +65,7 @@ Page {
             }
 
             Label {
-                id: status
+                id: presence
                 anchors {
                     right: parent.right
                     rightMargin: Theme.horizontalPageMargin

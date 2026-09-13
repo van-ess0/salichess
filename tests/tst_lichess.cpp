@@ -23,7 +23,9 @@
 #include "lichess/chatmodel.h"
 #include "lichess/eventstream.h"
 #include "lichess/friendsmodel.h"
+#include "lichess/gameanalysis.h"
 #include "lichess/gamecontroller.h"
+#include "lichess/gameshistorymodel.h"
 #include "lichess/lobbyseek.h"
 #include "lichess/ongoinggamesmodel.h"
 #include "lichess/outgoingchallenge.h"
@@ -1214,6 +1216,325 @@ private slots:
         controller.loadPuzzle(QStringLiteral("1Sqyb"));
         QTRY_COMPARE(controller.state(), PuzzleController::Playing);
         QVERIFY(!controller.isDaily());
+    }
+
+    // --- GamesHistoryModel ---
+
+    void gamesHistoryLoadsGames()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/games/user/Me");
+        GamesHistoryModel model;
+        QTRY_COMPARE(server->openStreams("/api/games/user/Me"), 1);
+        QVERIFY(model.loading());
+
+        const FakeLichess::Request request = server->lastRequest("GET", "/api/games/user/Me");
+        QCOMPARE(request.headers.value("accept"), QByteArray("application/x-ndjson"));
+        QCOMPARE(request.query.queryItemValue("max"), QStringLiteral("20"));
+        QCOMPARE(request.query.queryItemValue("finished"), QStringLiteral("true"));
+        QCOMPARE(request.query.queryItemValue("lastFen"), QStringLiteral("true"));
+        QCOMPARE(request.query.queryItemValue("moves"), QStringLiteral("false"));
+        QVERIFY(!request.query.hasQueryItem("until"));
+
+        server->push("/api/games/user/Me", line(HistoryGame) + line(HistoryGameOlder));
+        server->closeStreams("/api/games/user/Me");
+        QTRY_COMPARE(model.count(), 2);
+        QVERIFY(!model.loading());
+        // A page shorter than the one asked for is the end of the history.
+        QVERIFY(!model.hasMore());
+
+        QCOMPARE(role(model, 0, "gameId").toString(), QStringLiteral("hist0001"));
+        QCOMPARE(role(model, 0, "color").toString(), QStringLiteral("black"));
+        QCOMPARE(role(model, 0, "result").toString(), QStringLiteral("loss"));
+        QCOMPARE(role(model, 0, "opponentName").toString(), QStringLiteral("Rival"));
+        QCOMPARE(role(model, 0, "opponentTitle").toString(), QStringLiteral("FM"));
+        QCOMPARE(role(model, 0, "opponentRating").toInt(), 2100);
+        QCOMPARE(role(model, 0, "ratingDiff").toInt(), -8);
+        QCOMPARE(role(model, 0, "perf").toString(), QStringLiteral("blitz"));
+        QVERIFY(role(model, 0, "rated").toBool());
+        QCOMPARE(role(model, 0, "opening").toString(), QStringLiteral("Italian Game"));
+        QVERIFY(role(model, 0, "fen").toString().startsWith(QStringLiteral("rnbqkbnr/")));
+        QVERIFY(role(model, 0, "resultText").toString().contains(QStringLiteral("Checkmate")));
+
+        // Playing white against a computer, which Lichess leaves nameless.
+        QCOMPARE(role(model, 1, "color").toString(), QStringLiteral("white"));
+        QCOMPARE(role(model, 1, "result").toString(), QStringLiteral("win"));
+        QCOMPARE(role(model, 1, "opponentName").toString(), QStringLiteral("Stockfish level 3"));
+        QVERIFY(!role(model, 1, "rated").toBool());
+    }
+
+    void gamesHistoryPagesOnDemand()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/games/user/Me");
+        GamesHistoryModel model;
+        QTRY_COMPARE(server->openStreams("/api/games/user/Me"), 1);
+
+        // A full page means there may be more.
+        QByteArray page;
+        for (int i = 0; i < 20; ++i) {
+            QJsonObject game = QJsonDocument::fromJson(HistoryGame).object();
+            game.insert(QStringLiteral("id"), QStringLiteral("g%1").arg(i));
+            // Lichess sends them newest first.
+            game.insert(QStringLiteral("createdAt"), 1700000019000LL - i * 1000);
+            page += QJsonDocument(game).toJson(QJsonDocument::Compact) + '\n';
+        }
+        server->push("/api/games/user/Me", page);
+        server->closeStreams("/api/games/user/Me");
+        QTRY_COMPARE(model.count(), 20);
+        QVERIFY(model.hasMore());
+
+        model.loadMore();
+        QTRY_COMPARE(server->requestCount("GET", "/api/games/user/Me"), 2);
+        // The oldest game held was made at 1700000000000; the next page has
+        // to stop just short of it.
+        QCOMPARE(server->lastRequest("GET", "/api/games/user/Me").query.queryItemValue("until"),
+                 QStringLiteral("1699999999999"));
+        QCOMPARE(role(model, 19, "createdAt").toLongLong(), 1700000000000LL);
+
+        // A game already held is not listed twice.
+        server->push("/api/games/user/Me", line(HistoryGame) + page.left(page.indexOf('\n') + 1));
+        server->closeStreams("/api/games/user/Me");
+        QTRY_COMPARE(model.count(), 21);
+        QCOMPARE(role(model, 20, "gameId").toString(), QStringLiteral("hist0001"));
+    }
+
+    void gamesHistoryFilters()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/games/user/Me");
+        GamesHistoryModel model;
+        QTRY_COMPARE(server->requestCount("GET", "/api/games/user/Me"), 1);
+        QVERIFY(!model.filtered());
+
+        model.setPerfType(QStringLiteral("blitz,rapid"));
+        model.setColor(QStringLiteral("white"));
+        model.setRated(GamesHistoryModel::CasualOnly);
+        model.setAnalysedOnly(true);
+        model.setOpponent(QStringLiteral("Rival"));
+        QVERIFY(model.filtered());
+        // The five changes arrive together, so they cost one request.
+        QTRY_COMPARE(server->requestCount("GET", "/api/games/user/Me"), 2);
+
+        const QUrlQuery query = server->lastRequest("GET", "/api/games/user/Me").query;
+        QCOMPARE(query.queryItemValue("perfType"), QStringLiteral("blitz,rapid"));
+        QCOMPARE(query.queryItemValue("color"), QStringLiteral("white"));
+        QCOMPARE(query.queryItemValue("rated"), QStringLiteral("false"));
+        QCOMPARE(query.queryItemValue("analysed"), QStringLiteral("true"));
+        QCOMPARE(query.queryItemValue("vs"), QStringLiteral("Rival"));
+
+        model.clearFilters();
+        QVERIFY(!model.filtered());
+        QTRY_COMPARE(server->requestCount("GET", "/api/games/user/Me"), 3);
+        QVERIFY(!server->lastRequest("GET", "/api/games/user/Me").query.hasQueryItem("perfType"));
+    }
+
+    void gamesHistoryFollowsTheAccount()
+    {
+        server->streamRoute("GET", "/api/games/user/Me");
+        GamesHistoryModel model;
+        // Logged out there is nobody whose games could be shown.
+        QTest::qWait(50);
+        QCOMPARE(server->requestCount("GET", "/api/games/user/Me"), 0);
+        QVERIFY(!model.loading());
+
+        logIn();
+        QTRY_COMPARE(server->requestCount("GET", "/api/games/user/Me"), 1);
+
+        // Another player's games are asked for under their own name.
+        server->streamRoute("GET", "/api/games/user/Rival");
+        model.setUsername(QStringLiteral("Rival"));
+        QTRY_COMPARE(server->requestCount("GET", "/api/games/user/Rival"), 1);
+    }
+
+    void gamesHistoryEmptiesOnLogout()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/games/user/Me");
+        GamesHistoryModel model;
+        QTRY_COMPARE(server->openStreams("/api/games/user/Me"), 1);
+        server->push("/api/games/user/Me", line(HistoryGame));
+        server->closeStreams("/api/games/user/Me");
+        QTRY_COMPARE(model.count(), 1);
+
+        server->route("DELETE", "/api/token", 200, "{}");
+        session->logout();
+        QTRY_COMPARE(model.count(), 0);
+    }
+
+    void gamesHistoryReportsErrors()
+    {
+        logIn();
+        GamesHistoryModel model;
+        model.setUsername(QStringLiteral("Nobody")); // no route: 404
+        QTRY_VERIFY(!model.errorString().isEmpty());
+        QCOMPARE(model.count(), 0);
+        QVERIFY(!model.hasMore());
+        QVERIFY(!model.loading());
+    }
+
+    // --- GameAnalysis ---
+
+    void gameAnalysisReadsServerAnalysis()
+    {
+        logIn();
+        server->route("GET", "/game/export/anal0001", 200, AnalysedGame);
+        GameAnalysis analysis;
+        analysis.setGameId(QStringLiteral("anal0001"));
+        QTRY_COMPARE(analysis.game()->ply(), 4);
+        QVERIFY(!analysis.loading());
+        QVERIFY(analysis.errorString().isEmpty());
+        QVERIFY(analysis.hasServerAnalysis());
+
+        const QUrlQuery query = server->lastRequest("GET", "/game/export/anal0001").query;
+        QCOMPARE(query.queryItemValue("evals"), QStringLiteral("true"));
+        QCOMPARE(query.queryItemValue("accuracy"), QStringLiteral("true"));
+        QCOMPARE(query.queryItemValue("clocks"), QStringLiteral("true"));
+
+        QCOMPARE(analysis.game()->sanMoves(), QStringList({ "e4", "e5", "Qh5", "Nc6" }));
+        QCOMPARE(analysis.white().value("name").toString(), QStringLiteral("Me"));
+        QCOMPARE(analysis.white().value("accuracy").toInt(), 61);
+        QCOMPARE(analysis.white().value("acpl").toInt(), 120);
+        QCOMPARE(analysis.white().value("blunder").toInt(), 1);
+        QCOMPARE(analysis.black().value("title").toString(), QStringLiteral("FM"));
+        QCOMPARE(analysis.black().value("ratingDiff").toInt(), 7);
+        QCOMPARE(analysis.openingName(), QStringLiteral("Open Game"));
+        QCOMPARE(analysis.openingEco(), QStringLiteral("C20"));
+        QVERIFY(analysis.resultText().contains(QStringLiteral("Black is victorious")));
+        QCOMPARE(analysis.judgments(), QStringList({ "", "", "Blunder", "" }));
+
+        // Entry i belongs to the position after move i + 1, so the blunder
+        // is the third move.
+        analysis.game()->goToPly(3);
+        QVERIFY(analysis.hasEval());
+        QCOMPARE(analysis.evalCp(), -90);
+        QCOMPARE(analysis.evalSource(), QStringLiteral("server"));
+        QCOMPARE(analysis.judgment(), QStringLiteral("Blunder"));
+        QCOMPARE(analysis.bestMove(), QStringLiteral("g1f3"));
+        QCOMPARE(analysis.bestVariation(), QStringLiteral("Nf3 Nc6"));
+        QCOMPARE(analysis.clockMs(), 287000);
+        QVERIFY(analysis.winPercent() < 50); // black is better
+
+        // bestMove is the alternative to the move that led here, so it
+        // belongs to the position before this one; nextBestMove is the one
+        // to play from the position on the board, and that is what an arrow
+        // can be drawn for. The blunder is the third move, so it is the
+        // second position that has something better to play.
+        analysis.game()->goToPly(2);
+        QCOMPARE(analysis.nextBestMove(), QStringLiteral("g1f3"));
+        QCOMPARE(analysis.nextBestVariation(), QStringLiteral("Nf3 Nc6"));
+        QCOMPARE(analysis.bestMove(), QString()); // move 2 was not faulted
+
+        analysis.game()->goToPly(3);
+        QCOMPARE(analysis.bestMove(), QStringLiteral("g1f3"));
+        QCOMPARE(analysis.nextBestMove(), QString()); // nothing said about move 4
+
+        analysis.game()->goToPly(1);
+        QCOMPARE(analysis.evalCp(), 20);
+        QCOMPARE(analysis.judgment(), QString());
+        QVERIFY(analysis.winPercent() > 50);
+
+        const QVariantList points = analysis.evalPoints();
+        QCOMPARE(points.size(), 4);
+        QCOMPARE(points.at(2).toMap().value("ply").toInt(), 3);
+        QCOMPARE(points.at(2).toMap().value("judgment").toString(), QStringLiteral("Blunder"));
+
+        // The plies Lichess analysed need nothing from the cloud, and
+        // neither does the blank board shown while a game is loading.
+        QTest::qWait(600);
+        QCOMPARE(server->requestCount("GET", "/api/cloud-eval"), 0);
+
+        // The starting position is not one of the analysed plies, so that
+        // one is looked up.
+        server->route("GET", "/api/cloud-eval", 404, R"({"error":"nothing here"})");
+        analysis.game()->viewFirst();
+        QVERIFY(!analysis.hasEval());
+        QCOMPARE(analysis.clockMs(), -1);
+        QTRY_COMPARE(server->requestCount("GET", "/api/cloud-eval"), 1);
+    }
+
+    void gameAnalysisIgnoresSideLines()
+    {
+        logIn();
+        server->route("GET", "/game/export/anal0001", 200, AnalysedGame);
+        server->route("GET", "/api/cloud-eval", 404, R"({"error":"nothing here"})");
+        GameAnalysis analysis;
+        analysis.setGameId(QStringLiteral("anal0001"));
+        QTRY_COMPARE(analysis.game()->ply(), 4);
+
+        analysis.game()->setAllowVariations(true);
+        analysis.game()->goToPly(2);
+        QCOMPARE(analysis.evalCp(), 15);
+        QCOMPARE(analysis.clockMs(), 298500);
+
+        // A move of the user's own is not part of what Lichess analysed, so
+        // neither its evaluations nor its clocks apply from there on.
+        // The branch point is still the game's own position, so what should
+        // have been played there still holds.
+        QCOMPARE(analysis.nextBestMove(), QStringLiteral("g1f3"));
+
+        QVERIFY(analysis.game()->playUci("b1c3"));
+        QVERIFY(analysis.game()->inVariation());
+        QCOMPARE(analysis.nextBestMove(), QString()); // a side line is not the game
+        QVERIFY(!analysis.hasEval());
+        QCOMPARE(analysis.judgment(), QString());
+        QCOMPARE(analysis.clockMs(), -1);
+        QCOMPARE(analysis.whiteClockMs(), -1);
+        // The cloud is asked about the side line instead.
+        QTRY_VERIFY(server->requestCount("GET", "/api/cloud-eval") > 0);
+
+        // Back on the game everything is there again.
+        analysis.game()->exitVariation();
+        QCOMPARE(analysis.game()->viewPly(), 2);
+        QCOMPARE(analysis.evalCp(), 15);
+        QCOMPARE(analysis.clockMs(), 298500);
+    }
+
+    void gameAnalysisFallsBackToCloudEval()
+    {
+        logIn();
+        server->route("GET", "/game/export/anal0002", 200, UnanalysedGame);
+        server->route("GET", "/api/cloud-eval", 200,
+                      R"({"fen":"x","knodes":1,"depth":30,"pvs":[{"cp":34,"moves":"g1f3"}]})");
+        GameAnalysis analysis;
+        analysis.setGameId(QStringLiteral("anal0002"));
+        QTRY_COMPARE(analysis.game()->ply(), 2);
+        QVERIFY(!analysis.hasServerAnalysis());
+
+        QTRY_VERIFY(analysis.hasEval());
+        QCOMPARE(analysis.evalCp(), 34);
+        QCOMPARE(analysis.evalSource(), QStringLiteral("cloud"));
+        QCOMPARE(server->lastRequest("GET", "/api/cloud-eval").query.queryItemValue("fen"),
+                 analysis.game()->fen());
+
+        // Positions Lichess has never seen answer with 404, which is normal.
+        server->route("GET", "/api/cloud-eval", 404, R"({"error":"No cloud evaluation available"})");
+        analysis.game()->viewFirst();
+        QTRY_COMPARE(server->requestCount("GET", "/api/cloud-eval"), 2);
+        QVERIFY(!analysis.hasEval());
+        QVERIFY(analysis.errorString().isEmpty());
+
+        // A position already asked about is not asked about again.
+        analysis.game()->viewLatest();
+        QTRY_VERIFY(analysis.hasEval());
+        QTest::qWait(600);
+        QCOMPARE(server->requestCount("GET", "/api/cloud-eval"), 2);
+    }
+
+    void gameAnalysisRejectsUnplayableVariants()
+    {
+        logIn();
+        server->route("GET", "/game/export/anal0003", 200, CrazyhouseGame);
+        GameAnalysis analysis;
+        analysis.setGameId(QStringLiteral("anal0003"));
+        QTRY_VERIFY(!analysis.errorString().isEmpty());
+        QCOMPARE(analysis.game()->ply(), 0);
+        QCOMPARE(analysis.variantName(), QStringLiteral("crazyhouse"));
+
+        // A game that is not there says so rather than staying blank.
+        analysis.setGameId(QStringLiteral("nosuchgame"));
+        QTRY_VERIFY(!analysis.errorString().isEmpty());
+        QVERIFY(!analysis.loading());
     }
 };
 

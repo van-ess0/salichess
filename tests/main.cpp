@@ -5,6 +5,7 @@
 
 int runChessTests(int argc, char *argv[]);
 int runLichessTests(int argc, char *argv[]);
+int runEngineTests(int argc, char *argv[]);
 int runLiveTests(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
     int failures = 0;
     failures += runChessTests(argc, argv);
     failures += runLichessTests(argc, argv);
+    failures += runEngineTests(argc, argv);
     failures += runLiveTests(argc, argv);
     return failures;
 }
