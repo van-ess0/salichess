@@ -3,6 +3,26 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Sun Sep 13 2026 van-ess0 <https://github.com/van-ess0> 0.4-1
+- Your games: the games you have played, newest first, with the final
+  position, the result and the rating change. Filter them by time control,
+  colour, rated or casual, opponent, or to only those Lichess has analysed.
+- Analysis board: replay a finished game with Lichess' computer analysis
+  where there is one. Inaccuracies, mistakes and blunders are marked in the
+  moves, the evaluation is shown as you step through, and a summary gives
+  each player's accuracy and average centipawn loss. Games Lichess has not
+  analysed can be sent to it from the pull-down menu.
+- Try your own moves from any position. They become a side line you can
+  follow, make the main one, or throw away, and the moves are laid out like
+  a PGN so you can find your way back.
+- Stockfish on the phone, for any position you look at: an evaluation bar,
+  the lines it is considering, and arrows for the moves it likes. Switch it
+  on in the settings or from the analysis board; the networks it needs are
+  downloaded once, on request, and can be deleted again.
+- Puzzles now open the game they were taken from on the analysis board
+  instead of in the browser.
+- Fixed: tapping a move in the move list did nothing.
+
 * Sat Sep 12 2026 van-ess0 <https://github.com/van-ess0> 0.3-1
 - Puzzles can be kept on the phone and solved without a connection; how many
   is up to you in the settings. Results reach Lichess once it is reachable
