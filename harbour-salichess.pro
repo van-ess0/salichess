@@ -50,6 +50,7 @@ HEADERS += \
     src/core/tokenstore.h \
     src/chess/chessgame.h \
     src/chess/chessposition.h \
+    src/chess/hotseatcontroller.h \
     src/chess/movetree.h \
     src/chess/piecesmodel.h \
     src/lichess/challengesmodel.h \
@@ -83,6 +84,7 @@ SOURCES += \
     src/core/session.cpp \
     src/chess/chessgame.cpp \
     src/chess/chessposition.cpp \
+    src/chess/hotseatcontroller.cpp \
     src/chess/movetree.cpp \
     src/chess/piecesmodel.cpp \
     src/lichess/challengesmodel.cpp \

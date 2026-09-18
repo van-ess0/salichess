@@ -26,6 +26,7 @@ HEADERS += \
     testdata.h \
     $$SRC/chess/chessgame.h \
     $$SRC/chess/chessposition.h \
+    $$SRC/chess/hotseatcontroller.h \
     $$SRC/chess/movetree.h \
     $$SRC/chess/piecesmodel.h \
     $$SRC/core/appsettings.h \
@@ -62,6 +63,7 @@ SOURCES += \
     tst_live.cpp \
     $$SRC/chess/chessgame.cpp \
     $$SRC/chess/chessposition.cpp \
+    $$SRC/chess/hotseatcontroller.cpp \
     $$SRC/chess/movetree.cpp \
     $$SRC/chess/piecesmodel.cpp \
     $$SRC/core/appsettings.cpp \

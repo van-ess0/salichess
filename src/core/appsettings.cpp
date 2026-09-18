@@ -134,6 +134,40 @@ void AppSettings::setOfflinePuzzles(int count)
         emit offlinePuzzlesChanged();
 }
 
+int AppSettings::hotseatSeconds() const
+{
+    // 0 is a game without a clock; the ceiling matches HotseatController's.
+    return qBound(0, m_settings.value(QStringLiteral("hotseat/seconds"), 300).toInt(), 180 * 60);
+}
+
+void AppSettings::setHotseatSeconds(int seconds)
+{
+    if (store("hotseat/seconds", qBound(0, seconds, 180 * 60)))
+        emit hotseatSecondsChanged();
+}
+
+int AppSettings::hotseatIncrement() const
+{
+    return qBound(0, m_settings.value(QStringLiteral("hotseat/increment"), 0).toInt(), 180);
+}
+
+void AppSettings::setHotseatIncrement(int seconds)
+{
+    if (store("hotseat/increment", qBound(0, seconds, 180)))
+        emit hotseatIncrementChanged();
+}
+
+bool AppSettings::hotseatAutoClock() const
+{
+    return m_settings.value(QStringLiteral("hotseat/autoClock"), false).toBool();
+}
+
+void AppSettings::setHotseatAutoClock(bool automatic)
+{
+    if (store("hotseat/autoClock", automatic))
+        emit hotseatAutoClockChanged();
+}
+
 bool AppSettings::engineEnabled() const
 {
     return m_settings.value(QStringLiteral("engine/enabled"), false).toBool();

@@ -744,6 +744,222 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>HotseatClock</name>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tap for a new game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 — tap to end your turn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paused — tap to go on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 to move</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>HotseatController</name>
+    <message>
+        <source>No clock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checkmate — White wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checkmate — Black wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black resigned — White wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White resigned — Black wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Out of time — draw, the other side cannot mate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black ran out of time — White wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White ran out of time — Black wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Draw by stalemate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Draw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You win</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You lose</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>HotseatDialog</name>
+    <message>
+        <source>Play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pass and play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Two players share this phone. Lay it on the table between you: each side&apos;s pieces face its own player, and each of you gets a clock on your own edge of the screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3+2 • Blitz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5+0 • Blitz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>10+0 • Rapid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15+10 • Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No clock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minutes per side</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Increment in seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nearest player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Who sits at the bottom edge of the screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch the clock automatically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Otherwise the clock works like a real one: play your move, then tap your own clock to end your turn.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Without a clock the buttons only say whose turn it is.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>HotseatPage</name>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leaving</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 resigns</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resigning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting a new game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn the board round</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Take back move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Go on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pause</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paused</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LichessApi</name>
     <message>
         <source>The request timed out</source>
@@ -1006,6 +1222,14 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Look back at the games you played</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pass and play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Two players sharing this phone</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

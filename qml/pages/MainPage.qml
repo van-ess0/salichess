@@ -106,6 +106,16 @@ Page {
             }
 
             BackgroundItem {
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("HotseatDialog.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-device"
+                    title: qsTr("Pass and play")
+                    subtitle: qsTr("Two players sharing this phone")
+                }
+            }
+
+            BackgroundItem {
                 visible: session.loggedIn
                 height: Theme.itemSizeMedium
                 onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))

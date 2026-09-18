@@ -24,6 +24,12 @@ class AppSettings : public QObject
     // How many puzzles PuzzleStore keeps on the phone for offline play.
     Q_PROPERTY(int offlinePuzzles READ offlinePuzzles WRITE setOfflinePuzzles NOTIFY offlinePuzzlesChanged)
 
+    // Pass and play: the time control two players on this phone last chose,
+    // and whether the clock changes hands on the move rather than on a tap.
+    Q_PROPERTY(int hotseatSeconds READ hotseatSeconds WRITE setHotseatSeconds NOTIFY hotseatSecondsChanged)
+    Q_PROPERTY(int hotseatIncrement READ hotseatIncrement WRITE setHotseatIncrement NOTIFY hotseatIncrementChanged)
+    Q_PROPERTY(bool hotseatAutoClock READ hotseatAutoClock WRITE setHotseatAutoClock NOTIFY hotseatAutoClockChanged)
+
     // Stockfish on the analysis board. Off until the user asks for it: the
     // networks have to be downloaded first, and searching costs battery.
     Q_PROPERTY(bool engineEnabled READ engineEnabled WRITE setEngineEnabled NOTIFY engineEnabledChanged)
@@ -55,6 +61,13 @@ public:
     void setPuzzleDifficulty(const QString &difficulty);
     int offlinePuzzles() const;
     void setOfflinePuzzles(int count);
+
+    int hotseatSeconds() const;
+    void setHotseatSeconds(int seconds);
+    int hotseatIncrement() const;
+    void setHotseatIncrement(int seconds);
+    bool hotseatAutoClock() const;
+    void setHotseatAutoClock(bool automatic);
 
     bool engineEnabled() const;
     void setEngineEnabled(bool enabled);
@@ -88,6 +101,9 @@ signals:
     void notificationsChanged();
     void puzzleDifficultyChanged();
     void offlinePuzzlesChanged();
+    void hotseatSecondsChanged();
+    void hotseatIncrementChanged();
+    void hotseatAutoClockChanged();
     void engineEnabledChanged();
     void engineLinesChanged();
     void engineDepthChanged();

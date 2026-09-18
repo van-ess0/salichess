@@ -7,6 +7,7 @@
 
 #include "chess/chessgame.h"
 #include "chess/chessposition.h"
+#include "chess/hotseatcontroller.h"
 #include "chess/movetree.h"
 #include "chess/piecesmodel.h"
 #include "lichess/puzzlecontroller.h"
@@ -602,6 +603,99 @@ private slots:
         // Back on the game, since the side line is gone.
         QVERIFY(!game.inVariation());
         QCOMPARE(game.sanMoves(), QStringList({ "e4", "e5" }));
+    }
+
+    // --- Hotseat: two players sharing one phone ---
+
+    void hotseatClockChangesHandsOnTheButton()
+    {
+        HotseatController hotseat;
+        hotseat.setInitialSeconds(60);
+        hotseat.setIncrement(2);
+        hotseat.start();
+        QCOMPARE(hotseat.state(), HotseatController::Running);
+        QCOMPARE(hotseat.runningClock(), QStringLiteral("white"));
+        QVERIFY(hotseat.acceptsMoves());
+
+        hotseat.move(QStringLiteral("e2e4"));
+        // The move alone does not hand the clock over: white still owes a
+        // press, and nothing can be played in the meantime.
+        QCOMPARE(hotseat.awaitingPress(), QStringLiteral("white"));
+        QCOMPARE(hotseat.runningClock(), QStringLiteral("white"));
+        QVERIFY(!hotseat.acceptsMoves());
+        hotseat.move(QStringLiteral("e7e5"));
+        QCOMPARE(hotseat.game()->ply(), 1);
+
+        hotseat.pressClock();
+        QCOMPARE(hotseat.runningClock(), QStringLiteral("black"));
+        QVERIFY(hotseat.awaitingPress().isEmpty());
+        QVERIFY(hotseat.acceptsMoves());
+        // The increment went to the side that pressed, and only to it.
+        QVERIFY(hotseat.whiteTime() > 60000);
+        QVERIFY(hotseat.blackTime() <= 60000);
+    }
+
+    void hotseatAutoSwitchNeedsNoPress()
+    {
+        HotseatController hotseat;
+        hotseat.setInitialSeconds(60);
+        hotseat.setAutoSwitch(true);
+        hotseat.start();
+
+        hotseat.move(QStringLiteral("e2e4"));
+        QVERIFY(hotseat.awaitingPress().isEmpty());
+        QCOMPARE(hotseat.runningClock(), QStringLiteral("black"));
+        QVERIFY(hotseat.acceptsMoves());
+        hotseat.move(QStringLiteral("e7e5"));
+        QCOMPARE(hotseat.game()->sanMoves(), QStringList({ "e4", "e5" }));
+    }
+
+    void hotseatCheckmateEndsTheGame()
+    {
+        HotseatController hotseat;
+        hotseat.setInitialSeconds(0); // untimed: there is nothing to press
+        hotseat.start();
+
+        // Fool's mate.
+        hotseat.move(QStringLiteral("f2f3"));
+        hotseat.move(QStringLiteral("e7e5"));
+        hotseat.move(QStringLiteral("g2g4"));
+        hotseat.move(QStringLiteral("d8h4"));
+        QVERIFY(hotseat.gameOver());
+        QCOMPARE(hotseat.status(), QStringLiteral("checkmate"));
+        QCOMPARE(hotseat.winner(), QStringLiteral("black"));
+        QVERIFY(!hotseat.acceptsMoves());
+
+        // Taking the mate back puts the game back on.
+        hotseat.undoMove();
+        QVERIFY(!hotseat.gameOver());
+        QVERIFY(hotseat.acceptsMoves());
+        QCOMPARE(hotseat.sideToMove(), QStringLiteral("black"));
+    }
+
+    void hotseatFlagLosesOnTime()
+    {
+        HotseatController hotseat;
+        hotseat.setInitialSeconds(1);
+        hotseat.setAutoSwitch(true);
+        hotseat.start();
+
+        QTRY_COMPARE_WITH_TIMEOUT(hotseat.state(), HotseatController::Finished, 3000);
+        QCOMPARE(hotseat.status(), QStringLiteral("timeout"));
+        QCOMPARE(hotseat.winner(), QStringLiteral("black"));
+        QCOMPARE(hotseat.whiteTime(), 0);
+    }
+
+    void hotseatFlagIsADrawWithoutMatingMaterial()
+    {
+        HotseatController hotseat;
+        hotseat.setInitialSeconds(1);
+        hotseat.start(QStringLiteral("8/8/8/4k3/8/8/4K3/8 w - - 0 1"));
+
+        QTRY_COMPARE_WITH_TIMEOUT(hotseat.state(), HotseatController::Finished, 3000);
+        QCOMPARE(hotseat.status(), QStringLiteral("timeout"));
+        // Black has a bare king and could never mate: nobody wins.
+        QVERIFY(hotseat.winner().isEmpty());
     }
 };
 

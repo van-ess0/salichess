@@ -23,6 +23,10 @@ Item {
     // {"from", "to", "weight"}, where the weight (0..1) is how strongly it
     // is drawn: the best move solid, the runners-up faint.
     property var arrows: []
+    // Hotseat: the men of the side sitting at the far edge of the phone are
+    // turned round, so that each player sees their own the right way up.
+    property bool facePlayers: false
+    readonly property string farSideColor: flipped ? "w" : "b"
 
     signal moveRequested(string uci)
 
@@ -328,6 +332,7 @@ Item {
             sourceSize.height: Math.ceil(board.squareSize)
             source: board.squareSize > 0 ? "image://pieces/" + appSettings.pieceSet + "/" + model.piece : ""
             smooth: true
+            rotation: board.facePlayers && model.piece.charAt(0) === board.farSideColor ? 180 : 0
 
             Behavior on x {
                 enabled: appSettings.animatePieces && board.dragSquare < 0 && !board.settling
@@ -467,6 +472,8 @@ Item {
                         anchors.margins: parent.width * 0.05
                         sourceSize.width: width
                         sourceSize.height: height
+                        rotation: board.facePlayers
+                                  && board.movingColor().charAt(0) === board.farSideColor ? 180 : 0
                         source: "image://pieces/" + appSettings.pieceSet + "/"
                                 + board.movingColor().charAt(0) + modelData.toUpperCase()
                     }

@@ -11,6 +11,7 @@
 #include <sailfishapp.h>
 
 #include "chess/chessgame.h"
+#include "chess/hotseatcontroller.h"
 #include "chess/movetree.h"
 #include "chess/piecesmodel.h"
 #include "core/appsettings.h"
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<GameAnalysis>(uri, 1, 0, "GameAnalysis");
     qmlRegisterType<GamesHistoryModel>(uri, 1, 0, "GamesHistoryModel");
     qmlRegisterType<PuzzleController>(uri, 1, 0, "PuzzleController");
+    qmlRegisterType<HotseatController>(uri, 1, 0, "HotseatController");
     // Registered as MoveTreeModel: qml/components/MoveTree.qml is the view
     // that uses it, and a QML file shadows a type of the same name.
     qmlRegisterType<MoveTree>(uri, 1, 0, "MoveTreeModel");
