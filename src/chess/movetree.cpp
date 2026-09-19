@@ -58,7 +58,7 @@ void MoveTree::appendRun(int node, int depth)
         move.insert(QStringLiteral("node"), at);
         move.insert(QStringLiteral("san"), m_game->nodeSan(at));
         move.insert(QStringLiteral("ply"), ply);
-        move.insert(QStringLiteral("white"), ply % 2 == 1);
+        move.insert(QStringLiteral("white"), ply % 2 != 0);
         move.insert(QStringLiteral("first"), moves.isEmpty());
         moves.append(move);
 

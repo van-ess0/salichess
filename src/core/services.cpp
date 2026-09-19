@@ -12,6 +12,8 @@ PuzzleStore *s_puzzles = nullptr;
 
 namespace Services {
 
+// The services are locals of main(), so these pointers are addresses on its
+// stack. That is safe: main() outlives everything that can look them up.
 void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles)
 {
     s_api = api;
