@@ -64,6 +64,7 @@ HEADERS += \
     src/core/services.h \
     src/core/session.h \
     src/core/tokenstore.h \
+    src/chess/boardeditor.h \
     src/chess/chessgame.h \
     src/chess/chessposition.h \
     src/chess/hotseatcontroller.h \
@@ -98,6 +99,7 @@ SOURCES += \
     src/core/secretstokenstore.cpp \
     src/core/services.cpp \
     src/core/session.cpp \
+    src/chess/boardeditor.cpp \
     src/chess/chessgame.cpp \
     src/chess/chessposition.cpp \
     src/chess/hotseatcontroller.cpp \

@@ -116,6 +116,16 @@ Page {
             }
 
             BackgroundItem {
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("BoardEditorPage.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-edit"
+                    title: qsTr("Set up a position")
+                    subtitle: qsTr("Copy a board to analyse it or play it out")
+                }
+            }
+
+            BackgroundItem {
                 visible: session.loggedIn
                 height: Theme.itemSizeMedium
                 onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))

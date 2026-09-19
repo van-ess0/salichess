@@ -4,6 +4,7 @@
 #include "stockfishengine.h"
 
 #include "nnueweights.h"
+#include "chess/chessposition.h"
 
 #include <QDebug>
 
@@ -218,11 +219,21 @@ void StockfishEngine::search(const QString &fen, const QStringList &moves, int d
         return;
     stop();
 
+    // Stockfish trusts its input. A position the rules engine refuses, or
+    // one with more pieces than a game can have (easy to set up by hand),
+    // makes it write past its arrays and take the app down with it.
+    const bool start = fen.isEmpty() || fen == QLatin1String("startpos");
+    ChessPosition position;
+    if (!start && (!position.setFen(fen) || !position.hasStandardMaterial())) {
+        emit failed(tr("Stockfish cannot analyse this position"));
+        emit searchFinished();
+        return;
+    }
+
     std::vector<std::string> uciMoves;
     uciMoves.reserve(moves.size());
     for (const QString &move : moves)
         uciMoves.push_back(move.toStdString());
-    const bool start = fen.isEmpty() || fen == QLatin1String("startpos");
     m_engine->set_position(start ? std::string(StartFen) : fen.toStdString(), uciMoves);
 
     Stockfish::Search::LimitsType limits;

@@ -106,6 +106,18 @@ void GameAnalysis::setGameId(const QString &id)
         fetch();
 }
 
+void GameAnalysis::setStartFen(const QString &fen)
+{
+    if (m_startFen == fen)
+        return;
+    m_startFen = fen;
+    emit startFenChanged();
+    if (m_gameId.isEmpty()) {
+        resetGameData();
+        m_cloudTimer.start();
+    }
+}
+
 void GameAnalysis::reload()
 {
     if (m_gameId.isEmpty() || m_loading)
@@ -131,7 +143,7 @@ void GameAnalysis::resetGameData()
     m_clocks.clear();
     m_cloudEvals.clear();
     endRequest(QString());
-    m_game->reset();
+    m_game->reset(m_gameId.isEmpty() ? m_startFen : QString());
     // After the reset: it moves the view, which is what arms the timer.
     m_cloudTimer.stop();
     setLoading(false);

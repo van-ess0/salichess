@@ -1521,6 +1521,32 @@ private slots:
         QCOMPARE(server->requestCount("GET", "/api/cloud-eval"), 2);
     }
 
+    void gameAnalysisOfASetUpPosition()
+    {
+        logIn();
+        server->route("GET", "/api/cloud-eval", 200,
+                      R"({"fen":"x","knodes":1,"depth":30,"pvs":[{"cp":-120,"moves":"e8d7"}]})");
+        const QString fen = QStringLiteral("4k3/8/8/8/8/8/4P3/4K3 b - - 0 1");
+        GameAnalysis analysis;
+        analysis.setStartFen(fen);
+        QCOMPARE(analysis.game()->fen(), fen);
+        QCOMPARE(analysis.game()->ply(), 0);
+        QVERIFY(!analysis.loading());
+
+        // The cloud is asked about the position; there is no game to fetch.
+        QTRY_VERIFY(analysis.hasEval());
+        QCOMPARE(analysis.evalCp(), -120);
+        QCOMPARE(server->lastRequest("GET", "/api/cloud-eval").query.queryItemValue("fen"), fen);
+        for (const FakeLichess::Request &request : server->requests())
+            QVERIFY(!request.path.startsWith(QStringLiteral("/game/export")));
+
+        // Moves can be played from it, and reload() has nothing to fetch.
+        QVERIFY(analysis.game()->playUci(QStringLiteral("e8d7")));
+        QCOMPARE(analysis.game()->ply(), 1);
+        analysis.reload();
+        QVERIFY(!analysis.loading());
+    }
+
     void gameAnalysisRejectsUnplayableVariants()
     {
         logIn();

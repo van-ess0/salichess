@@ -53,6 +53,10 @@ class ChessGame : public QObject
 
     // State of the end of the current line.
     Q_PROPERTY(int ply READ ply NOTIFY movesChanged)
+    // The plies the starting position counts as played already, going by its
+    // FEN: 0 for the usual start, 1 for a position set up with black to move.
+    // Move numbers are counted from there.
+    Q_PROPERTY(int startPly READ startPly NOTIFY movesChanged)
     Q_PROPERTY(QString sideToMove READ sideToMove NOTIFY movesChanged)
     Q_PROPERTY(QStringList sanMoves READ sanMoves NOTIFY movesChanged)
     Q_PROPERTY(QString outcome READ outcome NOTIFY movesChanged)
@@ -86,6 +90,7 @@ public:
     int materialScore() const;
 
     int ply() const { return m_line.size(); }
+    int startPly() const;
     QString sideToMove() const;
     QStringList sanMoves() const;
     QStringList uciMoves() const;

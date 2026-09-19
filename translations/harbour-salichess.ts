@@ -132,6 +132,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Stockfish is starting…</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Set up this position</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AnalysisSummaryPage</name>
@@ -165,6 +169,124 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Lichess has not analysed this game.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BoardEditor</name>
+    <message>
+        <source>White has no king</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White has more than one king</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black has no king</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black has more than one king</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pawns cannot stand on the first or last rank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black is in check, but it is White&apos;s move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White is in check, but it is Black&apos;s move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White has more pieces than a game can give it: at most eight pawns, and an extra queen, rook, bishop or knight only for each pawn gone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black has more pieces than a game can give it: at most eight pawns, and an extra queen, rook, bishop or knight only for each pawn gone</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BoardEditorPage</name>
+    <message>
+        <source>Copy FEN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste FEN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty board</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pass and play from here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analyse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set up position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick a piece to place it, or drag the pieces on the board. Drag one off the board to remove it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tap squares to empty them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tap squares to put the piece there, or to take it away again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Castling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White O-O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White O-O-O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black O-O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black O-O-O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The clipboard does not hold a FEN</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1232,6 +1354,14 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Two players sharing this phone</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Set up a position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy a board to analyse it or play it out</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewChallengeDialog</name>
@@ -2213,6 +2343,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <name>StockfishEngine</name>
     <message>
         <source>The engine networks are missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish cannot analyse this position</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -18,6 +18,9 @@ Page {
     property bool autoClock: appSettings.hotseatAutoClock
     // Which player sits at the bottom edge, nearest whoever opened the app.
     property bool whiteAtBottom: true
+    // Where the game starts, and every new one after it; the usual starting
+    // position if empty.
+    property string startFen
     property bool started: false
 
     readonly property string bottomColor: whiteAtBottom ? "white" : "black"
@@ -52,7 +55,7 @@ Page {
             // as the dialog before it opens, long before the players are here.
             if (!page.started) {
                 page.started = true
-                hotseat.start()
+                hotseat.start(page.startFen)
             }
         } else if (status === PageStatus.Deactivating) {
             app.boardVisible = false
@@ -73,7 +76,7 @@ Page {
 
     function newGame() {
         page.whiteAtBottom = page.whiteAtBottom
-        hotseat.start()
+        hotseat.start(page.startFen)
     }
 
     SilicaFlickable {

@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QtTest>
 
+#include "chess/boardeditor.h"
 #include "chess/chessgame.h"
 #include "chess/chessposition.h"
 #include "chess/hotseatcontroller.h"
@@ -696,6 +697,205 @@ private slots:
         QCOMPARE(hotseat.status(), QStringLiteral("timeout"));
         // Black has a bare king and could never mate: nobody wins.
         QVERIFY(hotseat.winner().isEmpty());
+    }
+    // --- BoardEditor ---
+
+    void editorStartsFromTheStartPosition()
+    {
+        BoardEditor editor;
+        QCOMPARE(editor.fen(), ChessPosition::startFen());
+        QVERIFY(editor.valid());
+        QCOMPARE(editor.pieces()->rowCount(), 32);
+        QCOMPARE(editor.pieceAt(ChessPosition::squareFromName("e1")), QStringLiteral("wK"));
+        QCOMPARE(editor.pieceAt(ChessPosition::squareFromName("d8")), QStringLiteral("bQ"));
+        QVERIFY(editor.pieceAt(ChessPosition::squareFromName("e4")).isEmpty());
+    }
+
+    void editorFenRoundTrip()
+    {
+        BoardEditor editor;
+        const QString fen = QStringLiteral("r3k2r/pp3ppp/8/3q4/8/8/PP3PPP/R3K2R b Kq - 0 1");
+        QVERIFY(editor.setFen(fen));
+        QCOMPARE(editor.fen(), fen);
+        QCOMPARE(editor.sideToMove(), QStringLiteral("black"));
+        QVERIFY(editor.whiteKingside());
+        QVERIFY(!editor.whiteQueenside());
+        QVERIFY(!editor.blackKingside());
+        QVERIFY(editor.blackQueenside());
+
+        // Counters and en passant are dropped: a set-up position starts afresh.
+        QVERIFY(editor.setFen(QStringLiteral(
+            "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2")));
+        QCOMPARE(editor.fen(), QStringLiteral(
+            "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1"));
+    }
+
+    void editorRejectsBrokenFens()
+    {
+        BoardEditor editor;
+        const QString before = editor.fen();
+        QVERIFY(!editor.setFen(QString()));
+        QVERIFY(!editor.setFen(QStringLiteral("8/8/8/8/8/8/8 w - - 0 1")));   // 7 ranks
+        QVERIFY(!editor.setFen(QStringLiteral("9/8/8/8/8/8/8/8 w - - 0 1")));
+        QVERIFY(!editor.setFen(QStringLiteral("ppppppppp/8/8/8/8/8/8/8 w - - 0 1")));
+        QVERIFY(!editor.setFen(QStringLiteral("x7/8/8/8/8/8/8/8 w - - 0 1")));
+        QVERIFY(!editor.setFen(QStringLiteral("8/8/8/8/8/8/8/8 x - - 0 1")));
+        QCOMPARE(editor.fen(), before);
+
+        // A placement alone is enough, and it need not be playable.
+        QVERIFY(editor.setFen(QStringLiteral("8/8/8/8/8/8/8/8")));
+        QVERIFY(!editor.valid());
+    }
+
+    void editorExplainsWhatIsWrong()
+    {
+        BoardEditor editor;
+        editor.clear();
+        QCOMPARE(editor.pieces()->rowCount(), 0);
+        QVERIFY(!editor.valid());
+        QVERIFY(editor.problem().contains(QStringLiteral("White")));
+
+        const int e1 = ChessPosition::squareFromName("e1");
+        const int e8 = ChessPosition::squareFromName("e8");
+        editor.setPiece(e1, QStringLiteral("wK"));
+        QVERIFY(editor.problem().contains(QStringLiteral("Black")));
+        editor.setPiece(e8, QStringLiteral("bK"));
+        QVERIFY(editor.valid());
+        QCOMPARE(editor.fen(), QStringLiteral("4k3/8/8/8/8/8/8/4K3 w - - 0 1"));
+
+        editor.setPiece(ChessPosition::squareFromName("a8"), QStringLiteral("wP"));
+        QVERIFY(!editor.valid());
+        editor.setPiece(ChessPosition::squareFromName("a8"), QString());
+        QVERIFY(editor.valid());
+
+        editor.setPiece(ChessPosition::squareFromName("d1"), QStringLiteral("wK"));
+        QVERIFY(!editor.valid());
+        editor.setPiece(ChessPosition::squareFromName("d1"), QString());
+
+        // Black in check with white to move: black's king could be taken.
+        editor.setPiece(ChessPosition::squareFromName("e2"), QStringLiteral("wR"));
+        QVERIFY(!editor.valid());
+        QCOMPARE(editor.checkSquare(), -1);
+        editor.setSideToMove(QStringLiteral("black"));
+        QVERIFY(editor.valid());
+        QCOMPARE(editor.checkSquare(), e8);
+        QVERIFY(ChessPosition().setFen(editor.fen()));
+    }
+
+    void editorGrantsCastlingOnlyFromHome()
+    {
+        BoardEditor editor;
+        QVERIFY(editor.setFen(QStringLiteral("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1")));
+        QVERIFY(editor.whiteKingsidePossible());
+
+        editor.movePiece(ChessPosition::squareFromName("h1"), ChessPosition::squareFromName("h2"));
+        QVERIFY(!editor.whiteKingsidePossible());
+        QVERIFY(editor.whiteKingside()); // the wish stays ...
+        QCOMPARE(editor.fen(), QStringLiteral("r3k2r/8/8/8/8/8/7R/R3K3 w Qkq - 0 1")); // ... unused
+
+        editor.movePiece(ChessPosition::squareFromName("h2"), ChessPosition::squareFromName("h1"));
+        editor.setBlackQueenside(false);
+        QCOMPARE(editor.fen(), QStringLiteral("r3k2r/8/8/8/8/8/8/R3K2R w KQk - 0 1"));
+
+        editor.clear();
+        editor.setPiece(ChessPosition::squareFromName("e1"), QStringLiteral("wK"));
+        editor.setPiece(ChessPosition::squareFromName("e8"), QStringLiteral("bK"));
+        QCOMPARE(editor.fen(), QStringLiteral("4k3/8/8/8/8/8/8/4K3 w - - 0 1"));
+    }
+
+    void editorForgetsGuessesThatWereCorrected()
+    {
+        BoardEditor editor;
+        const int e2 = ChessPosition::squareFromName("e2");
+        const int e4 = ChessPosition::squareFromName("e4");
+        QSignalSpy spy(&editor, &BoardEditor::uncertainSquaresChanged);
+        editor.setUncertain(e2, true);
+        editor.setUncertain(e4, true);
+        QCOMPARE(editor.uncertainSquares(), QVariantList({ e4 < e2 ? e4 : e2, e4 < e2 ? e2 : e4 }));
+        editor.movePiece(e2, e4);
+        QVERIFY(editor.uncertainSquares().isEmpty());
+        QCOMPARE(editor.pieceAt(e4), QStringLiteral("wP"));
+        QVERIFY(spy.count() >= 3);
+    }
+
+    void standardMaterial()
+    {
+        QVERIFY(ChessPosition().hasStandardMaterial());
+        // Three queens after two promotions: fine.
+        QVERIFY(ChessPosition(QStringLiteral("4k3/8/8/8/8/8/PPPPPP2/QQQ1K3 w - - 0 1")).hasStandardMaterial());
+        // Three queens with all eight pawns still there: not from a game.
+        const ChessPosition crowded(QStringLiteral("4k3/8/8/8/8/PPPPPPPP/8/QQQ1K3 w - - 0 1"));
+        QVERIFY(!crowded.hasStandardMaterial());
+
+        BoardEditor editor;
+        QVERIFY(editor.setFen(QStringLiteral("4k3/8/8/8/8/PPPPPPPP/8/QQQ1K3 w - - 0 1")));
+        QVERIFY(!editor.valid());
+        QVERIFY(editor.problem().startsWith(QStringLiteral("White")));
+        QVERIFY(editor.setFen(QStringLiteral("4k3/nnn5/8/8/8/8/8/4K3 w - - 0 1")));
+        QVERIFY(editor.valid()); // one extra knight, eight pawns gone
+    }
+
+    void editorUndoesAndRedoes()
+    {
+        BoardEditor editor;
+        QVERIFY(!editor.canUndo());
+        QVERIFY(!editor.canRedo());
+        const QString start = editor.fen();
+        const int e2 = ChessPosition::squareFromName("e2");
+        const int e4 = ChessPosition::squareFromName("e4");
+
+        editor.movePiece(e2, e4);
+        const QString moved = editor.fen();
+        editor.setSideToMove(QStringLiteral("black"));
+        const QString blackToMove = editor.fen();
+        editor.setPiece(e4, QStringLiteral("wP")); // no change, no step
+        QVERIFY(editor.canUndo());
+
+        editor.undo();
+        QCOMPARE(editor.fen(), moved);
+        QVERIFY(editor.canRedo());
+        editor.undo();
+        QCOMPARE(editor.fen(), start);
+        QVERIFY(!editor.canUndo());
+        QCOMPARE(editor.pieceAt(e2), QStringLiteral("wP"));
+
+        editor.redo();
+        editor.redo();
+        QCOMPARE(editor.fen(), blackToMove);
+        QVERIFY(!editor.canRedo());
+
+        // A new change drops what could have been redone.
+        editor.undo();
+        editor.clear();
+        QVERIFY(!editor.canRedo());
+        editor.undo();
+        QCOMPARE(editor.fen(), moved);
+
+        editor.clearHistory();
+        QVERIFY(!editor.canUndo());
+        QVERIFY(!editor.canRedo());
+    }
+
+    void gameNumbersMovesFromItsStartPosition()
+    {
+        ChessGame game;
+        QCOMPARE(game.startPly(), 0);
+        game.reset(QStringLiteral("4k3/8/8/8/8/8/4P3/4K3 b - - 0 1"));
+        QCOMPARE(game.startPly(), 1);
+        QVERIFY(game.playUci(QStringLiteral("e8d7")));
+        QVERIFY(game.playUci(QStringLiteral("e2e4")));
+
+        MoveTree tree;
+        tree.setGame(&game);
+        const QVariantList moves = tree.paragraphs().first().toMap().value(QStringLiteral("moves")).toList();
+        QCOMPARE(moves.size(), 2);
+        QCOMPARE(moves.at(0).toMap().value(QStringLiteral("white")).toBool(), false);
+        QCOMPARE(moves.at(0).toMap().value(QStringLiteral("number")).toInt(), 1);
+        QCOMPARE(moves.at(1).toMap().value(QStringLiteral("white")).toBool(), true);
+        QCOMPARE(moves.at(1).toMap().value(QStringLiteral("number")).toInt(), 2);
+
+        game.reset(QStringLiteral("4k3/8/8/8/8/8/4P3/4K3 w - - 3 20"));
+        QCOMPARE(game.startPly(), 38);
     }
 };
 

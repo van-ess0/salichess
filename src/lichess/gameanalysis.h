@@ -17,6 +17,8 @@ class ChessGame;
 // One finished game, for reviewing it: the moves, and what Lichess knows
 // about them. Created in QML:
 //     GameAnalysis { gameId: "abcdefgh" }
+// or, for a position that is not from a Lichess game (the analysis board):
+//     GameAnalysis { startFen: "..." }
 //
 // This is the finished-game counterpart of GameController: no stream, no
 // clocks running, but the computer analysis Lichess stored with the game
@@ -27,6 +29,9 @@ class GameAnalysis : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString gameId READ gameId WRITE setGameId NOTIFY gameIdChanged)
+    // Where the board starts when there is no gameId. Only the cloud and the
+    // engine have anything to say about such a position.
+    Q_PROPERTY(QString startFen READ startFen WRITE setStartFen NOTIFY startFenChanged)
     Q_PROPERTY(ChessGame *game READ game CONSTANT)
 
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
@@ -85,6 +90,8 @@ public:
 
     QString gameId() const { return m_gameId; }
     void setGameId(const QString &id);
+    QString startFen() const { return m_startFen; }
+    void setStartFen(const QString &fen);
     ChessGame *game() const { return m_game; }
 
     bool loading() const { return m_loading; }
@@ -139,6 +146,7 @@ public:
 
 signals:
     void gameIdChanged();
+    void startFenChanged();
     void loadingChanged();
     void errorStringChanged();
     void infoChanged();
@@ -174,6 +182,7 @@ private:
 
     ChessGame *m_game;
     QString m_gameId;
+    QString m_startFen;
     bool m_loading = false;
     QString m_error;
 

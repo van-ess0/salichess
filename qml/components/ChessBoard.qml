@@ -40,6 +40,11 @@ Item {
     property real dragX: 0
     property real dragY: 0
     property bool settling: false
+    // Set just before a drag ends to let the dropped piece glide from under
+    // the finger onto its square. It has to be on before the drag ends:
+    // ending it changes the piece's position and whether it may animate at
+    // the same moment, and the position wins.
+    property bool gliding: false
     property int promotionFrom: -1
     property int promotionTo: -1
 
@@ -134,6 +139,13 @@ Item {
         id: settleTimer
         interval: 60
         onTriggered: board.settling = false
+    }
+
+    onGlidingChanged: if (gliding) glideTimer.restart()
+    Timer {
+        id: glideTimer
+        interval: 250
+        onTriggered: board.gliding = false
     }
 
     // Squares with coordinates
@@ -335,11 +347,17 @@ Item {
             rotation: board.facePlayers && model.piece.charAt(0) === board.farSideColor ? 180 : 0
 
             Behavior on x {
-                enabled: appSettings.animatePieces && board.dragSquare < 0 && !board.settling
+                enabled: appSettings.animatePieces && !board.settling
+                         && (board.dragSquare < 0 || board.gliding)
                 NumberAnimation { duration: 180; easing.type: Easing.OutQuad }
             }
             Behavior on y {
-                enabled: appSettings.animatePieces && board.dragSquare < 0 && !board.settling
+                enabled: appSettings.animatePieces && !board.settling
+                         && (board.dragSquare < 0 || board.gliding)
+                NumberAnimation { duration: 180; easing.type: Easing.OutQuad }
+            }
+            Behavior on scale {
+                enabled: board.gliding
                 NumberAnimation { duration: 180; easing.type: Easing.OutQuad }
             }
         }

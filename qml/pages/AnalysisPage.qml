@@ -17,6 +17,10 @@ Page {
     id: page
 
     property string gameId
+    // A position to study that is not from a Lichess game, used when there
+    // is no gameId.
+    property string startFen
+    readonly property bool isGame: gameId !== ""
     // Which way round the board starts; the colour the user played by
     // default, worked out from the game once it has loaded.
     property string myColor
@@ -37,6 +41,7 @@ Page {
     GameAnalysis {
         id: gameAnalysis
         gameId: page.gameId
+        startFen: page.startFen
 
         // The analysis board is the one place where a move from an earlier
         // position starts a side line instead of being refused.
@@ -150,17 +155,27 @@ Page {
             }
             MenuItem {
                 text: qsTr("Open in browser")
-                onClicked: Qt.openUrlExternally("https://lichess.org/" + page.gameId)
+                onClicked: Qt.openUrlExternally(page.isGame
+                                                ? "https://lichess.org/" + page.gameId
+                                                : "https://lichess.org/analysis/"
+                                                  + gameAnalysis.game.fen.replace(/ /g, "_"))
             }
             MenuItem {
-                visible: !gameAnalysis.hasServerAnalysis && !gameAnalysis.requestingAnalysis
+                text: qsTr("Set up this position")
+                onClicked: pageStack.push(Qt.resolvedUrl("BoardEditorPage.qml"),
+                                          { initialFen: gameAnalysis.game.fen,
+                                            flipped: page.flipped })
+            }
+            MenuItem {
+                visible: page.isGame
+                         && !gameAnalysis.hasServerAnalysis && !gameAnalysis.requestingAnalysis
                          && !gameAnalysis.loading && gameAnalysis.game.ply > 0
                          && gameAnalysis.errorString === ""
                 text: qsTr("Request a computer analysis")
                 onClicked: gameAnalysis.requestAnalysis()
             }
             MenuItem {
-                visible: gameAnalysis.game.ply > 0 && gameAnalysis.errorString === ""
+                visible: page.isGame && gameAnalysis.game.ply > 0 && gameAnalysis.errorString === ""
                 text: qsTr("Game summary")
                 onClicked: pageStack.push(Qt.resolvedUrl("AnalysisSummaryPage.qml"),
                                           { analysis: gameAnalysis })
@@ -346,7 +361,7 @@ Page {
                             return qsTr("Best: %1").arg(gameAnalysis.nextBestVariation)
                         if (gameAnalysis.evalSource === "cloud")
                             return qsTr("Lichess cloud evaluation")
-                        if (!gameAnalysis.hasServerAnalysis && gameAnalysis.game.ply > 0)
+                        if (page.isGame && !gameAnalysis.hasServerAnalysis && gameAnalysis.game.ply > 0)
                             return qsTr("Not analysed by Lichess")
                         // The header carries the result, but only in portrait.
                         return page.isPortrait ? "" : gameAnalysis.resultText

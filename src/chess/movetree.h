@@ -14,8 +14,9 @@ class ChessGame;
 // underneath the move it branches off from.
 //
 // "paragraphs" is a list of runs, each {"depth", "moves"}, where a move is
-// {"node", "san", "ply", "white", "first"}: |node| is the id to hand back to
-// ChessGame::goToNode(), |white| says whether white played it, and |first|
+// {"node", "san", "ply", "number", "white", "first"}: |node| is the id to
+// hand back to ChessGame::goToNode(), |number| is the move number it is
+// written with, |white| says whether white played it, and |first|
 // marks the move a run starts with, which is the one that needs its move
 // number written out.
 //

@@ -112,12 +112,11 @@ SilicaFlickable {
                             text: {
                                 // "12." before a white move, "12…" when a run
                                 // starts on a black one.
-                                var number = Math.floor((modelData.ply + 1) / 2)
                                 var prefix = ""
                                 if (modelData.white)
-                                    prefix = number + "."
+                                    prefix = modelData.number + "."
                                 else if (modelData.first)
-                                    prefix = number + "…"
+                                    prefix = modelData.number + "…"
                                 return prefix + modelData.san + Util.judgmentGlyph(moveItem.judgment)
                             }
                         }

@@ -52,13 +52,16 @@ void MoveTree::appendRun(int node, int depth)
     QVariantList moves;
     QVector<QPair<int, int>> branches; // side lines found along the way
 
+    const int startPly = m_game->startPly();
     for (int at = node; m_game->nodeExists(at); ) {
         const int ply = m_game->nodeDepth(at);
+        const int played = startPly + ply; // counted from the very first move
         QVariantMap move;
         move.insert(QStringLiteral("node"), at);
         move.insert(QStringLiteral("san"), m_game->nodeSan(at));
         move.insert(QStringLiteral("ply"), ply);
-        move.insert(QStringLiteral("white"), ply % 2 != 0);
+        move.insert(QStringLiteral("number"), (played + 1) / 2);
+        move.insert(QStringLiteral("white"), played % 2 != 0);
         move.insert(QStringLiteral("first"), moves.isEmpty());
         moves.append(move);
 

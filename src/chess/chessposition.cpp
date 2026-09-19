@@ -5,6 +5,10 @@
 
 #include <chess.hpp>
 
+#include <QtGlobal>
+
+#include <algorithm>
+
 namespace {
 
 chess::Move findLegalMove(const chess::Board &board, const QString &uci)
@@ -144,6 +148,25 @@ ChessPosition::Outcome ChessPosition::outcome() const
     case GameResultReason::THREEFOLD_REPETITION: return ThreefoldRepetition;
     default: return Ongoing;
     }
+}
+
+bool ChessPosition::hasStandardMaterial(const std::array<char, 64> &board, Color color)
+{
+    const bool white = color == White;
+    const auto count = [&](char type) {
+        const char code = white ? type : char(type - 'A' + 'a');
+        return int(std::count(board.begin(), board.end(), code));
+    };
+    const int pawns = count('P');
+    const int promoted = qMax(0, count('Q') - 1) + qMax(0, count('R') - 2)
+            + qMax(0, count('B') - 2) + qMax(0, count('N') - 2);
+    return pawns <= 8 && promoted <= 8 - pawns;
+}
+
+bool ChessPosition::hasStandardMaterial() const
+{
+    const std::array<char, 64> board = pieces();
+    return hasStandardMaterial(board, White) && hasStandardMaterial(board, Black);
 }
 
 QString ChessPosition::normalizeUci(const QString &uci) const

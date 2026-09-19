@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "chess/chessgame.h"
+#include "chess/chessposition.h"
 #include "core/appsettings.h"
 #include "engine/enginecontroller.h"
 #include "engine/nnueweights.h"
@@ -201,6 +202,33 @@ private slots:
         QVERIFY(info.count() > 0);
         QCOMPARE(info.last().at(2).toInt(), 0); // a draw is worth nothing
         QCOMPARE(info.last().at(3).toInt(), 0);
+    }
+
+    void refusesPositionsItCannotHold()
+    {
+        const QStringList nets = networks();
+        if (nets.size() < 2)
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+        StockfishEngine engine;
+        engine.load(nets.first(), nets.last());
+        QVERIFY(engine.isReady());
+
+        QSignalSpy failed(&engine, &StockfishEngine::failed);
+        QSignalSpy finished(&engine, &StockfishEngine::searchFinished);
+        // A legal-looking board, but 31 pieces a side: Stockfish crashed on it.
+        const QString crowded = QStringLiteral(
+            "qqqqqqqk/qqqqqqqq/qqqqqqqq/8/8/QQQQQQQQ/QQQQQQQQ/KQQQQQQQ b - - 0 1");
+        QVERIFY(ChessPosition().setFen(crowded));
+        engine.search(crowded, QStringList(), 8);
+        QCOMPARE(failed.count(), 1);
+        QCOMPARE(finished.count(), 1);
+
+        // Unusual but possible positions are still searched.
+        failed.clear();
+        finished.clear();
+        engine.search(QStringLiteral("4k3/8/2N1R3/1B6/8/8/8/4K3 b - - 0 1"), QStringList(), 8);
+        QTRY_VERIFY_WITH_TIMEOUT(finished.count() == 1, 30000);
+        QCOMPARE(failed.count(), 0);
     }
 
     void stopsOnDemand()

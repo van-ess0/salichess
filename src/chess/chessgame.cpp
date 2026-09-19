@@ -81,6 +81,13 @@ int ChessGame::nodeParent(int node) const
     return nodeExists(node) ? m_nodes.at(node).parent : -1;
 }
 
+int ChessGame::startPly() const
+{
+    const QStringList fields = m_start.fen().split(QLatin1Char(' '));
+    const int moveNumber = qMax(1, fields.value(5).toInt());
+    return (moveNumber - 1) * 2 + (fields.value(1) == QLatin1String("b") ? 1 : 0);
+}
+
 int ChessGame::nodeDepth(int node) const
 {
     int depth = 0;

@@ -9,6 +9,11 @@ import Sailfish.Silica 1.0
 Dialog {
     id: dialog
 
+    // A position to start from instead of the usual one.
+    property string startFen
+    // Who sits nearest at first; the choice below can change it.
+    property bool whiteAtBottom: true
+
     readonly property var presets: [
         { "seconds": 180, "increment": 2 },
         { "seconds": 300, "increment": 0 },
@@ -62,6 +67,7 @@ Dialog {
         acceptDestinationInstance.increment = dialog.increment
         acceptDestinationInstance.autoClock = autoSwitch.checked
         acceptDestinationInstance.whiteAtBottom = colorBox.currentIndex === 0
+        acceptDestinationInstance.startFen = dialog.startFen
     }
 
     SilicaFlickable {
@@ -127,6 +133,7 @@ Dialog {
             ComboBox {
                 id: colorBox
                 label: qsTr("Nearest player")
+                currentIndex: dialog.whiteAtBottom ? 0 : 1
                 description: qsTr("Who sits at the bottom edge of the screen")
                 menu: ContextMenu {
                     MenuItem { text: qsTr("White") }

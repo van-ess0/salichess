@@ -24,6 +24,7 @@ include($$PWD/../3rdparty/stockfish.pri)
 HEADERS += \
     fakelichess.h \
     testdata.h \
+    $$SRC/chess/boardeditor.h \
     $$SRC/chess/chessgame.h \
     $$SRC/chess/chessposition.h \
     $$SRC/chess/hotseatcontroller.h \
@@ -61,6 +62,7 @@ SOURCES += \
     tst_engine.cpp \
     tst_lichess.cpp \
     tst_live.cpp \
+    $$SRC/chess/boardeditor.cpp \
     $$SRC/chess/chessgame.cpp \
     $$SRC/chess/chessposition.cpp \
     $$SRC/chess/hotseatcontroller.cpp \

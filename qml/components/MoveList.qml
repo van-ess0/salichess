@@ -40,7 +40,12 @@ SilicaListView {
         Label {
             id: moveLabel
             anchors.centerIn: parent
-            text: (index % 2 === 0 ? (Math.floor(index / 2) + 1) + ". " : "") + modelData
+            // Counted from the game's first move, which a game set up
+            // from a position may not have started with.
+            readonly property int played: index + (game ? game.startPly : 0)
+            text: (played % 2 === 0 ? (Math.floor(played / 2) + 1) + ". "
+                                    : (index === 0 ? (Math.floor(played / 2) + 1) + "… " : ""))
+                  + modelData
                   + Util.judgmentGlyph(parent.judgment)
             color: {
                 if (parent.current)

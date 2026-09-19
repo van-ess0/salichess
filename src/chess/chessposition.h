@@ -53,6 +53,13 @@ public:
     int kingSquare(Color color) const;
     Outcome outcome() const;
 
+    // Whether |color| has no more than a game can give it: eight pawns, and
+    // no more extra queens, rooks, bishops and knights than it has lost
+    // pawns to promote. Stockfish relies on it: it keeps room for 32 pieces
+    // and not many more moves, and a set-up board with more crashes it.
+    static bool hasStandardMaterial(const std::array<char, 64> &board, Color color);
+    bool hasStandardMaterial() const;
+
     // Returns the canonical UCI string ("e1g1" for castling) if the move is
     // legal here, otherwise an empty string. Accepts both the standard and the
     // king-takes-rook castling notations.
