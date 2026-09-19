@@ -37,7 +37,8 @@ solve puzzles on lichess.org.
 
 %build
 
-# The app reports the package version (About page, user agent).
+# The .pro reads the version from this spec itself; VERSION here is only its
+# fallback for a build without the spec.
 %qmake5 VERSION=%{version}
 
 %make_build

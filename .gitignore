@@ -11,5 +11,9 @@
 # Local test builds (see tests/tests.pro)
 build-tests/
 
+# Written by harbour-salichess.pro into the build dir, which is the source dir
+# for in-tree builds (CI's mb2 build)
+/appversion.h
+
 # Local notes for AI coding assistants (contain machine-specific paths)
 CLAUDE.md

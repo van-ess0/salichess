@@ -5,18 +5,34 @@
 # translation file names, and Name: in rpm/harbour-salichess.spec.
 TARGET = harbour-salichess
 
-# The RPM build passes VERSION from the spec (%qmake5 VERSION=%{version}).
-# Qt Creator and "sfdk make-install" call qmake without it, so read the same
-# Version: line here: the About page shows it.
-isEmpty(VERSION) {
-    SPEC_LINES = $$cat($$PWD/rpm/harbour-salichess.spec, lines)
-    for (line, SPEC_LINES) {
-        stripped = $$replace(line, "^Version:[ \\t]*", "")
-        !equals(stripped, $$line): VERSION = $$stripped
-    }
+# The About page shows the Version: line of the spec. It is read here even
+# when qmake is given a VERSION, because that one can be stale: a Makefile
+# regenerates itself by replaying the qmake command that created it, so a
+# build dir that an RPM build set up at 0.2.1 kept passing VERSION=0.2.1 long
+# after the spec had moved on. The spec is also a dependency of the Makefile,
+# so bumping it makes qmake run again. A VERSION given on the command line
+# (%qmake5 VERSION=%{version}) is only used when there is no spec to read.
+SPEC_VERSION =
+SPEC_LINES = $$cat($$PWD/rpm/harbour-salichess.spec, lines)
+for (line, SPEC_LINES) {
+    stripped = $$replace(line, "^Version:[ \\t]*", "")
+    !equals(stripped, $$line): SPEC_VERSION = $$stripped
 }
+!isEmpty(SPEC_VERSION): VERSION = $$SPEC_VERSION
 isEmpty(VERSION): VERSION = 0.0
-DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+QMAKE_INTERNAL_INCLUDED_FILES += $$PWD/rpm/harbour-salichess.spec
+
+# APP_VERSION reaches main.cpp through a generated header, not a -D flag:
+# make does not rebuild an object when only its flags change, so main.o kept
+# the version it was first compiled with. The header is only rewritten when
+# the version changes, and main.o depends on it like on any other header.
+VERSION_HEADER = $$OUT_PWD/appversion.h
+VERSION_DEFINE = "$${LITERAL_HASH}define APP_VERSION \"$$VERSION\""
+!equals(VERSION_DEFINE, $$cat($$VERSION_HEADER, blob)) {
+    write_file($$VERSION_HEADER, VERSION_DEFINE)|error("Cannot write $$VERSION_HEADER")
+}
+INCLUDEPATH += $$OUT_PWD
+DEPENDPATH += $$OUT_PWD
 
 CONFIG += sailfishapp
 
