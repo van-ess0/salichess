@@ -25,8 +25,12 @@ written in C++/Qt 5 with a native Silica user interface.
 
 ## Installing
 
-There is no store release yet. Build the RPM yourself (see below) and install it on the phone, for
-example with `sfdk deploy --sdk`.
+- **OpenRepos:** [salichess on OpenRepos](https://openrepos.net/content/vaness0/salichess). Install
+  it with the Storeman app, or download the RPM from the page.
+- **GitHub releases:** every [release](https://github.com/van-ess0/salichess/releases) has the RPMs
+  for aarch64, armv7hl and i486 (the emulator).
+- **From source:** build the RPM yourself (see below) and install it on the phone, for example with
+  `sfdk deploy --sdk`.
 
 salichess is developed against the Sailfish OS 5.1 SDK target and tested on Sailfish OS 5.2. It
 needs Sailjail, so older releases without it won't work. It requests the Sailjail permissions
