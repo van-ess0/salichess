@@ -86,7 +86,10 @@ Page {
                 value: appSettings.offlinePuzzles
                 label: qsTr("Puzzles kept for offline play")
                 valueText: value > 0 ? qsTr("%n puzzle(s)", "", Math.round(value)) : qsTr("Off")
-                onValueChanged: appSettings.offlinePuzzles = Math.round(value)
+                // sliderValueChanged, not valueChanged: it only fires when the
+                // user moves the slider, so writing the setting back does not
+                // loop through the value binding.
+                onSliderValueChanged: appSettings.offlinePuzzles = Math.round(value)
             }
 
             Label {
@@ -171,9 +174,20 @@ Page {
                 stepSize: 1
                 value: appSettings.engineDepth
                 label: qsTr("Search depth")
-                description: qsTr("Deeper is stronger, and costs more battery")
                 valueText: value
                 onSliderValueChanged: appSettings.engineDepth = value
+            }
+
+            // Slider has no description property: an unknown property makes
+            // QML reject the whole page, so the hint is a label of its own.
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                visible: appSettings.engineEnabled
+                wrapMode: Text.Wrap
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: qsTr("Deeper is stronger, and costs more battery")
             }
 
             Slider {
