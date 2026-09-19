@@ -3,6 +3,16 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Sat Sep 19 2026 van-ess0 <https://github.com/van-ess0> 0.6-1
+- Set up a position: copy a board from the table, a book or anywhere else,
+  then study it on the analysis board with Stockfish and the Lichess cloud,
+  or play it out with a friend on this phone. Place pieces from a palette,
+  drag them around or off the board, undo and redo, and choose who is to
+  move and who may still castle. FENs can be copied and pasted, and the
+  analysis board can send any position it shows to the editor.
+- Fixed: positions starting with black to move were numbered as if white
+  had moved.
+
 * Sat Sep 19 2026 van-ess0 <https://github.com/van-ess0> 0.5-2
 - Fixed: the settings page did not open since 0.4-1.
 
