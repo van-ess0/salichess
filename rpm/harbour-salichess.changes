@@ -3,6 +3,15 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Sat Sep 19 2026 van-ess0 <https://github.com/van-ess0> 0.5-1
+- Pass and play: two players on one phone, no account needed. The board
+  lies between you, each side's pieces face their own player, and each of
+  you gets a big clock on your own edge of the screen. The clock works like
+  a real one: play your move, then tap your clock to end your turn, or let
+  it change hands by itself. Choose a time control with increment, or play
+  without a clock; running out of time draws when the other side cannot
+  mate.
+
 * Sun Sep 13 2026 van-ess0 <https://github.com/van-ess0> 0.4-1
 - Your games: the games you have played, newest first, with the final
   position, the result and the rating change. Filter them by time control,
