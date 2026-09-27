@@ -23,6 +23,10 @@
 #
 # qml/js/*.js is left out on purpose: three small helper libraries, nothing
 # for the JavaScript queries to find.
+#
+# build-codeql/moc_*.cpp is moc's own generated meta-object code (the
+# qt_static_metacall dispatch), not code we wrote. Its empty branches and
+# trivial switches are Qt's boilerplate, so it is excluded too.
 
 name: CodeQL
 
@@ -71,6 +75,7 @@ jobs:
           config: |
             paths-ignore:
               - 3rdparty
+              - build-codeql/moc_*.cpp
 
       # The build for the c-cpp database. Desktop Qt 5, no SDK and no network:
       # the network tests talk to a local fake Lichess server.
