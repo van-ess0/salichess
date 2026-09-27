@@ -3,6 +3,11 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Sun Sep 27 2026 van-ess0 <https://github.com/van-ess0> 0.7-1
+- Analyse a pass-and-play game once it is over, on the same analysis board
+  as a Lichess game: the engine and the Lichess cloud look at every move
+  that was played.
+
 * Sat Sep 19 2026 van-ess0 <https://github.com/van-ess0> 0.6-1
 - Set up a position: copy a board from the table, a book or anywhere else,
   then study it on the analysis board with Stockfish and the Lichess cloud,
