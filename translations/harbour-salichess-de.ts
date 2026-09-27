@@ -1080,6 +1080,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Paused</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Analyse</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LichessApi</name>

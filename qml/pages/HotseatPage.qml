@@ -107,6 +107,14 @@ Page {
                 }
             }
             MenuItem {
+                visible: hotseat.gameOver
+                text: qsTr("Analyse")
+                onClicked: pageStack.push(Qt.resolvedUrl("AnalysisPage.qml"),
+                                          { startFen: page.startFen,
+                                            startMoves: hotseat.game.sanMoves.join(" "),
+                                            myColor: page.whiteAtBottom ? "white" : "black" })
+            }
+            MenuItem {
                 text: qsTr("New game")
                 onClicked: {
                     if (page.inProgress)

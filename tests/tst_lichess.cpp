@@ -1547,6 +1547,24 @@ private slots:
         QVERIFY(!analysis.loading());
     }
 
+    void gameAnalysisOfPlayedOutMoves()
+    {
+        logIn();
+        server->route("GET", "/api/cloud-eval", 404, R"({"error":"nothing here"})");
+        GameAnalysis analysis;
+        analysis.setStartFen(QString());
+        analysis.setStartMoves(QStringLiteral("e4 e5 Qh5 Nc6"));
+        QCOMPARE(analysis.game()->sanMoves(), QStringList({ "e4", "e5", "Qh5", "Nc6" }));
+        QVERIFY(analysis.errorString().isEmpty());
+        for (const FakeLichess::Request &request : server->requests())
+            QVERIFY(!request.path.startsWith(QStringLiteral("/game/export")));
+
+        // Nothing was analysed server-side, so only the cloud has anything
+        // to say, same as any other position without a gameId.
+        QVERIFY(!analysis.hasServerAnalysis());
+        QTRY_COMPARE(server->requestCount("GET", "/api/cloud-eval"), 1);
+    }
+
     void gameAnalysisRejectsUnplayableVariants()
     {
         logIn();

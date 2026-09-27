@@ -32,6 +32,9 @@ class GameAnalysis : public QObject
     // Where the board starts when there is no gameId. Only the cloud and the
     // engine have anything to say about such a position.
     Q_PROPERTY(QString startFen READ startFen WRITE setStartFen NOTIFY startFenChanged)
+    // Moves already played from startFen, SAN separated by spaces, replayed
+    // when there is no gameId (a game Lichess never saw, e.g. hotseat).
+    Q_PROPERTY(QString startMoves READ startMoves WRITE setStartMoves NOTIFY startMovesChanged)
     Q_PROPERTY(ChessGame *game READ game CONSTANT)
 
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
@@ -92,6 +95,8 @@ public:
     void setGameId(const QString &id);
     QString startFen() const { return m_startFen; }
     void setStartFen(const QString &fen);
+    QString startMoves() const { return m_startMoves; }
+    void setStartMoves(const QString &moves);
     ChessGame *game() const { return m_game; }
 
     bool loading() const { return m_loading; }
@@ -147,6 +152,7 @@ public:
 signals:
     void gameIdChanged();
     void startFenChanged();
+    void startMovesChanged();
     void loadingChanged();
     void errorStringChanged();
     void infoChanged();
@@ -183,6 +189,7 @@ private:
     ChessGame *m_game;
     QString m_gameId;
     QString m_startFen;
+    QString m_startMoves;
     bool m_loading = false;
     QString m_error;
 

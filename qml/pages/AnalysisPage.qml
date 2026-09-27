@@ -20,6 +20,9 @@ Page {
     // A position to study that is not from a Lichess game, used when there
     // is no gameId.
     property string startFen
+    // Moves already played from startFen (SAN, space separated), for a
+    // finished game Lichess never saw, e.g. a hotseat game.
+    property string startMoves
     readonly property bool isGame: gameId !== ""
     // Which way round the board starts; the colour the user played by
     // default, worked out from the game once it has loaded.
@@ -42,6 +45,7 @@ Page {
         id: gameAnalysis
         gameId: page.gameId
         startFen: page.startFen
+        startMoves: page.startMoves
 
         // The analysis board is the one place where a move from an earlier
         // position starts a side line instead of being refused.
