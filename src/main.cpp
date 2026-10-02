@@ -24,8 +24,10 @@
 #include "core/services.h"
 #include "core/session.h"
 #include "core/secretstokenstore.h"
+#include "engine/computergame.h"
 #include "engine/enginecontroller.h"
 #include "engine/nnueweights.h"
+#include "lichess/aichallenge.h"
 #include "lichess/challengesmodel.h"
 #include "lichess/chatmodel.h"
 #include "lichess/eventstream.h"
@@ -37,8 +39,12 @@
 #include "lichess/ongoinggamesmodel.h"
 #include "lichess/outgoingchallenge.h"
 #include "lichess/outgoingchallenges.h"
+#include "lichess/playersearch.h"
 #include "lichess/puzzlecontroller.h"
+#include "lichess/puzzledashboard.h"
 #include "lichess/puzzlestore.h"
+#include "lichess/tvfeed.h"
+#include "lichess/userprofile.h"
 
 int main(int argc, char *argv[])
 {
@@ -54,6 +60,12 @@ int main(int argc, char *argv[])
     qmlRegisterType<GameAnalysis>(uri, 1, 0, "GameAnalysis");
     qmlRegisterType<GamesHistoryModel>(uri, 1, 0, "GamesHistoryModel");
     qmlRegisterType<PuzzleController>(uri, 1, 0, "PuzzleController");
+    qmlRegisterType<PuzzleDashboard>(uri, 1, 0, "PuzzleDashboard");
+    qmlRegisterType<ComputerGame>(uri, 1, 0, "ComputerGame");
+    qmlRegisterType<AiChallenge>(uri, 1, 0, "AiChallenge");
+    qmlRegisterType<UserProfile>(uri, 1, 0, "UserProfile");
+    qmlRegisterType<PlayerSearch>(uri, 1, 0, "PlayerSearch");
+    qmlRegisterType<TvFeed>(uri, 1, 0, "TvFeed");
     qmlRegisterType<HotseatController>(uri, 1, 0, "HotseatController");
     qmlRegisterType<BoardEditor>(uri, 1, 0, "BoardEditor");
     // Registered as MoveTreeModel: qml/components/MoveTree.qml is the view
@@ -78,11 +90,12 @@ int main(int argc, char *argv[])
     LobbySeek lobbySeek(&api, &events);
     AppActivation activation;
     PuzzleStore puzzleStore(&api, &session, &settings);
-    Services::init(&api, &session, &settings, &puzzleStore);
-    // Stockfish and its networks. One engine for the whole app: a phone can
-    // only usefully run one, and the analysis page hands it the board it is
-    // showing.
+    // Stockfish and its networks. One analysis engine for the whole app: a
+    // phone can only usefully run one, and the analysis page hands it the
+    // board it is showing. (A game against the computer has an engine of its
+    // own for as long as it lasts.)
     NnueWeights engineWeights;
+    Services::init(&api, &session, &settings, &puzzleStore, &engineWeights);
     EngineController engine(&settings, &engineWeights);
 
     auto onLoginChanged = [&]() {

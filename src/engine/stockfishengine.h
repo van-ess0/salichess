@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QStringList>
 
+#include <atomic>
 #include <memory>
 #include <string>
 
@@ -45,8 +46,16 @@ public slots:
     void setThreads(int threads);
     void setHashSize(int megabytes);
     void setMultiPv(int lines);
+    // 0 (weakest) to 20 (full strength). Only a game against the engine
+    // wants anything but the default.
+    void setSkillLevel(int level);
     // Searches the position after |moves| (UCI) from |fen| until |depth|.
     void search(const QString &fen, const QStringList &moves, int depth);
+    // Picks a move for the side to move, within |depth| plies and
+    // |movetimeMs|, whichever ends the search first. The answer comes back
+    // as bestMove() with the same |requestId|, so that one for a position
+    // the game has left again can be told from the one wanted.
+    void play(const QString &fen, const QStringList &moves, int depth, int movetimeMs, int requestId);
     void stop();
 
 signals:
@@ -58,8 +67,11 @@ signals:
     // a centipawn one.
     void info(int depth, int multiPv, int scoreCp, int mateIn, const QString &pvUci);
     void searchFinished();
+    // The move chosen by play(); empty if the position has no legal move.
+    void bestMove(int requestId, const QString &uci);
 
 private:
+    void startSearch(const QString &fen, const QStringList &moves, int depth, int movetimeMs);
     bool ensureEngine();
     // Turns one of Stockfish's scores into centipawns or moves-to-mate.
     static void readScore(const Stockfish::Score &score, int &cp, int &mate);
@@ -72,6 +84,9 @@ private:
     int m_threads = 1;
     int m_hashMb = 16;
     int m_multiPv = 1;
+    int m_skill = 20;
+    // Set before each play() search, read by the callback of its thread.
+    std::atomic<int> m_requestId{0};
     int m_verifyMessages = 0;  // how many "networks are fine" lines were logged
 };
 

@@ -117,7 +117,10 @@ bool StockfishEngine::ensureEngine()
         // left unset.
     });
 
-    m_engine->set_on_bestmove([this](std::string_view, std::string_view) {
+    m_engine->set_on_bestmove([this](std::string_view best, std::string_view) {
+        // "(none)" is what Stockfish says when there is no legal move.
+        const QString uci = QString::fromUtf8(best.data(), int(best.size()));
+        emit bestMove(m_requestId.load(), uci == QLatin1String("(none)") ? QString() : uci);
         emit searchFinished();
     });
 
@@ -141,6 +144,7 @@ bool StockfishEngine::ensureEngine()
     applyOption("Threads", m_threads);
     applyOption("Hash", m_hashMb);
     applyOption("MultiPV", m_multiPv);
+    applyOption("Skill Level", m_skill);
     return true;
 }
 
@@ -213,10 +217,36 @@ void StockfishEngine::setMultiPv(int lines)
     applyOption("MultiPV", m_multiPv);
 }
 
+void StockfishEngine::setSkillLevel(int level)
+{
+    m_skill = qBound(0, level, 20);
+    applyOption("Skill Level", m_skill);
+}
+
 void StockfishEngine::search(const QString &fen, const QStringList &moves, int depth)
 {
-    if (!m_ready || !m_engine)
+    startSearch(fen, moves, depth, 0);
+}
+
+void StockfishEngine::play(const QString &fen, const QStringList &moves, int depth, int movetimeMs,
+                           int requestId)
+{
+    // Whatever was running is stopped first, and its answer has been given
+    // by the time the new id is set.
+    stop();
+    m_requestId = requestId;
+    startSearch(fen, moves, depth, movetimeMs);
+}
+
+void StockfishEngine::startSearch(const QString &fen, const QStringList &moves, int depth, int movetimeMs)
+{
+    if (!m_ready || !m_engine) {
+        // Asked for a move before the networks are in: say so, rather than
+        // leave the caller waiting for an answer that never comes.
+        if (movetimeMs > 0)
+            emit failed(tr("The engine is not ready"));
         return;
+    }
     stop();
 
     // Stockfish trusts its input. A position the rules engine refuses, or
@@ -239,6 +269,8 @@ void StockfishEngine::search(const QString &fen, const QStringList &moves, int d
     Stockfish::Search::LimitsType limits;
     limits.startTime = Stockfish::now();
     limits.depth = qBound(1, depth, 40);
+    if (movetimeMs > 0)
+        limits.movetime = movetimeMs;
     m_searching = true;
     m_engine->go(limits);
 }

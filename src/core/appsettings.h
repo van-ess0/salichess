@@ -30,6 +30,15 @@ class AppSettings : public QObject
     Q_PROPERTY(int hotseatIncrement READ hotseatIncrement WRITE setHotseatIncrement NOTIFY hotseatIncrementChanged)
     Q_PROPERTY(bool hotseatAutoClock READ hotseatAutoClock WRITE setHotseatAutoClock NOTIFY hotseatAutoClockChanged)
 
+    // Play against the computer: the strength (1-8, like the Lichess AI), the
+    // side the player takes ("random", "white" or "black"), whether the
+    // engine on the phone plays instead of the Lichess AI, and the index of
+    // the time control last chosen for the Lichess AI.
+    Q_PROPERTY(int computerLevel READ computerLevel WRITE setComputerLevel NOTIFY computerLevelChanged)
+    Q_PROPERTY(QString computerColor READ computerColor WRITE setComputerColor NOTIFY computerColorChanged)
+    Q_PROPERTY(bool computerOffline READ computerOffline WRITE setComputerOffline NOTIFY computerOfflineChanged)
+    Q_PROPERTY(int computerClock READ computerClock WRITE setComputerClock NOTIFY computerClockChanged)
+
     // Stockfish on the analysis board. Off until the user asks for it: the
     // networks have to be downloaded first, and searching costs battery.
     Q_PROPERTY(bool engineEnabled READ engineEnabled WRITE setEngineEnabled NOTIFY engineEnabledChanged)
@@ -69,6 +78,15 @@ public:
     bool hotseatAutoClock() const;
     void setHotseatAutoClock(bool automatic);
 
+    int computerLevel() const;
+    void setComputerLevel(int level);
+    QString computerColor() const;
+    void setComputerColor(const QString &color);
+    bool computerOffline() const;
+    void setComputerOffline(bool offline);
+    int computerClock() const;
+    void setComputerClock(int index);
+
     bool engineEnabled() const;
     void setEngineEnabled(bool enabled);
     int engineLines() const;
@@ -104,6 +122,10 @@ signals:
     void hotseatSecondsChanged();
     void hotseatIncrementChanged();
     void hotseatAutoClockChanged();
+    void computerLevelChanged();
+    void computerColorChanged();
+    void computerOfflineChanged();
+    void computerClockChanged();
     void engineEnabledChanged();
     void engineLinesChanged();
     void engineDepthChanged();

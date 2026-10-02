@@ -6,6 +6,7 @@
 
 class AppSettings;
 class LichessApi;
+class NnueWeights;
 class PuzzleStore;
 class Session;
 
@@ -14,12 +15,15 @@ class Session;
 // look their dependencies up here instead of receiving them.
 namespace Services {
 
-void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles);
+void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles,
+          NnueWeights *weights = nullptr);
 
 LichessApi *api();
 Session *session();
 AppSettings *settings();
 PuzzleStore *puzzles();
+// The engine networks; null where there is no engine (some tests).
+NnueWeights *weights();
 
 } // namespace Services
 

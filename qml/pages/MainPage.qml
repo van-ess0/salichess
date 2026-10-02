@@ -35,14 +35,6 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("About")
-                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
-            }
-            MenuItem {
-                text: qsTr("Settings")
-                onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
-            }
-            MenuItem {
                 enabled: !session.busy
                 text: session.loggedIn ? qsTr("Log out") : qsTr("Log in")
                 onClicked: {
@@ -51,6 +43,14 @@ Page {
                     else
                         pageStack.push(Qt.resolvedUrl("LoginPage.qml"))
                 }
+            }
+            MenuItem {
+                text: qsTr("About")
+                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
+            }
+            MenuItem {
+                text: qsTr("Settings")
+                onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
             }
             MenuItem {
                 visible: session.loggedIn
@@ -82,6 +82,19 @@ Page {
 
             // Entry points
             BackgroundItem {
+                readonly property bool waiting: lobbySeek.seeking && !lobbySeek.correspondence
+                visible: session.loggedIn
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl(waiting ? "SeekWaitingPage.qml" : "SeekPage.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-shuffle"
+                    title: qsTr("Play with a random opponent")
+                    subtitle: parent.waiting ? qsTr("Looking for an opponent…")
+                                             : qsTr("Rapid, classical or correspondence")
+                }
+            }
+
+            BackgroundItem {
                 visible: session.loggedIn
                 height: Theme.itemSizeMedium
                 onClicked: pageStack.push(Qt.resolvedUrl("NewChallengeDialog.qml"))
@@ -93,15 +106,13 @@ Page {
             }
 
             BackgroundItem {
-                readonly property bool waiting: lobbySeek.seeking && !lobbySeek.correspondence
-                visible: session.loggedIn
                 height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl(waiting ? "SeekWaitingPage.qml" : "SeekPage.qml"))
+                onClicked: pageStack.push(Qt.resolvedUrl("ComputerPage.qml"))
                 MenuEntry {
-                    icon: "image://theme/icon-m-shuffle"
-                    title: qsTr("Play with a random opponent")
-                    subtitle: parent.waiting ? qsTr("Looking for an opponent…")
-                                             : qsTr("Rapid, classical or correspondence")
+                    icon: "image://theme/icon-m-computer"
+                    title: qsTr("Play the computer")
+                    subtitle: session.loggedIn ? qsTr("The Lichess AI, or Stockfish on this phone")
+                                               : qsTr("Stockfish on this phone")
                 }
             }
 
@@ -125,15 +136,11 @@ Page {
                 }
             }
 
-            BackgroundItem {
-                visible: session.loggedIn
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-history"
-                    title: qsTr("Games")
-                    subtitle: qsTr("Look back at the games you played")
-                }
+            Separator {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                color: Theme.primaryColor
+                horizontalAlignment: Qt.AlignHCenter
             }
 
             BackgroundItem {
@@ -155,6 +162,62 @@ Page {
                     icon: "image://theme/icon-m-date"
                     title: qsTr("Daily puzzle")
                     subtitle: qsTr("The Lichess puzzle of the day")
+                }
+            }
+
+            Separator {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                color: Theme.primaryColor
+                horizontalAlignment: Qt.AlignHCenter
+            }
+
+            BackgroundItem {
+                visible: session.loggedIn
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("ProfilePage.qml"), { username: session.userId })
+                MenuEntry {
+                    icon: "image://theme/icon-m-contact"
+                    title: qsTr("My profile")
+                    subtitle: qsTr("Your ratings and results")
+                }
+            }
+
+            BackgroundItem {
+                visible: session.loggedIn
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-history"
+                    title: qsTr("Games")
+                    subtitle: qsTr("Look back at the games you played")
+                }
+            }
+
+            BackgroundItem {
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("PlayerSearchPage.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-search"
+                    title: qsTr("Find a player")
+                    subtitle: qsTr("Look up any Lichess player")
+                }
+            }
+
+            Separator {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                color: Theme.primaryColor
+                horizontalAlignment: Qt.AlignHCenter
+            }
+
+            BackgroundItem {
+                height: Theme.itemSizeMedium
+                onClicked: pageStack.push(Qt.resolvedUrl("TvPage.qml"))
+                MenuEntry {
+                    icon: "image://theme/icon-m-video"
+                    title: qsTr("Lichess TV")
+                    subtitle: qsTr("Watch the games Lichess features")
                 }
             }
 

@@ -31,6 +31,7 @@ HEADERS += \
     $$SRC/chess/movetree.h \
     $$SRC/chess/piecesmodel.h \
     $$SRC/core/appsettings.h \
+    $$SRC/engine/computergame.h \
     $$SRC/engine/enginecontroller.h \
     $$SRC/engine/nnueweights.h \
     $$SRC/engine/stockfishengine.h \
@@ -39,6 +40,7 @@ HEADERS += \
     $$SRC/core/services.h \
     $$SRC/core/session.h \
     $$SRC/core/tokenstore.h \
+    $$SRC/lichess/aichallenge.h \
     $$SRC/lichess/challengesmodel.h \
     $$SRC/lichess/chatmodel.h \
     $$SRC/lichess/eventstream.h \
@@ -51,8 +53,12 @@ HEADERS += \
     $$SRC/lichess/ongoinggamesmodel.h \
     $$SRC/lichess/outgoingchallenge.h \
     $$SRC/lichess/outgoingchallenges.h \
+    $$SRC/lichess/playersearch.h \
     $$SRC/lichess/puzzlecontroller.h \
+    $$SRC/lichess/puzzledashboard.h \
     $$SRC/lichess/puzzlestore.h \
+    $$SRC/lichess/tvfeed.h \
+    $$SRC/lichess/userprofile.h \
     $$SRC/lichess/puzzlelogic.h
 
 SOURCES += \
@@ -60,6 +66,7 @@ SOURCES += \
     fakelichess.cpp \
     tst_chess.cpp \
     tst_engine.cpp \
+    tst_features.cpp \
     tst_lichess.cpp \
     tst_live.cpp \
     $$SRC/chess/boardeditor.cpp \
@@ -69,6 +76,7 @@ SOURCES += \
     $$SRC/chess/movetree.cpp \
     $$SRC/chess/piecesmodel.cpp \
     $$SRC/core/appsettings.cpp \
+    $$SRC/engine/computergame.cpp \
     $$SRC/engine/enginecontroller.cpp \
     $$SRC/engine/nnueweights.cpp \
     $$SRC/engine/stockfishengine.cpp \
@@ -76,6 +84,7 @@ SOURCES += \
     $$SRC/core/ndjsonstream.cpp \
     $$SRC/core/services.cpp \
     $$SRC/core/session.cpp \
+    $$SRC/lichess/aichallenge.cpp \
     $$SRC/lichess/challengesmodel.cpp \
     $$SRC/lichess/chatmodel.cpp \
     $$SRC/lichess/eventstream.cpp \
@@ -88,6 +97,10 @@ SOURCES += \
     $$SRC/lichess/ongoinggamesmodel.cpp \
     $$SRC/lichess/outgoingchallenge.cpp \
     $$SRC/lichess/outgoingchallenges.cpp \
+    $$SRC/lichess/playersearch.cpp \
     $$SRC/lichess/puzzlecontroller.cpp \
+    $$SRC/lichess/puzzledashboard.cpp \
     $$SRC/lichess/puzzlestore.cpp \
+    $$SRC/lichess/tvfeed.cpp \
+    $$SRC/lichess/userprofile.cpp \
     $$SRC/lichess/puzzlelogic.cpp

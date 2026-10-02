@@ -35,6 +35,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>AiChallenge</name>
+    <message>
+        <source>Lichess did not start the game.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AnalysisPage</name>
     <message>
         <source>Open in browser</source>
@@ -392,6 +399,187 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>Message to your opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerGame</name>
+    <message>
+        <source>You</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The engine suggested a move that is not legal.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerGamePage</name>
+    <message>
+        <source>You</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish is waking up…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish needs its networks before it can move.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish is thinking…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your turn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resign</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resigning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Take back move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting a new game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download the engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Try again</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ComputerPage</name>
+    <message>
+        <source>Play the computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish on this phone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Lichess AI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log in to play the Lichess AI instead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish runs on this phone, without a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You seem to be offline. Switch this on to play on the phone.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Off: play the Lichess AI on lichess.org</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading the engine…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download the engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The download needs a connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Strength</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About %1 on lichess.org</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Random</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games on the phone have no clock and are not rated.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Starting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1366,6 +1554,42 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Copy a board to analyse it or play it out</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Play the computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Lichess AI, or Stockfish on this phone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish on this phone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>My profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your ratings and results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find a player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Look up any Lichess player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess TV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watch the games Lichess features</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewChallengeDialog</name>
@@ -1526,6 +1750,142 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>PlayerSearchPage</name>
+    <message>
+        <source>Find a player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Searching needs a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type a name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No player found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Two letters are enough</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProfilePage</name>
+    <message>
+        <source>Playing now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Online</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last seen %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Challenge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profiles need a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading profile…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Try again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This account is closed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ratings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n game(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Rating history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 wins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 draws</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 losses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games played</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time playing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Member since</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Followers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last seen today</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PuzzleController</name>
     <message>
         <source>Invalid puzzle id.</source>
@@ -1541,6 +1901,94 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>You are offline, and no puzzles are stored for offline play.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PuzzleDashboard</name>
+    <message>
+        <source>Log in to see your puzzle dashboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PuzzleDashboardPage</name>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Puzzle dashboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rating %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The dashboard needs a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Last %n day(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Loading…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Played</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First try</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Performance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No puzzles played in this period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Strongest themes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Themes to practise</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recent puzzles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Solved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>rating %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>By theme</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1649,6 +2097,15 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Stored puzzles can still be played</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PuzzleThemeRow</name>
+    <message numerus="yes">
+        <source>%n puzzle(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -1999,6 +2456,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Dashboard</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2353,6 +2814,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Stockfish cannot analyse this position</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The engine is not ready</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Time</name>
@@ -2362,6 +2827,95 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>%1h %2m</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TvFeed</name>
+    <message>
+        <source>This channel is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection lost. Reconnecting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TvPage</name>
+    <message>
+        <source>Top rated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bullet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blitz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UltraBullet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bots</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Analyse this game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn the board round</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess TV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lichess TV needs a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for a game…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Swipe back to leave. The board follows the featured game and moves on by itself when it changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UserProfile</name>
+    <message>
+        <source>&quot;%1&quot; is not a valid Lichess username.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No such player</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

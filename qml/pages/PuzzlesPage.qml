@@ -20,6 +20,14 @@ Page {
         anchors.fill: parent
         contentHeight: column.height + Theme.paddingLarge
 
+        PullDownMenu {
+            MenuItem {
+                visible: session.loggedIn
+                text: qsTr("Dashboard")
+                onClicked: pageStack.push(Qt.resolvedUrl("PuzzleDashboardPage.qml"))
+            }
+        }
+
         Column {
             id: column
             width: page.width

@@ -168,6 +168,51 @@ void AppSettings::setHotseatAutoClock(bool automatic)
         emit hotseatAutoClockChanged();
 }
 
+int AppSettings::computerLevel() const
+{
+    return qBound(1, m_settings.value(QStringLiteral("computer/level"), 3).toInt(), 8);
+}
+
+void AppSettings::setComputerLevel(int level)
+{
+    if (store("computer/level", qBound(1, level, 8)))
+        emit computerLevelChanged();
+}
+
+QString AppSettings::computerColor() const
+{
+    const QString color = m_settings.value(QStringLiteral("computer/color"), QStringLiteral("random")).toString();
+    return color == QLatin1String("white") || color == QLatin1String("black") ? color : QStringLiteral("random");
+}
+
+void AppSettings::setComputerColor(const QString &color)
+{
+    if (store("computer/color", color))
+        emit computerColorChanged();
+}
+
+bool AppSettings::computerOffline() const
+{
+    return m_settings.value(QStringLiteral("computer/offline"), false).toBool();
+}
+
+void AppSettings::setComputerOffline(bool offline)
+{
+    if (store("computer/offline", offline))
+        emit computerOfflineChanged();
+}
+
+int AppSettings::computerClock() const
+{
+    return qMax(0, m_settings.value(QStringLiteral("computer/clock"), 2).toInt());
+}
+
+void AppSettings::setComputerClock(int index)
+{
+    if (store("computer/clock", qMax(0, index)))
+        emit computerClockChanged();
+}
+
 bool AppSettings::engineEnabled() const
 {
     return m_settings.value(QStringLiteral("engine/enabled"), false).toBool();

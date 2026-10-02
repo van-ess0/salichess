@@ -8,18 +8,21 @@ LichessApi *s_api = nullptr;
 Session *s_session = nullptr;
 AppSettings *s_settings = nullptr;
 PuzzleStore *s_puzzles = nullptr;
+NnueWeights *s_weights = nullptr;
 }
 
 namespace Services {
 
 // The services are locals of main(), so these pointers are addresses on its
 // stack. That is safe: main() outlives everything that can look them up.
-void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles)
+void init(LichessApi *api, Session *session, AppSettings *settings, PuzzleStore *puzzles,
+          NnueWeights *weights)
 {
     s_api = api;
     s_session = session;
     s_settings = settings;
     s_puzzles = puzzles;
+    s_weights = weights;
 }
 
 LichessApi *api()
@@ -40,6 +43,11 @@ AppSettings *settings()
 PuzzleStore *puzzles()
 {
     return s_puzzles;
+}
+
+NnueWeights *weights()
+{
+    return s_weights;
 }
 
 } // namespace Services

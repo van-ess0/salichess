@@ -23,9 +23,23 @@ Item {
     // its material score; "+N" is shown for the side that is ahead.
     property var material: []
     property int materialScore: 0
+    // Tapping the name opens the player's profile, when they have one.
+    property bool profileLink: true
+    readonly property bool hasProfile: profileLink && !!player && !!player.id
 
     width: parent ? parent.width : 0
     height: Theme.itemSizeSmall
+
+    MouseArea {
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
+            right: clock.visible ? clock.left : parent.right
+        }
+        enabled: bar.hasProfile
+        onClicked: pageStack.push(Qt.resolvedUrl("../pages/ProfilePage.qml"), { username: bar.player.id })
+    }
 
     Row {
         anchors {

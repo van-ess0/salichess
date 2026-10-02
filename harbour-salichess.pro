@@ -53,6 +53,7 @@ include($$PWD/3rdparty/stockfish.pri)
 
 HEADERS += \
     src/core/appsettings.h \
+    src/engine/computergame.h \
     src/engine/enginecontroller.h \
     src/engine/nnueweights.h \
     src/engine/stockfishengine.h \
@@ -70,6 +71,7 @@ HEADERS += \
     src/chess/hotseatcontroller.h \
     src/chess/movetree.h \
     src/chess/piecesmodel.h \
+    src/lichess/aichallenge.h \
     src/lichess/challengesmodel.h \
     src/lichess/chatmodel.h \
     src/lichess/eventstream.h \
@@ -82,13 +84,18 @@ HEADERS += \
     src/lichess/ongoinggamesmodel.h \
     src/lichess/outgoingchallenge.h \
     src/lichess/outgoingchallenges.h \
+    src/lichess/playersearch.h \
     src/lichess/puzzlecontroller.h \
+    src/lichess/puzzledashboard.h \
     src/lichess/puzzlestore.h \
+    src/lichess/tvfeed.h \
+    src/lichess/userprofile.h \
     src/lichess/puzzlelogic.h
 
 SOURCES += \
     src/main.cpp \
     src/core/appsettings.cpp \
+    src/engine/computergame.cpp \
     src/engine/enginecontroller.cpp \
     src/engine/nnueweights.cpp \
     src/engine/stockfishengine.cpp \
@@ -105,6 +112,7 @@ SOURCES += \
     src/chess/hotseatcontroller.cpp \
     src/chess/movetree.cpp \
     src/chess/piecesmodel.cpp \
+    src/lichess/aichallenge.cpp \
     src/lichess/challengesmodel.cpp \
     src/lichess/chatmodel.cpp \
     src/lichess/eventstream.cpp \
@@ -117,8 +125,12 @@ SOURCES += \
     src/lichess/ongoinggamesmodel.cpp \
     src/lichess/outgoingchallenge.cpp \
     src/lichess/outgoingchallenges.cpp \
+    src/lichess/playersearch.cpp \
     src/lichess/puzzlecontroller.cpp \
+    src/lichess/puzzledashboard.cpp \
     src/lichess/puzzlestore.cpp \
+    src/lichess/tvfeed.cpp \
+    src/lichess/userprofile.cpp \
     src/lichess/puzzlelogic.cpp
 
 DISTFILES += \

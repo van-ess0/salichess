@@ -11,6 +11,8 @@ Page {
     id: page
 
     property bool daily: false
+    // A particular puzzle to play, e.g. one from the history.
+    property string puzzleId
     property string angle: "mix"
     property bool userFlipped: false
     readonly property bool flipped: (puzzle.playerColor === "black") !== userFlipped
@@ -27,6 +29,8 @@ Page {
     Component.onCompleted: {
         if (daily)
             puzzle.loadDaily()
+        else if (puzzleId !== "")
+            puzzle.loadPuzzle(puzzleId)
         else
             puzzle.loadNext()
     }
@@ -42,6 +46,7 @@ Page {
 
     function nextPuzzle() {
         page.daily = false
+        page.puzzleId = ""
         page.userFlipped = false
         puzzle.loadNext()
     }
