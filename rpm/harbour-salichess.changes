@@ -3,6 +3,19 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Fri Oct 02 2026 van-ess0 <https://github.com/van-ess0> 0.8-1
+- Play the computer: the Lichess AI (levels 1 to 8, with a clock), or
+  Stockfish on the phone, which needs no connection or account once its
+  networks are downloaded. A game on the phone waits and says so if the
+  networks are missing, and carries on when they arrive.
+- Player profiles: ratings with their change, a rating graph, results and
+  playing time. Tap a player's name on a board, or use Find a player on the
+  main page; "My profile" shows your own.
+- Lichess TV: watch the games Lichess features, in any speed channel.
+- Puzzle dashboard (pull down on Puzzles): how you did over the last days,
+  your strongest and weakest themes, and the puzzles you played last, which
+  can be replayed.
+
 * Sun Sep 27 2026 van-ess0 <https://github.com/van-ess0> 0.7-1
 - Analyse a pass-and-play game once it is over, on the same analysis board
   as a Lichess game: the engine and the Lichess cloud look at every move
