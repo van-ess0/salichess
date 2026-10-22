@@ -670,12 +670,16 @@ private slots:
     {
         logIn();
         server->streamRoute("GET", "/api/rel/following");
+        server->streamRoute("GET", "/api/games/user/me");
+        // The followed list has no games; the crosstable counts those against the user.
+        server->route("GET", "/api/crosstable/me/alice", 200, R"({"users":{"me":0,"alice":0},"nbGames":0})");
+        server->route("GET", "/api/crosstable/me/bob", 200, R"({"users":{"me":2.5,"bob":4.5},"nbGames":7})");
         server->route("GET", "/api/users/status", 200, R"([{"id":"bob","online":true},{"id":"alice","online":false}])");
-        FriendsModel model(api);
+        FriendsModel model(api, session);
         model.refresh();
         QTRY_COMPARE(server->openStreams("/api/rel/following"), 1);
-        server->push("/api/rel/following", line(R"({"id":"alice","username":"Alice"})")
-                     + line(R"({"id":"bob","username":"Bob","title":"GM","perfs":{"blitz":{"rating":2500}}})"));
+        server->push("/api/rel/following", line(R"({"id":"alice","username":"Alice","seenAt":1690000000000})")
+                     + line(R"({"id":"bob","username":"Bob","title":"GM","seenAt":1700000000000,"perfs":{"blitz":{"rating":2500}}})"));
         server->closeStreams("/api/rel/following");
         QTRY_COMPARE(model.count(), 2);
         QCOMPARE(server->lastRequest("GET", "/api/users/status").query.queryItemValue("ids"), QStringLiteral("alice,bob"));
@@ -684,8 +688,24 @@ private slots:
         QCOMPARE(role(model, 0, "online").toBool(), true);
         QCOMPARE(role(model, 0, "title").toString(), QStringLiteral("GM"));
         QCOMPARE(role(model, 0, "blitzRating").toInt(), 2500);
+        QCOMPARE(role(model, 0, "seenAt").toLongLong(), qint64(1700000000000));
         QCOMPARE(role(model, 1, "username").toString(), QStringLiteral("Alice"));
         QVERIFY(!model.loading());
+
+        // Games against each friend, then the latest of them for those who have some.
+        QTRY_COMPARE(role(model, 0, "gamesCount").toInt(), 7);
+        QCOMPARE(role(model, 0, "lastGameAt").toLongLong(), qint64(0));
+        QTRY_COMPARE(server->openStreams("/api/games/user/me"), 1);
+        const QUrlQuery query = server->lastRequest("GET", "/api/games/user/me").query;
+        QCOMPARE(query.queryItemValue("vs"), QStringLiteral("bob"));
+        QCOMPARE(query.queryItemValue("max"), QStringLiteral("1"));
+        server->push("/api/games/user/me", line(R"({"id":"g1","createdAt":1700000000000,"lastMoveAt":1700000600000})"));
+        server->closeStreams("/api/games/user/me");
+        QTRY_COMPARE(role(model, 0, "lastGameAt").toLongLong(), qint64(1700000600000));
+        // Friends go one after the other: Alice is looked at once Bob's game is in.
+        QTRY_COMPARE(role(model, 1, "gamesCount").toInt(), 0);
+        QCOMPARE(role(model, 1, "lastGameAt").toLongLong(), qint64(0));
+        QCOMPARE(server->requestCount("GET", "/api/games/user/me"), 1);
     }
 
     // --- Seeks for a random opponent ---

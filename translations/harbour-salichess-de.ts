@@ -685,6 +685,82 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>FriendTile</name>
+    <message>
+        <source>Last game %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Playing now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Online</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>today</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n game(s) with you</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>No games with you yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last seen %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FriendsPage</name>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Friends</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Players you follow on Lichess</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Friends need a connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading friends…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are not following anyone yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blitz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classical</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GameAnalysis</name>
     <message>
         <source>This game does not exist</source>
@@ -1411,19 +1487,19 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
 <context>
     <name>MainMeTab</name>
     <message>
-        <source>My profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Your ratings and results</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Games</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Look back at the games you played</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Friends</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The players you follow</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1804,13 +1880,17 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
-    <name>ProfilePage</name>
+    <name>ProfileContent</name>
     <message>
         <source>Playing now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Online</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last seen today</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1823,22 +1903,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message>
         <source>%1 minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open in browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Games</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Challenge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1876,6 +1940,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>%1 wins</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1908,7 +1976,26 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Last seen today</source>
+        <source>Challenge</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProfilePage</name>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Challenge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games history</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     EventStream events(&api);
     ChallengesModel challenges(&api, &events);
     OngoingGamesModel ongoingGames(&api, &events);
-    FriendsModel friends(&api);
+    FriendsModel friends(&api, &session);
     OutgoingChallenges outgoingChallenges(&api, &events);
     LobbySeek lobbySeek(&api, &events);
     AppActivation activation;

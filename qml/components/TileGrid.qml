@@ -14,7 +14,7 @@ Flow {
     // so that the text lines up across a row however long it is.
     readonly property real titleHeight: Math.ceil(Theme.fontSizeSmall * 1.3) * 2
     readonly property real subtitleHeight: Math.ceil(Theme.fontSizeExtraSmall * 1.3) * 2
-    readonly property real tileHeight: 2 * Theme.paddingLarge + Theme.iconSizeMedium
+    property real tileHeight: 2 * Theme.paddingLarge + Theme.iconSizeMedium
                                        + titleHeight + subtitleHeight + 2 * Theme.paddingSmall
 
     x: Theme.horizontalPageMargin

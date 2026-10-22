@@ -5,6 +5,7 @@
 
 #include "core/lichessapi.h"
 #include "core/ndjsonstream.h"
+#include "core/session.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -21,9 +22,10 @@ int perfRating(const QJsonObject &user, const char *perf)
 }
 }
 
-FriendsModel::FriendsModel(LichessApi *api, QObject *parent)
+FriendsModel::FriendsModel(LichessApi *api, Session *session, QObject *parent)
     : QAbstractListModel(parent)
     , m_api(api)
+    , m_session(session)
 {
 }
 
@@ -46,6 +48,9 @@ QVariant FriendsModel::data(const QModelIndex &index, int role) const
     case BlitzRatingRole: return f.blitz;
     case RapidRatingRole: return f.rapid;
     case ClassicalRatingRole: return f.classical;
+    case GamesCountRole: return f.games;
+    case LastGameRole: return f.lastGameAt;
+    case SeenAtRole: return f.seenAt;
     default: return QVariant();
     }
 }
@@ -61,6 +66,9 @@ QHash<int, QByteArray> FriendsModel::roleNames() const
         { BlitzRatingRole, "blitzRating" },
         { RapidRatingRole, "rapidRating" },
         { ClassicalRatingRole, "classicalRating" },
+        { GamesCountRole, "gamesCount" },
+        { LastGameRole, "lastGameAt" },
+        { SeenAtRole, "seenAt" },
     };
 }
 
@@ -70,6 +78,7 @@ void FriendsModel::refresh()
         return;
     setLoading(true);
     m_pending.clear();
+    abortGameStream();
 
     m_stream = m_api->openStream(QStringLiteral("/api/rel/following"));
     m_stream->setParent(this);
@@ -81,6 +90,7 @@ void FriendsModel::refresh()
         f.blitz = perfRating(user, "blitz");
         f.rapid = perfRating(user, "rapid");
         f.classical = perfRating(user, "classical");
+        f.seenAt = qint64(user.value(QStringLiteral("seenAt")).toDouble());
         if (!f.id.isEmpty())
             m_pending.append(f);
     });
@@ -103,6 +113,7 @@ void FriendsModel::clear()
         m_stream.clear();
     }
     m_pending.clear();
+    abortGameStream();
     beginResetModel();
     m_friends.clear();
     endResetModel();
@@ -153,6 +164,74 @@ void FriendsModel::publish()
     m_pending.clear();
     setLoading(false);
     emit countChanged();
+    fetchDetails(0, m_generation);
+}
+
+void FriendsModel::abortGameStream()
+{
+    ++m_generation;
+    if (m_gameStream) {
+        m_gameStream->abort();
+        m_gameStream->deleteLater();
+        m_gameStream.clear();
+    }
+}
+
+void FriendsModel::fetchDetails(int index, int generation)
+{
+    const QString me = m_session->userId();
+    if (generation != m_generation || index >= m_friends.size() || me.isEmpty())
+        return;
+    // The crosstable counts the games the two have played against each other.
+    m_api->get(QStringLiteral("/api/crosstable/") + me + QLatin1Char('/') + m_friends.at(index).id,
+               QUrlQuery(), this, [this, index, generation](const ApiResult &result) {
+        if (generation != m_generation)
+            return;
+        if (result.ok()) {
+            m_friends[index].games = result.json.object().value(QStringLiteral("nbGames")).toInt();
+            emit dataChanged(this->index(index), this->index(index), { GamesCountRole });
+        }
+        fetchLastGame(index, generation);
+    });
+}
+
+void FriendsModel::fetchLastGame(int index, int generation)
+{
+    // Friends the user never played have no latest game to ask for, nor do
+    // those whose count could not be read.
+    if (generation != m_generation || index >= m_friends.size())
+        return;
+    if (m_friends.at(index).games <= 0) {
+        fetchDetails(index + 1, generation);
+        return;
+    }
+
+    const QString id = m_friends.at(index).id;
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("vs"), id);
+    query.addQueryItem(QStringLiteral("max"), QStringLiteral("1"));
+    query.addQueryItem(QStringLiteral("moves"), QStringLiteral("false"));
+    m_gameStream = m_api->openStream(QStringLiteral("/api/games/user/") + m_session->userId(), query);
+    m_gameStream->setParent(this);
+    connect(m_gameStream.data(), &NdjsonStream::message, this, [this, id, generation](const QJsonObject &game) {
+        if (generation != m_generation)
+            return;
+        const qint64 at = qint64(game.value(QStringLiteral("lastMoveAt")).toDouble());
+        for (int row = 0; row < m_friends.size(); ++row) {
+            if (m_friends.at(row).id == id) {
+                m_friends[row].lastGameAt = at ? at : qint64(game.value(QStringLiteral("createdAt")).toDouble());
+                emit dataChanged(this->index(row), this->index(row), { LastGameRole });
+                break;
+            }
+        }
+    });
+    connect(m_gameStream.data(), &NdjsonStream::finished, this, [this, index, generation](int, const QString &) {
+        if (generation != m_generation)
+            return;
+        m_gameStream->deleteLater();
+        m_gameStream.clear();
+        fetchDetails(index + 1, generation);
+    });
 }
 
 void FriendsModel::setLoading(bool loading)

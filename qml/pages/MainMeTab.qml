@@ -5,25 +5,34 @@ import QtQuick 2.6
 import Sailfish.Silica 1.0
 import "../components"
 
+// The user's own profile, with the way on to their games and their friends.
 MainTab {
+    onRefreshed: profileContent.profile.reload()
 
     LoginPrompt {}
 
-    TileGrid {
-        MenuTile {
-            visible: session.loggedIn
-            onClicked: pageStack.push(Qt.resolvedUrl("ProfilePage.qml"), { username: session.userId })
-            icon: "image://theme/icon-m-contact"
-            title: qsTr("My profile")
-            subtitle: qsTr("Your ratings and results")
-        }
+    ProfileContent {
+        id: profileContent
+        visible: session.loggedIn
+        username: session.loggedIn ? session.userId : ""
+        showActions: false
 
-        MenuTile {
+        TileGrid {
             visible: session.loggedIn
-            onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))
-            icon: "image://theme/icon-m-history"
-            title: qsTr("Games")
-            subtitle: qsTr("Look back at the games you played")
+
+            MenuTile {
+                onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))
+                icon: "image://theme/icon-m-history"
+                title: qsTr("Games history")
+                subtitle: qsTr("Look back at the games you played")
+            }
+
+            MenuTile {
+                onClicked: pageStack.push(Qt.resolvedUrl("FriendsPage.qml"))
+                icon: "image://theme/icon-m-people"
+                title: qsTr("Friends")
+                subtitle: qsTr("The players you follow")
+            }
         }
     }
 }

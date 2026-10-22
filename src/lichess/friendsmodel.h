@@ -10,9 +10,14 @@
 #include <QVector>
 
 class LichessApi;
+class Session;
 class NdjsonStream;
 
-// Players the user follows, with online status; online players first.
+// Players the user follows, with online status; online players first. Each
+// also has the number of games the user has played against them (-1 while
+// unknown), the time of the latest such game and the time they were last on
+// Lichess, in ms since the epoch (0 while unknown). The followed list doesn't
+// carry the games, so they are fetched once it is shown, one friend at a time.
 // Exposed to QML as "friends".
 class FriendsModel : public QAbstractListModel
 {
@@ -28,10 +33,13 @@ public:
         PlayingRole,
         BlitzRatingRole,
         RapidRatingRole,
-        ClassicalRatingRole
+        ClassicalRatingRole,
+        GamesCountRole,
+        LastGameRole,
+        SeenAtRole
     };
 
-    explicit FriendsModel(LichessApi *api, QObject *parent = nullptr);
+    FriendsModel(LichessApi *api, Session *session, QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -57,14 +65,24 @@ private:
         int blitz = 0;
         int rapid = 0;
         int classical = 0;
+        int games = -1;
+        qint64 lastGameAt = 0;
+        qint64 seenAt = 0;
     };
 
     void fetchStatuses(int from);
     void publish();
+    void fetchDetails(int index, int generation);
+    void fetchLastGame(int index, int generation);
+    void abortGameStream();
     void setLoading(bool loading);
 
     LichessApi *m_api;
+    Session *m_session;
     QPointer<NdjsonStream> m_stream;
+    QPointer<NdjsonStream> m_gameStream;
+    // Bumped whenever the list is replaced, so a late answer for an old list is dropped.
+    int m_generation = 0;
     QVector<Friend> m_pending;
     QVector<Friend> m_friends;
     bool m_loading = false;
