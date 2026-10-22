@@ -3,424 +3,103 @@
 
 import QtQuick 2.6
 import Sailfish.Silica 1.0
-import "../components"
-import "../js/Time.js" as Time
-import "../js/Util.js" as Util
 
+// The start page: tabs along the top, swiped sideways like in the Settings app,
+// whose TabView and TabBar are in Sailfish.Silica.private, which Harbour does not
+// allow. So this is a SlideshowView, which comes round, of full-height tabs with a
+// tab bar floating over them, which slides down with a tab that is pulled down and
+// gets a background once the tab scrolls beneath it.
 Page {
     id: page
 
     allowedOrientations: Orientation.All
-
-    // Correspondence countdowns are drawn against this, so that they keep
-    // running between the polls that load the games.
-    property double now: Date.now()
 
     onStatusChanged: {
         if (status === PageStatus.Active && session.loggedIn)
             ongoingGames.refreshIfStale()
     }
 
-    Timer {
-        running: page.status === PageStatus.Active && ongoingGames.count > 0
-        interval: 30 * 1000
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: page.now = Date.now()
+    Component { id: playTab; MainPlayTab { topInset: tabBar.height } }
+    Component { id: exploreTab; MainExploreTab { topInset: tabBar.height } }
+    Component { id: meTab; MainMeTab { topInset: tabBar.height } }
+
+    // Swiping on from the last tab comes round to the first
+    SlideshowView {
+        id: tabs
+        anchors.fill: parent
+        itemWidth: width
+        itemHeight: height
+        // The neighbouring tabs wait just outside the page, and show while a page slides
+        clip: true
+        model: 3
+
+        delegate: Item {
+            property Item tab: loader.item
+            width: tabs.itemWidth
+            height: tabs.itemHeight
+
+            Loader {
+                id: loader
+                anchors.fill: parent
+                sourceComponent: [playTab, exploreTab, meTab][index]
+            }
+        }
     }
 
-    SilicaFlickable {
-        anchors.fill: parent
-        contentHeight: column.height + Theme.paddingLarge
+    Item {
+        id: tabBar
+        readonly property real scrolled: tabs.currentItem && tabs.currentItem.tab ? tabs.currentItem.tab.contentY : 0
+        // A notch in portrait pushes the tab names down, as in Silica's own TabBar
+        readonly property real notch: page.orientation === Orientation.Portrait && Screen.topCutout.height > 0
+                                      ? Math.max(0, Screen.topCutout.height - Theme.paddingLarge) : 0
+        width: parent.width
+        height: Theme.itemSizeMedium + notch
+        y: Math.max(0, -scrolled)
+        z: 1
 
-        PullDownMenu {
-            MenuItem {
-                enabled: !session.busy
-                text: session.loggedIn ? qsTr("Log out") : qsTr("Log in")
-                onClicked: {
-                    if (session.loggedIn)
-                        Remorse.popupAction(page, qsTr("Logging out"), function() { session.logout() })
-                    else
-                        pageStack.push(Qt.resolvedUrl("LoginPage.qml"))
-                }
-            }
-            MenuItem {
-                text: qsTr("About")
-                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
-            }
-            MenuItem {
-                text: qsTr("Settings")
-                onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
-            }
-            MenuItem {
-                visible: session.loggedIn
-                text: qsTr("Refresh")
-                onClicked: {
-                    challenges.refresh()
-                    ongoingGames.refresh()
-                    session.refreshAccount()
-                }
-            }
+        Rectangle {
+            anchors.fill: parent
+            color: Theme.overlayBackgroundColor
+            opacity: Math.max(0, Math.min(1, tabBar.scrolled / Theme.paddingLarge))
         }
 
-        Column {
-            id: column
-            width: page.width
+        Row {
+            y: tabBar.notch
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: Theme.paddingLarge
 
-            PageHeader {
-                title: "salichess"
-                description: session.loggedIn
-                             ? Util.playerName(session.username, session.title)
-                             : qsTr("Not logged in")
-            }
+            Repeater {
+                model: [qsTr("Play"), qsTr("Explore"), qsTr("Me")]
 
-            OfflineBanner {
-                description: puzzleStore.count > 0
-                             ? qsTr("%n puzzle(s) are ready to play offline", "", puzzleStore.count)
-                             : qsTr("Games and puzzles need a connection")
-            }
-
-            // Entry points
-            BackgroundItem {
-                readonly property bool waiting: lobbySeek.seeking && !lobbySeek.correspondence
-                visible: session.loggedIn
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl(waiting ? "SeekWaitingPage.qml" : "SeekPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-shuffle"
-                    title: qsTr("Play with a random opponent")
-                    subtitle: parent.waiting ? qsTr("Looking for an opponent…")
-                                             : qsTr("Rapid, classical or correspondence")
-                }
-            }
-
-            BackgroundItem {
-                visible: session.loggedIn
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("NewChallengeDialog.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-people"
-                    title: qsTr("Play with a friend")
-                    subtitle: qsTr("Send a challenge to a Lichess player")
-                }
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("ComputerPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-computer"
-                    title: qsTr("Play the computer")
-                    subtitle: session.loggedIn ? qsTr("The Lichess AI, or Stockfish on this phone")
-                                               : qsTr("Stockfish on this phone")
-                }
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("HotseatDialog.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-device"
-                    title: qsTr("Pass and play")
-                    subtitle: qsTr("Two players sharing this phone")
-                }
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("BoardEditorPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-edit"
-                    title: qsTr("Set up a position")
-                    subtitle: qsTr("Copy a board to analyse it or play it out")
-                }
-            }
-
-            Separator {
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2 * x
-                color: Theme.primaryColor
-                horizontalAlignment: Qt.AlignHCenter
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("PuzzlesPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-wizard"
-                    title: qsTr("Puzzles")
-                    subtitle: session.loggedIn && session.puzzleRating > 0
-                              ? qsTr("Your puzzle rating: %1").arg(session.puzzleRating)
-                              : qsTr("Train tactics by theme and difficulty")
-                }
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("PuzzlePage.qml"), { daily: true })
-                MenuEntry {
-                    icon: "image://theme/icon-m-date"
-                    title: qsTr("Daily puzzle")
-                    subtitle: qsTr("The Lichess puzzle of the day")
-                }
-            }
-
-            Separator {
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2 * x
-                color: Theme.primaryColor
-                horizontalAlignment: Qt.AlignHCenter
-            }
-
-            BackgroundItem {
-                visible: session.loggedIn
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("ProfilePage.qml"), { username: session.userId })
-                MenuEntry {
-                    icon: "image://theme/icon-m-contact"
-                    title: qsTr("My profile")
-                    subtitle: qsTr("Your ratings and results")
-                }
-            }
-
-            BackgroundItem {
-                visible: session.loggedIn
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("GamesHistoryPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-history"
-                    title: qsTr("Games")
-                    subtitle: qsTr("Look back at the games you played")
-                }
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("PlayerSearchPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-search"
-                    title: qsTr("Find a player")
-                    subtitle: qsTr("Look up any Lichess player")
-                }
-            }
-
-            Separator {
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2 * x
-                color: Theme.primaryColor
-                horizontalAlignment: Qt.AlignHCenter
-            }
-
-            BackgroundItem {
-                height: Theme.itemSizeMedium
-                onClicked: pageStack.push(Qt.resolvedUrl("TvPage.qml"))
-                MenuEntry {
-                    icon: "image://theme/icon-m-video"
-                    title: qsTr("Lichess TV")
-                    subtitle: qsTr("Watch the games Lichess features")
-                }
-            }
-
-            // Login prompt
-            Item {
-                visible: !session.loggedIn
-                width: parent.width
-                height: loginColumn.height + 2 * Theme.paddingLarge
-
-                Column {
-                    id: loginColumn
-                    y: Theme.paddingLarge
-                    width: parent.width
-                    spacing: Theme.paddingLarge
+                // No background and no press highlight, as in the Settings app: the
+                // name of the tab being shown, or pressed, takes the highlight colour.
+                MouseArea {
+                    id: tabItem
+                    readonly property bool current: tabs.currentIndex === index
+                    width: tabTitle.width + 2 * Theme.paddingLarge
+                    height: Theme.itemSizeMedium
+                    onClicked: tabs.currentIndex = index
 
                     Label {
-                        x: Theme.horizontalPageMargin
-                        width: parent.width - 2 * x
-                        wrapMode: Text.Wrap
-                        color: Theme.secondaryHighlightColor
-                        font.pixelSize: Theme.fontSizeMedium
-                        text: qsTr("Log in with your Lichess account to play games with friends and to keep track of your puzzle rating.")
+                        id: tabTitle
+                        anchors.centerIn: parent
+                        text: modelData
+                        font.pixelSize: Theme.fontSizeLarge
+                        color: tabItem.current || tabItem.pressed ? Theme.highlightColor : Theme.primaryColor
                     }
-                    Button {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: qsTr("Log in")
-                        onClicked: pageStack.push(Qt.resolvedUrl("LoginPage.qml"))
-                    }
-                }
-            }
-
-            // Challenges
-            SectionHeader {
-                visible: challenges.count > 0
-                text: qsTr("Challenges")
-            }
-
-            Repeater {
-                model: challenges
-                ListItem {
-                    id: challengeItem
-                    width: column.width
-                    contentHeight: Theme.itemSizeMedium
-                    menu: challengeMenu
-                    onClicked: {
-                        // Challenges sent from the app can be reopened.
-                        var sent = model.direction === "out" ? outgoingChallenges.find(model.challengeId) : null
-                        if (sent)
-                            pageStack.push(Qt.resolvedUrl("ChallengeWaitingPage.qml"), { challenge: sent })
-                        else
-                            openMenu()
-                    }
-
-                    Column {
+                    Rectangle {
+                        visible: tabItem.current
                         anchors {
-                            left: parent.left
-                            leftMargin: Theme.horizontalPageMargin
-                            right: parent.right
-                            rightMargin: Theme.horizontalPageMargin
-                            verticalCenter: parent.verticalCenter
+                            horizontalCenter: parent.horizontalCenter
+                            top: tabTitle.bottom
+                            topMargin: Theme.paddingSmall
                         }
-                        Label {
-                            width: parent.width
-                            truncationMode: TruncationMode.Fade
-                            color: challengeItem.highlighted ? Theme.highlightColor : Theme.primaryColor
-                            text: model.direction === "in"
-                                  ? qsTr("From %1").arg(Util.playerName(model.opponentName, model.opponentTitle))
-                                  : qsTr("To %1").arg(Util.playerName(model.opponentName, model.opponentTitle))
-                        }
-                        Label {
-                            width: parent.width
-                            truncationMode: TruncationMode.Fade
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.secondaryColor
-                            text: [model.timeControl, model.perfName,
-                                   model.rated ? qsTr("Rated") : qsTr("Casual"),
-                                   model.direction === "out" ? qsTr("Waiting…") : ""]
-                                  .filter(function(s) { return s !== "" }).join(" • ")
-                        }
-                    }
-
-                    Component {
-                        id: challengeMenu
-                        ContextMenu {
-                            MenuItem {
-                                visible: model.direction === "in"
-                                text: qsTr("Accept")
-                                onClicked: challenges.accept(model.challengeId)
-                            }
-                            MenuItem {
-                                visible: model.direction === "in"
-                                text: qsTr("Decline")
-                                onClicked: challenges.decline(model.challengeId, "generic")
-                            }
-                            MenuItem {
-                                visible: model.direction === "in"
-                                text: qsTr("Decline: not now")
-                                onClicked: challenges.decline(model.challengeId, "later")
-                            }
-                            MenuItem {
-                                visible: model.direction === "out"
-                                text: qsTr("Cancel challenge")
-                                onClicked: {
-                                    var sent = outgoingChallenges.find(model.challengeId)
-                                    if (sent)
-                                        sent.cancel()
-                                    else
-                                        challenges.cancel(model.challengeId)
-                                }
-                            }
-                        }
+                        width: tabTitle.width
+                        height: Math.round(Theme.paddingSmall / 2)
+                        color: Theme.highlightColor
                     }
                 }
-            }
-
-            // Ongoing games
-            SectionHeader {
-                visible: ongoingGames.count > 0
-                text: ongoingGames.myTurnCount > 0
-                      ? qsTr("Ongoing games (your turn: %1)").arg(ongoingGames.myTurnCount)
-                      : qsTr("Ongoing games")
-            }
-
-            Repeater {
-                model: ongoingGames
-                BackgroundItem {
-                    id: gameItem
-                    width: column.width
-                    height: Theme.itemSizeExtraLarge
-                    onClicked: {
-                        if (model.boardCompatible)
-                            app.openGame(model.gameId)
-                        else
-                            app.notice(qsTr("This game's time control is too fast to be played in salichess."))
-                    }
-
-                    MiniBoard {
-                        id: thumb
-                        x: Theme.horizontalPageMargin
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.height - Theme.paddingMedium
-                        fen: model.fen
-                        lastMove: model.lastMove
-                        flipped: model.color === "black"
-                    }
-
-                    Column {
-                        anchors {
-                            left: thumb.right
-                            leftMargin: Theme.paddingLarge
-                            right: parent.right
-                            rightMargin: Theme.horizontalPageMargin
-                            verticalCenter: parent.verticalCenter
-                        }
-                        Label {
-                            width: parent.width
-                            truncationMode: TruncationMode.Fade
-                            text: Util.playerName(model.opponentName, model.opponentTitle)
-                                  + (model.opponentRating > 0 ? " (" + model.opponentRating + ")" : "")
-                            color: gameItem.highlighted ? Theme.highlightColor : Theme.primaryColor
-                        }
-                        Label {
-                            width: parent.width
-                            truncationMode: TruncationMode.Fade
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: model.isMyTurn ? Theme.highlightColor : Theme.secondaryColor
-                            text: {
-                                var turn = model.isMyTurn ? qsTr("Your turn") : qsTr("Waiting for opponent")
-                                // Correspondence: how long the side to move
-                                // still has for it.
-                                var left = model.turnDeadline > 0 ? model.turnDeadline - page.now : 0
-                                if (left > 0)
-                                    turn += " • " + qsTr("%1 left").arg(Time.formatTurnTime(left))
-                                return turn
-                            }
-                        }
-                        Label {
-                            width: parent.width
-                            truncationMode: TruncationMode.Fade
-                            font.pixelSize: Theme.fontSizeExtraSmall
-                            color: Theme.secondaryColor
-                            text: [model.perf, model.rated ? qsTr("Rated") : qsTr("Casual"),
-                                   model.color === "white" ? qsTr("You play white") : qsTr("You play black")]
-                                  .join(" • ")
-                        }
-                    }
-                }
-            }
-
-            Label {
-                visible: session.loggedIn && ongoingGames.count === 0 && challenges.count === 0
-                         && !ongoingGames.loading
-                x: Theme.horizontalPageMargin
-                width: parent.width - 2 * x
-                topPadding: Theme.paddingLarge * 2
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                color: Theme.secondaryHighlightColor
-                font.pixelSize: Theme.fontSizeLarge
-                text: qsTr("No games or challenges right now")
             }
         }
-
-        VerticalScrollDecorator {}
     }
 }

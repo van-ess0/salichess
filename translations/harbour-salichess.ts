@@ -1371,53 +1371,24 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
-    <name>MainPage</name>
+    <name>LoginPrompt</name>
     <message>
-        <source>About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Log out</source>
+        <source>Log in with your Lichess account to play games with friends and to keep track of your puzzle rating.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Log in</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>MainExploreTab</name>
     <message>
-        <source>Logging out</source>
+        <source>Set up a position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Refresh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Not logged in</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Play with a friend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Send a challenge to a Lichess player</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Puzzles</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Your puzzle rating: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Train tactics by theme and difficulty</source>
+        <source>Copy a board to analyse it or play it out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1429,7 +1400,84 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Log in with your Lichess account to play games with friends and to keep track of your puzzle rating.</source>
+        <source>Lichess TV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Watch the games Lichess features</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainMeTab</name>
+    <message>
+        <source>My profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your ratings and results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Look back at the games you played</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainPage</name>
+    <message>
+        <source>Play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Explore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Me</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainPlayTab</name>
+    <message>
+        <source>Play with a random opponent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Looking for an opponent…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rapid, classical or correspondence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play with a friend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send a challenge to a Lichess player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Lichess AI, or Stockfish on this phone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stockfish on this phone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pass and play</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Two players sharing this phone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1493,6 +1541,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>%1 left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>You play white</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1505,73 +1557,15 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 left</source>
+        <source>Puzzles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Play with a random opponent</source>
+        <source>Your puzzle rating: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Looking for an opponent…</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rapid, classical or correspondence</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <source>%n puzzle(s) are ready to play offline</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Games and puzzles need a connection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Games</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Look back at the games you played</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pass and play</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Two players sharing this phone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set up a position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Copy a board to analyse it or play it out</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Play the computer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The Lichess AI, or Stockfish on this phone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stockfish on this phone</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>My profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Your ratings and results</source>
+        <source>Train tactics by theme and difficulty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1583,11 +1577,44 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lichess TV</source>
+        <source>Play with the computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainTab</name>
+    <message>
+        <source>Log out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Watch the games Lichess features</source>
+        <source>Log in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logging out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n puzzle(s) are ready to play offline</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Games and puzzles need a connection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
