@@ -83,29 +83,34 @@ Page {
                 }
             }
 
-            Repeater {
-                model: Themes.categories()
+            // The themes, one group at a time unfolded
+            ExpandingSectionGroup {
+                width: column.width
 
-                Column {
-                    width: column.width
+                Repeater {
+                    model: Themes.categories()
 
-                    SectionHeader {
-                        text: modelData.title
-                    }
+                    ExpandingSection {
+                        title: modelData.title
 
-                    Repeater {
-                        model: modelData.themes
-                        BackgroundItem {
-                            id: themeItem
-                            height: Theme.itemSizeExtraSmall
-                            onClicked: page.start(modelData)
-                            Label {
-                                x: Theme.horizontalPageMargin
-                                width: parent.width - 2 * x
-                                anchors.verticalCenter: parent.verticalCenter
-                                truncationMode: TruncationMode.Fade
-                                text: Themes.name(modelData)
-                                color: themeItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                        content.sourceComponent: Column {
+                            width: column.width
+
+                            Repeater {
+                                model: modelData.themes
+                                BackgroundItem {
+                                    id: themeItem
+                                    height: Theme.itemSizeExtraSmall
+                                    onClicked: page.start(modelData)
+                                    Label {
+                                        x: Theme.horizontalPageMargin + Theme.paddingLarge
+                                        width: parent.width - x - Theme.horizontalPageMargin
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        truncationMode: TruncationMode.Fade
+                                        text: Themes.name(modelData)
+                                        color: themeItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                                    }
+                                }
                             }
                         }
                     }

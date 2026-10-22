@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Install the newest i486 RPM on the emulator, start the app and save a screenshot.
 #
-#   tools/emulator-shot.sh [--logged-in] [--tab N] [--page NAME [--mock-friends]] OUT.png
+#   tools/emulator-shot.sh [--logged-in] [--tab N] [--page NAME [--mock-friends]] [--patch FILE SED]... OUT.png
 #
 # --logged-in  mocks the logged-in interface: every `session.loggedIn` in the
 #              installed main-page QML is replaced with `true`, so the tiles and
@@ -12,16 +12,19 @@
 #              emulator's app never touches a real token.
 # --tab N      opens the main page on tab N (0 Play, 1 Explore, 2 Me).
 # --page NAME  starts on qml/pages/NAME.qml instead of the main page (e.g. FriendsPage).
+# --patch FILE SED  runs sed -e SED on the installed qml/FILE (e.g. pages/PuzzlesPage.qml), to
+#              set up a state that needs a tap. SED must not contain single quotes.
 # --mock-friends  fills the friends page with four made-up friends.
 # The emulator must be running, with its host-only network (see the Sailfish notes).
 set -e
-mock=0; tab=0; page=; friends=0
+mock=0; tab=0; page=; friends=0; patches=
 while [ $# -gt 1 ]; do
     case $1 in
         --logged-in) mock=1; shift ;;
         --tab) tab=$2; shift 2 ;;
         --page) page=$2; shift 2 ;;
         --mock-friends) friends=1; shift ;;
+        --patch) patches="$patches sed -i '$3' \$Q/$2;"; shift 3 ;;
         *) break ;;
     esac
 done
@@ -55,6 +58,7 @@ Q=/usr/share/harbour-salichess/qml
 [ $mock = 1 ] && sed -i 's/session\.loggedIn/true/g' \$Q/pages/Main*.qml \$Q/components/LoginPrompt.qml
 sed -i 's/id: tabs\$/id: tabs\n        currentIndex: $tab/' \$Q/pages/MainPage.qml
 [ $friends = 1 ] && cp /root/FriendsPage.qml \$Q/pages/FriendsPage.qml
+$patches
 [ -n '$page' ] && sed -i 's/MainPage { }/$page { }/' \$Q/harbour-salichess.qml
 ps -eo pid,comm | awk '\$2 ~ /^harbour-saliche/ {print \$1}' | xargs -r kill
 sleep 1
