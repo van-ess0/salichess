@@ -36,18 +36,7 @@ scp $O "$rpm" root@10.220.220.1:/root/t.rpm >/dev/null
 mockdir=$(mktemp -d)
 trap 'rm -rf "$mockdir"' EXIT
 if [ $friends = 1 ]; then
-    cat > "$mockdir/model" <<'MOCK'
-model: ListModel {
-    ListElement { userId: "magnus"; username: "Magnus"; title: "GM"; online: true; playing: true
-                  blitzRating: 3100; rapidRating: 2900; classicalRating: 2850; gamesCount: 41210; lastGameAt: 1792800000000; seenAt: 1792800000000 }
-    ListElement { userId: "alice"; username: "Alice"; title: ""; online: true; playing: false
-                  blitzRating: 1620; rapidRating: 1710; classicalRating: 0; gamesCount: 532; lastGameAt: 1790000000000; seenAt: 1792700000000 }
-    ListElement { userId: "bob"; username: "Bob"; title: ""; online: false; playing: false
-                  blitzRating: 1300; rapidRating: 0; classicalRating: 0; gamesCount: 7; lastGameAt: 1700000000000; seenAt: 1750000000000 }
-    ListElement { userId: "newbie"; username: "Newbie"; title: ""; online: false; playing: false
-                  blitzRating: 0; rapidRating: 0; classicalRating: 0; gamesCount: 0; lastGameAt: 0; seenAt: 0 }
-}
-MOCK
+    cp "$(dirname "$0")/friends-mock.model" "$mockdir/model"
     sed -e '/model: friends/{r '"$mockdir/model"'
 d}' -e 's/friends\.count/4/g; s/friends\.loading/false/g' "$(dirname "$0")/../qml/pages/FriendsPage.qml" > "$mockdir/FriendsPage.qml"
     scp $O "$mockdir/FriendsPage.qml" root@10.220.220.1:/root/FriendsPage.qml >/dev/null

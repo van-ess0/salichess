@@ -18,8 +18,38 @@ Page {
 
     allowedOrientations: Orientation.All
 
+    // Profiles are for logged-in users: without an account there is only a way in,
+    // under the same header.
+    PageHeader {
+        visible: !session.loggedIn
+        title: page.username
+    }
+
+    Column {
+        anchors.centerIn: parent
+        width: parent.width
+        visible: !session.loggedIn
+        spacing: Theme.paddingLarge
+
+        Label {
+            x: Theme.horizontalPageMargin
+            width: parent.width - 2 * x
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+            color: Theme.secondaryHighlightColor
+            font.pixelSize: Theme.fontSizeLarge
+            text: qsTr("Log in first")
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("Log in")
+            onClicked: pageStack.push(Qt.resolvedUrl("LoginPage.qml"))
+        }
+    }
+
     SilicaFlickable {
         anchors.fill: parent
+        visible: session.loggedIn
         contentHeight: content.height + Theme.paddingLarge
 
         PullDownMenu {
@@ -45,7 +75,7 @@ Page {
 
         ProfileContent {
             id: content
-            username: page.username
+            username: session.loggedIn ? page.username : ""
         }
 
         VerticalScrollDecorator {}

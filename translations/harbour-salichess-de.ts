@@ -1998,6 +1998,14 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Games history</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Log in first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log in</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PuzzleController</name>

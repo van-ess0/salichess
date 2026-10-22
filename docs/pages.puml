@@ -1,0 +1,192 @@
+' SPDX-FileCopyrightText: 2026 van-ess0 <https://github.com/van-ess0>
+' SPDX-License-Identifier: GPL-3.0-or-later
+'
+' How each page is reached, logged out and logged in. An arrow is a tap (or a
+' pull-down menu entry, where it says so) that pushes the page; a dashed arrow
+' is a page that replaces another or an app-wide event that opens it.
+' Page names are the QML files in qml/pages/, the tabs those of Main*Tab.qml.
+' Render with: java -jar plantuml.jar -tpng docs/pages.puml
+' (the "smetana" layout needs no Graphviz). Keep it in step with the
+' pageStack.push() calls and with the page functions of tools/screenshot-pages.sh.
+
+@startuml pages-logged-out
+!pragma layout smetana
+title salichess: pages reachable logged out
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam ArrowFontSize 11
+skinparam rectangle {
+  RoundCorner 12
+  BackgroundColor #F4F4F4
+}
+skinparam rectangle<<tab>> {
+  BackgroundColor #D8E8FF
+}
+skinparam rectangle<<gate>> {
+  BackgroundColor #FFE9C7
+}
+left to right direction
+
+rectangle "MainPage" as Main {
+  rectangle "Play tab" <<tab>> as Play
+  rectangle "Explore tab" <<tab>> as Explore
+  rectangle "Me tab\n(login prompt only)" <<tab>> as Me
+}
+
+rectangle LoginPage <<gate>> as Login
+rectangle AboutPage as About
+rectangle SettingsPage as Settings
+
+rectangle ComputerPage as Computer
+rectangle ComputerGamePage as ComputerGame
+rectangle HotseatDialog as HotseatDlg
+rectangle HotseatPage as Hotseat
+rectangle BoardEditorPage as Editor
+rectangle "PuzzlePage\n(daily)" as Daily
+rectangle TvPage as Tv
+rectangle AnalysisPage as Analysis
+rectangle AnalysisSummaryPage as Summary
+rectangle "ProfilePage\n(only asks to log in)" <<gate>> as Profile
+
+Main --> Login : pull-down "Log in"
+Main --> About : pull-down "About"
+Main --> Settings : pull-down "Settings"
+Play --> Login : "Log in" button
+Me --> Login : "Log in" button
+Play --> Computer : Play with the computer\n(Stockfish only)
+Play --> HotseatDlg : Pass and play
+Explore --> Editor : Set up a position
+Explore --> Daily : Daily puzzle
+Explore --> Tv : Lichess TV
+
+Computer --> ComputerGame : Play
+ComputerGame --> Analysis : Analyse
+HotseatDlg --> Hotseat : accept
+Hotseat --> Analysis : Analyse
+Editor --> HotseatDlg : Play it out
+Editor --> Analysis : Analyse
+Daily --> Analysis : Analyse
+Tv --> Analysis : Analyse
+Analysis --> Editor : Edit position
+Analysis --> Summary : Summary
+Tv --> Profile : tap a player
+Analysis --> Profile : tap a player
+Profile --> Login : "Log in" button
+@enduml
+
+@startuml pages-logged-in
+!pragma layout smetana
+title salichess: pages reachable logged in
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam ArrowFontSize 11
+skinparam rectangle {
+  RoundCorner 12
+  BackgroundColor #F4F4F4
+}
+skinparam rectangle<<tab>> {
+  BackgroundColor #D8E8FF
+}
+skinparam rectangle<<new>> {
+  BackgroundColor #D9F2D0
+}
+top to bottom direction
+
+rectangle "MainPage" as Main {
+  rectangle "Play tab" <<tab>> as Play
+  rectangle "Explore tab" <<tab>> as Explore
+  rectangle "Me tab\n(own profile inline)" <<tab>> as Me
+}
+
+rectangle AboutPage as About
+rectangle SettingsPage as Settings
+
+' Only logged in
+rectangle SeekPage <<new>> as Seek
+rectangle CustomSeekDialog <<new>> as CustomSeek
+rectangle SeekWaitingPage <<new>> as SeekWait
+rectangle NewChallengeDialog <<new>> as NewChallenge
+rectangle FriendPickerPage <<new>> as FriendPicker
+rectangle ChallengeWaitingPage <<new>> as ChallengeWait
+rectangle GamePage <<new>> as Game
+rectangle ChatPage <<new>> as Chat
+rectangle PuzzlesPage <<new>> as Puzzles
+rectangle PuzzleDashboardPage <<new>> as Dashboard
+rectangle PlayerSearchPage <<new>> as Search
+rectangle FriendsPage <<new>> as Friends
+rectangle GamesHistoryPage <<new>> as History
+rectangle GameFilterDialog <<new>> as Filter
+
+' Also logged out
+rectangle "ComputerPage\n(also the Lichess AI)" as Computer
+rectangle ComputerGamePage as ComputerGame
+rectangle HotseatDialog as HotseatDlg
+rectangle HotseatPage as Hotseat
+rectangle BoardEditorPage as Editor
+rectangle PuzzlePage as Puzzle
+rectangle TvPage as Tv
+rectangle AnalysisPage as Analysis
+rectangle AnalysisSummaryPage as Summary
+rectangle ProfilePage as Profile
+
+Main --> About : pull-down "About"
+Main --> Settings : pull-down "Settings"
+
+Play --> Seek : Play with a random opponent
+Play --> SeekWait : ...while a seek is running
+Play --> NewChallenge : Play with a friend
+Play --> Computer : Play with the computer
+Play --> HotseatDlg : Pass and play
+Play --> Puzzles : Puzzles
+Play --> Search : Find a player
+Play --> ChallengeWait : a challenge you sent
+Play --> Game : an ongoing game
+Explore --> Editor : Set up a position
+Explore --> Puzzle : Daily puzzle
+Explore --> Tv : Lichess TV
+Me --> History : Games history
+Me --> Friends : Friends
+
+Seek --> SeekWait : a quick pairing
+Seek --> CustomSeek : Custom
+CustomSeek --> SeekWait : accept
+SeekWait ..> Game : opponent found
+NewChallenge --> FriendPicker : pick a friend
+NewChallenge --> ChallengeWait : accept
+ChallengeWait ..> Game : accepted
+Computer ..> Game : Lichess AI
+Computer --> ComputerGame : Stockfish
+Game --> Chat : Chat
+Game --> Analysis : Analyse
+Game --> NewChallenge : Rematch
+ComputerGame --> Analysis : Analyse
+HotseatDlg --> Hotseat : accept
+Hotseat --> Analysis : Analyse
+Editor --> HotseatDlg : Play it out
+Editor --> Analysis : Analyse
+Puzzles --> Puzzle : a theme, or Healthy mix
+Puzzles --> Dashboard : pull-down "Dashboard"
+Dashboard --> Puzzle : a theme, or a puzzle from the history
+Puzzle --> Analysis : Analyse
+Tv --> Analysis : Analyse
+Analysis --> Editor : Edit position
+Analysis --> Summary : Summary
+Search --> Profile : a result
+Friends --> Profile : a friend
+Game --> Profile : tap a player
+Tv --> Profile : tap a player
+Analysis --> Profile : tap a player
+Profile --> History : pull-down "Games history"
+Profile --> NewChallenge : Challenge
+History --> Filter : Filter
+History --> Analysis : a game
+
+note bottom of Game
+  A game also opens by itself: an accepted challenge,
+  an opponent found for a seek, a notification tap.
+end note
+legend right
+  Green: reachable only when logged in.
+  Blue: the tabs of the main page.
+end legend
+@enduml
