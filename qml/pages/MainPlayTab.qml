@@ -22,69 +22,53 @@ MainTab {
         onTriggered: playTab.now = Date.now()
     }
 
-    BackgroundItem {
-        readonly property bool waiting: lobbySeek.seeking && !lobbySeek.correspondence
-        visible: session.loggedIn
-        height: Theme.itemSizeMedium
-        onClicked: pageStack.push(Qt.resolvedUrl(waiting ? "SeekWaitingPage.qml" : "SeekPage.qml"))
-        MenuEntry {
+    TileGrid {
+        MenuTile {
+            readonly property bool waiting: lobbySeek.seeking && !lobbySeek.correspondence
+            visible: session.loggedIn
+            onClicked: pageStack.push(Qt.resolvedUrl(waiting ? "SeekWaitingPage.qml" : "SeekPage.qml"))
             icon: "image://theme/icon-m-shuffle"
             title: qsTr("Play with a random opponent")
-            subtitle: parent.waiting ? qsTr("Looking for an opponent…")
+            subtitle: waiting ? qsTr("Looking for an opponent…")
                                      : qsTr("Rapid, classical or correspondence")
         }
-    }
 
-    BackgroundItem {
-        visible: session.loggedIn
-        height: Theme.itemSizeMedium
-        onClicked: pageStack.push(Qt.resolvedUrl("NewChallengeDialog.qml"))
-        MenuEntry {
+        MenuTile {
+            visible: session.loggedIn
+            onClicked: pageStack.push(Qt.resolvedUrl("NewChallengeDialog.qml"))
             icon: "image://theme/icon-m-people"
             title: qsTr("Play with a friend")
             subtitle: qsTr("Send a challenge to a Lichess player")
         }
-    }
 
-    BackgroundItem {
-        height: Theme.itemSizeMedium
-        onClicked: pageStack.push(Qt.resolvedUrl("ComputerPage.qml"))
-        MenuEntry {
+        MenuTile {
+            onClicked: pageStack.push(Qt.resolvedUrl("ComputerPage.qml"))
             icon: "image://theme/icon-m-computer"
             title: qsTr("Play with the computer")
             subtitle: session.loggedIn ? qsTr("The Lichess AI, or Stockfish on this phone")
                                        : qsTr("Stockfish on this phone")
         }
-    }
 
-    BackgroundItem {
-        height: Theme.itemSizeMedium
-        onClicked: pageStack.push(Qt.resolvedUrl("HotseatDialog.qml"))
-        MenuEntry {
+        MenuTile {
+            onClicked: pageStack.push(Qt.resolvedUrl("HotseatDialog.qml"))
             icon: "image://theme/icon-m-device"
             title: qsTr("Pass and play")
             subtitle: qsTr("Two players sharing this phone")
         }
-    }
 
-    BackgroundItem {
-        visible: session.loggedIn
-        height: Theme.itemSizeMedium
-        onClicked: pageStack.push(Qt.resolvedUrl("PuzzlesPage.qml"))
-        MenuEntry {
+        MenuTile {
+            visible: session.loggedIn
+            onClicked: pageStack.push(Qt.resolvedUrl("PuzzlesPage.qml"))
             icon: "image://theme/icon-m-wizard"
             title: qsTr("Puzzles")
             subtitle: session.loggedIn && session.puzzleRating > 0
                       ? qsTr("Your puzzle rating: %1").arg(session.puzzleRating)
                       : qsTr("Train tactics by theme and difficulty")
         }
-    }
 
-    BackgroundItem {
-        visible: session.loggedIn
-        height: Theme.itemSizeMedium
-        onClicked: pageStack.push(Qt.resolvedUrl("PlayerSearchPage.qml"))
-        MenuEntry {
+        MenuTile {
+            visible: session.loggedIn
+            onClicked: pageStack.push(Qt.resolvedUrl("PlayerSearchPage.qml"))
             icon: "image://theme/icon-m-search"
             title: qsTr("Find a player")
             subtitle: qsTr("Look up any Lichess player")
