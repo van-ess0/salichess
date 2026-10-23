@@ -93,11 +93,14 @@ Page {
             text: {
                 if (search.errorString !== "")
                     return search.errorString
-                if (search.term.length < 2)
+                if (search.term.length > search.maxTermLength)
+                    return qsTr("That is too long for a name")
+                if (search.term.length < search.minTermLength)
                     return qsTr("Type a name")
                 return search.loading ? "" : qsTr("No player found")
             }
-            hintText: search.term.length < 2 ? qsTr("Two letters are enough") : ""
+            hintText: search.term.length < search.minTermLength
+                      ? qsTr("At least %1 letters are needed").arg(search.minTermLength) : ""
         }
 
         BusyIndicator {

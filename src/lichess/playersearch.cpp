@@ -12,8 +12,6 @@
 
 namespace {
 
-// Lichess answers from two characters on.
-const int MinTermLength = 2;
 // Not a request per keystroke.
 const int TypingDelayMs = 350;
 
@@ -37,7 +35,7 @@ void PlayerSearch::setTerm(const QString &term)
 
     // Answers to an earlier term are no longer wanted.
     ++m_generation;
-    if (m_term.size() < MinTermLength) {
+    if (m_term.size() < MinTermLength || m_term.size() > MaxTermLength) {
         m_debounce.stop();
         setLoading(false);
         if (!m_results.isEmpty()) {

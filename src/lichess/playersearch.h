@@ -16,14 +16,23 @@ class PlayerSearch : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString term READ term WRITE setTerm NOTIFY termChanged)
+    // The lengths of a term Lichess accepts: nothing else is sent
+    Q_PROPERTY(int minTermLength READ minTermLength CONSTANT)
+    Q_PROPERTY(int maxTermLength READ maxTermLength CONSTANT)
     // Maps of "id", "name", "title", "online" and "patron".
     Q_PROPERTY(QVariantList results READ results NOTIFY resultsChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY errorStringChanged)
 
 public:
+    // Lichess documents 3 to 20 characters, but answers a bad request to 3: from 4 it works
+    static constexpr int MinTermLength = 4;
+    static constexpr int MaxTermLength = 20;
+
     explicit PlayerSearch(QObject *parent = nullptr);
 
+    int minTermLength() const { return MinTermLength; }
+    int maxTermLength() const { return MaxTermLength; }
     QString term() const { return m_term; }
     void setTerm(const QString &term);
     QVariantList results() const { return m_results; }

@@ -363,9 +363,15 @@ private slots:
             {"id":"magnus","name":"Magnus","title":"GM","online":true},
             {"id":"magnuss","name":"MagnusS","patron":true}]})");
         PlayerSearch search;
-        search.setTerm(QStringLiteral("m"));
+        // Lichess documents 3 to 20 characters but rejects 3 in practice; nothing outside 4 to 20 is sent
+        QCOMPARE(search.minTermLength(), 4);
+        QCOMPARE(search.maxTermLength(), 20);
+        search.setTerm(QStringLiteral("mag"));
         QTest::qWait(500);
         QCOMPARE(server->requestCount("GET", "/api/player/autocomplete"), 0); // too short
+        search.setTerm(QString(21, QLatin1Char('a')));
+        QTest::qWait(500);
+        QCOMPARE(server->requestCount("GET", "/api/player/autocomplete"), 0); // too long
 
         search.setTerm(QStringLiteral(" magn "));
         QTRY_COMPARE(search.results().size(), 2);
@@ -375,6 +381,13 @@ private slots:
         const QUrlQuery query = server->lastRequest("GET", "/api/player/autocomplete").query;
         QCOMPARE(query.queryItemValue("term"), QStringLiteral("magn"));
         QCOMPARE(query.queryItemValue("object"), QStringLiteral("true"));
+
+        // Typing on to a term that is too long clears the list again, with no request.
+        const int requests = server->requestCount("GET", "/api/player/autocomplete");
+        search.setTerm(QString(21, QLatin1Char('b')));
+        QVERIFY(search.results().isEmpty());
+        QTest::qWait(500);
+        QCOMPARE(server->requestCount("GET", "/api/player/autocomplete"), requests);
 
         // Clearing the box clears the list.
         search.setTerm(QString());

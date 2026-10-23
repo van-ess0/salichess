@@ -1875,7 +1875,11 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Two letters are enough</source>
+        <source>That is too long for a name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>At least %1 letters are needed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
