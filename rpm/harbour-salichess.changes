@@ -3,6 +3,22 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Fri Oct 23 2026 van-ess0 <https://github.com/van-ess0> 0.9-1
+- The main page is in tabs, Play, Explore and Me, which you can tap or swipe
+  through, round and round. What used to be a list of buttons is now a grid
+  of tiles, and Lichess TV has a tile of its own with a game playing on its
+  board.
+- The Me tab shows your own profile, with tiles for the history of your games
+  and for your friends.
+- Friends: the players you follow, each with whether they are online or
+  playing, their ratings, how many games you have played against them, the
+  latest of those and when they were last seen. Tap one to open their profile.
+- The puzzle themes are folded into groups; open one to see its themes.
+- Puzzles and Find a player need an account, so they show once you are logged
+  in, and a profile asks you to log in first.
+- Find a player starts searching at four letters: Lichess answered shorter
+  names with an error.
+
 * Fri Oct 02 2026 van-ess0 <https://github.com/van-ess0> 0.8-1
 - Play the computer: the Lichess AI (levels 1 to 8, with a clock), or
   Stockfish on the phone, which needs no connection or account once its
