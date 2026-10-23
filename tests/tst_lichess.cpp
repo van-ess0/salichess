@@ -676,7 +676,7 @@ private slots:
         server->route("GET", "/api/crosstable/me/bob", 200, R"({"users":{"me":2.5,"bob":4.5},"nbGames":7})");
         server->route("GET", "/api/users/status", 200, R"([{"id":"bob","online":true},{"id":"alice","online":false}])");
         FriendsModel model(api, session);
-        model.refresh();
+        model.refresh(true);
         QTRY_COMPARE(server->openStreams("/api/rel/following"), 1);
         server->push("/api/rel/following", line(R"({"id":"alice","username":"Alice","seenAt":1690000000000})")
                      + line(R"({"id":"bob","username":"Bob","title":"GM","seenAt":1700000000000,"perfs":{"blitz":{"rating":2500}}})"));
@@ -706,6 +706,24 @@ private slots:
         QTRY_COMPARE(role(model, 1, "gamesCount").toInt(), 0);
         QCOMPARE(role(model, 1, "lastGameAt").toLongLong(), qint64(0));
         QCOMPARE(server->requestCount("GET", "/api/games/user/me"), 1);
+    }
+
+    // The friend picker needs only names and presence: no request per friend.
+    void friendsModelWithoutDetails()
+    {
+        logIn();
+        server->streamRoute("GET", "/api/rel/following");
+        server->route("GET", "/api/users/status", 200, R"([{"id":"bob","online":true}])");
+        server->route("GET", "/api/crosstable/me/bob", 200, R"({"nbGames":7})");
+        FriendsModel model(api, session);
+        model.refresh();
+        QTRY_COMPARE(server->openStreams("/api/rel/following"), 1);
+        server->push("/api/rel/following", line(R"({"id":"bob","username":"Bob"})"));
+        server->closeStreams("/api/rel/following");
+        QTRY_COMPARE(model.count(), 1);
+        QTest::qWait(300);
+        QCOMPARE(server->requestCount("GET", "/api/crosstable/me/bob"), 0);
+        QCOMPARE(role(model, 0, "gamesCount").toInt(), -1);
     }
 
     // --- Seeks for a random opponent ---

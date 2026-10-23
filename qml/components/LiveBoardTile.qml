@@ -14,12 +14,12 @@ BackgroundItem {
     property alias title: titleLabel.text
     property alias subtitle: subtitleLabel.text
 
-    // Morphy against the Duke of Brunswick and Count Isouard, 1858. Castling
-    // is the king's move; moveUci() brings the rook along.
+    // Morphy against the Duke of Brunswick and Count Isouard, 1858, as UCI moves;
+    // the castling is the king's move and the rook's, which slide together.
     readonly property var moves: [
         "e2e4", "e7e5", "g1f3", "d7d6", "d2d4", "c8g4", "d4e5", "g4f3", "d1f3", "d6e5",
         "f1c4", "g8f6", "f3b3", "d8e7", "b1c3", "c7c6", "c1g5", "b7b5", "c3b5", "c6b5",
-        "c4b5", "b8d7", "e1c1", "a8d8", "d1d7", "d8d7", "h1d1", "e7e6", "b5d7", "f6d7",
+        "c4b5", "b8d7", "e1c1 a1d1", "a8d8", "d1d7", "d8d7", "h1d1", "e7e6", "b5d7", "f6d7",
         "b3b8", "d7b8", "d1d8"
     ]
     // The game rests on the final position for a few beats before it restarts.
@@ -52,28 +52,16 @@ BackgroundItem {
         squares = s
     }
 
-    function pieceOn(square) {
-        return squares.indexOf(square)
-    }
-
-    function movePiece(s, from, to) {
-        var mover = s.indexOf(from)
-        var taken = s.indexOf(to)
-        if (taken >= 0)
-            s[taken] = -1
-        if (mover >= 0)
-            s[mover] = to
-    }
-
-    function playMove(uci) {
-        var from = Util.squareIndex(uci.substring(0, 2))
-        var to = Util.squareIndex(uci.substring(2, 4))
+    function playMove(move) {
         var s = squares.slice()
-        var mover = s.indexOf(from)
-        movePiece(s, from, to)
-        // Queenside castling, the only castling in the game
-        if (mover >= 0 && codes[mover].charAt(1) === "K" && from % 8 === 4 && to % 8 === 2)
-            movePiece(s, from - 4, from - 1)
+        move.split(" ").forEach(function(uci) {
+            var from = Util.squareIndex(uci.substring(0, 2))
+            var to = Util.squareIndex(uci.substring(2, 4))
+            var taken = s.indexOf(to)
+            if (taken >= 0)
+                s[taken] = -1
+            s[s.indexOf(from)] = to
+        })
         squares = s
     }
 

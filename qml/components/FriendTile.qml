@@ -107,35 +107,24 @@ BackgroundItem {
             }
         }
 
-        Label {
-            width: parent.width
-            height: Math.ceil(Theme.fontSizeExtraSmall * 1.3)
-            horizontalAlignment: Text.AlignHCenter
-            truncationMode: TruncationMode.Fade
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: tile.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
-            text: tile.games > 0 ? qsTr("%n game(s) with you", "", tile.games)
-                  : (tile.games === 0 ? qsTr("No games with you yet") : "")
-        }
-
-        Label {
-            width: parent.width
-            height: Math.ceil(Theme.fontSizeExtraSmall * 1.3)
-            horizontalAlignment: Text.AlignHCenter
-            truncationMode: TruncationMode.Fade
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: tile.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
-            text: tile.games > 0 && tile.lastGameAt > 0 ? qsTr("Last game %1").arg(tile.dayText(tile.lastGameAt)) : ""
-        }
-
-        Label {
-            width: parent.width
-            height: Math.ceil(Theme.fontSizeExtraSmall * 1.3)
-            horizontalAlignment: Text.AlignHCenter
-            truncationMode: TruncationMode.Fade
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: tile.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
-            text: tile.seenAt > 0 ? qsTr("Last seen %1").arg(tile.dayText(tile.seenAt)) : ""
+        // Games against the user, the latest of them, when the friend was last
+        // on Lichess; each line keeps its place when it has nothing to say.
+        Repeater {
+            model: [
+                tile.games > 0 ? qsTr("%n game(s) with you", "", tile.games)
+                               : (tile.games === 0 ? qsTr("No games with you yet") : ""),
+                tile.games > 0 && tile.lastGameAt > 0 ? qsTr("Last game %1").arg(tile.dayText(tile.lastGameAt)) : "",
+                tile.seenAt > 0 ? qsTr("Last seen %1").arg(tile.dayText(tile.seenAt)) : ""
+            ]
+            Label {
+                width: content.width
+                height: Math.ceil(Theme.fontSizeExtraSmall * 1.3)
+                horizontalAlignment: Text.AlignHCenter
+                truncationMode: TruncationMode.Fade
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: tile.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                text: modelData
+            }
         }
     }
 }

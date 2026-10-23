@@ -164,7 +164,7 @@ HotseatDlg --> Hotseat : accept
 Hotseat --> Analysis : Analyse
 Editor --> HotseatDlg : Play it out
 Editor --> Analysis : Analyse
-Puzzles --> Puzzle : a theme, or Healthy mix
+Puzzles --> Puzzle : a theme, Healthy mix or Daily puzzle
 Puzzles --> Dashboard : pull-down "Dashboard"
 Dashboard --> Puzzle : a theme, or a puzzle from the history
 Puzzle --> Analysis : Analyse

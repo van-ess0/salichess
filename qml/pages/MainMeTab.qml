@@ -16,6 +16,7 @@ MainTab {
         visible: session.loggedIn
         username: session.loggedIn ? session.userId : ""
         showActions: false
+        showOfflineBanner: false
 
         TileGrid {
             visible: session.loggedIn

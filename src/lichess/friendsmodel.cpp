@@ -72,12 +72,13 @@ QHash<int, QByteArray> FriendsModel::roleNames() const
     };
 }
 
-void FriendsModel::refresh()
+void FriendsModel::refresh(bool withDetails)
 {
     if (!m_api->hasToken() || m_loading)
         return;
     setLoading(true);
     m_pending.clear();
+    m_withDetails = withDetails;
     abortGameStream();
 
     m_stream = m_api->openStream(QStringLiteral("/api/rel/following"));
@@ -101,7 +102,7 @@ void FriendsModel::refresh()
             setLoading(false);
             return;
         }
-        fetchStatuses(0);
+        fetchStatuses(0, m_generation);
     });
 }
 
@@ -121,8 +122,10 @@ void FriendsModel::clear()
     emit countChanged();
 }
 
-void FriendsModel::fetchStatuses(int from)
+void FriendsModel::fetchStatuses(int from, int generation)
 {
+    if (generation != m_generation)
+        return;
     if (from >= m_pending.size()) {
         publish();
         return;
@@ -133,7 +136,9 @@ void FriendsModel::fetchStatuses(int from)
 
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("ids"), ids.join(QLatin1Char(',')));
-    m_api->get(QStringLiteral("/api/users/status"), query, this, [this, from](const ApiResult &result) {
+    m_api->get(QStringLiteral("/api/users/status"), query, this, [this, from, generation](const ApiResult &result) {
+        if (generation != m_generation)
+            return;
         if (result.ok()) {
             for (const QJsonValue &value : result.json.array()) {
                 const QJsonObject status = value.toObject();
@@ -147,7 +152,7 @@ void FriendsModel::fetchStatuses(int from)
                 }
             }
         }
-        fetchStatuses(from + StatusBatch);
+        fetchStatuses(from + StatusBatch, generation);
     });
 }
 
@@ -164,7 +169,13 @@ void FriendsModel::publish()
     m_pending.clear();
     setLoading(false);
     emit countChanged();
-    fetchDetails(0, m_generation);
+    if (m_withDetails)
+        fetchDetails(0, m_generation);
+}
+
+void FriendsModel::stopDetails()
+{
+    abortGameStream();
 }
 
 void FriendsModel::abortGameStream()

@@ -16,6 +16,8 @@ Column {
     // Content a caller adds goes between the header and the ratings.
     default property alias extras: extraColumn.data
     property bool showActions: true
+    // The Me tab has a banner of its own
+    property bool showOfflineBanner: true
     property alias profile: profile
     readonly property bool isMe: session.loggedIn && profile.loaded
                                  && session.userId.toLowerCase() === profile.name.toLowerCase()
@@ -75,6 +77,7 @@ Column {
     }
 
     OfflineBanner {
+        visible: content.showOfflineBanner && (connection.offline || connection.rateLimited)
         description: qsTr("Profiles need a connection")
     }
 

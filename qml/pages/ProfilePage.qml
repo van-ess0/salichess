@@ -3,7 +3,6 @@
 
 import QtQuick 2.6
 import Sailfish.Silica 1.0
-import harbour.salichess 1.0
 import "../components"
 
 // A Lichess player: ratings and how they changed, game results and what

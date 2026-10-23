@@ -11,7 +11,9 @@ Page {
 
     allowedOrientations: Orientation.All
 
-    Component.onCompleted: friends.refresh()
+    // The games against each friend are fetched for as long as the page is open
+    Component.onCompleted: friends.refresh(true)
+    Component.onDestruction: friends.stopDetails()
 
     SilicaFlickable {
         anchors.fill: parent
@@ -20,7 +22,7 @@ Page {
         PullDownMenu {
             MenuItem {
                 text: qsTr("Refresh")
-                onClicked: friends.refresh()
+                onClicked: friends.refresh(true)
             }
         }
 

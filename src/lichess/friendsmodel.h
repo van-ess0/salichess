@@ -17,8 +17,9 @@ class NdjsonStream;
 // also has the number of games the user has played against them (-1 while
 // unknown), the time of the latest such game and the time they were last on
 // Lichess, in ms since the epoch (0 while unknown). The followed list doesn't
-// carry the games, so they are fetched once it is shown, one friend at a time.
-// Exposed to QML as "friends".
+// carry the games, so with refresh(true) they are fetched once it is shown, one
+// friend at a time, until stopDetails() or the next refresh. Exposed to QML as
+// "friends".
 class FriendsModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -48,7 +49,8 @@ public:
     int count() const { return m_friends.size(); }
     bool loading() const { return m_loading; }
 
-    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void refresh(bool withDetails = false);
+    Q_INVOKABLE void stopDetails();
     void clear();
 
 signals:
@@ -70,7 +72,7 @@ private:
         qint64 seenAt = 0;
     };
 
-    void fetchStatuses(int from);
+    void fetchStatuses(int from, int generation);
     void publish();
     void fetchDetails(int index, int generation);
     void fetchLastGame(int index, int generation);
@@ -86,6 +88,7 @@ private:
     QVector<Friend> m_pending;
     QVector<Friend> m_friends;
     bool m_loading = false;
+    bool m_withDetails = false;
 };
 
 #endif // FRIENDSMODEL_H
