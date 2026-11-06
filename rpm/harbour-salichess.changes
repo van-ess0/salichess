@@ -3,6 +3,15 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Fri Nov 06 2026 van-ess0 <https://github.com/van-ess0> 0.10-1
+- salichess is now in German, Spanish, French, Finnish, Italian, Polish,
+  Brazilian and European Portuguese, Russian, Turkish, Simplified Chinese,
+  Japanese and Arabic, and follows the language of the phone. The names of
+  game types, results and puzzle themes follow those Lichess uses in each
+  language. Arabic is read from right to left, but the screens are not
+  mirrored. The translations have been checked against Lichess's own wording
+  but not by native speakers, so corrections are welcome.
+
 * Fri Oct 23 2026 van-ess0 <https://github.com/van-ess0> 0.9-1
 - The main page is in tabs, Play, Explore and Me, which you can tap or swipe
   through, round and round. What used to be a list of buttons is now a grid
