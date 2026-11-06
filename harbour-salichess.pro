@@ -149,7 +149,20 @@ SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 # Regenerates translations/*.ts from qsTr()/tr() on every build.
 CONFIG += sailfishapp_i18n
 
-TRANSLATIONS += translations/harbour-salichess-de.ts
+TRANSLATIONS += \
+    translations/harbour-salichess-de.ts \
+    translations/harbour-salichess-es.ts \
+    translations/harbour-salichess-fr.ts \
+    translations/harbour-salichess-fi.ts \
+    translations/harbour-salichess-it.ts \
+    translations/harbour-salichess-pl.ts \
+    translations/harbour-salichess-pt_BR.ts \
+    translations/harbour-salichess-pt_PT.ts \
+    translations/harbour-salichess-ru.ts \
+    translations/harbour-salichess-tr.ts \
+    translations/harbour-salichess-zh_CN.ts \
+    translations/harbour-salichess-ja.ts \
+    translations/harbour-salichess-ar.ts
 
 SUBDIRS += \
     tests/tests.pro

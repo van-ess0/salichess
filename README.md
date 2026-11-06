@@ -132,7 +132,10 @@ Bug reports and pull requests are welcome at <https://github.com/van-ess0/salich
   [REUSE](https://reuse.software); `uvx reuse lint` checks this.
 - **Translations:** `translations/harbour-salichess-<lang>.ts` files are regenerated from the
   sources on every build. To add a language, add the file to `TRANSLATIONS` in
-  `harbour-salichess.pro`, build once, and translate it with Qt Linguist.
+  `harbour-salichess.pro`, build once, and translate it with Qt Linguist, or with
+  `tools/i18n.py` (`dump` lists every string with its context, `build` turns a plain
+  text translation into the `.ts` and checks the placeholders and plural forms).
+  Terms should match Lichess's own in that language.
 
 ## License
 

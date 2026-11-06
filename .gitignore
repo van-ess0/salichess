@@ -17,3 +17,6 @@ build-tests/
 
 # Local notes for AI coding assistants (contain machine-specific paths)
 CLAUDE.md
+
+# Claude Code project settings and skills (local to this checkout)
+.claude/

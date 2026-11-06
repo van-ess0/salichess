@@ -17,6 +17,10 @@
 #   --no-install    do not install the newest i486 RPM first
 #   --list          list the pages and their states, and exit
 #
+# To shoot in another language, write e.g. `LANG=de_DE.UTF-8 LC_ALL=de_DE.UTF-8` to
+# /tmp/shot-lang on the emulator first (and delete it afterwards); use -o so the
+# English shots in docs/screenshots/ are not replaced.
+#
 # PAGE, --changed and --new together shoot the union. A shot is named PAGE_STATE.png
 # (PuzzlesPage_logged-out.png) and replaces the old one; git keeps the older ones.
 #
@@ -232,7 +236,7 @@ finish() {
     sed -i "s|MainPage { }|$2|" $Q/harbour-salichess.qml
     ps -eo pid,comm | awk '$2 ~ /^harbour-saliche/ {print $1}' | xargs -r kill
     sleep 1
-    su -s /bin/sh defaultuser -c 'XDG_RUNTIME_DIR=/run/user/100000 WAYLAND_DISPLAY=../../display/wayland-0 QT_QPA_PLATFORM=wayland QT_LOGGING_TO_CONSOLE=1 nohup /usr/bin/harbour-salichess >/home/defaultuser/log.txt 2>&1 &' </dev/null
+    su -s /bin/sh defaultuser -c 'XDG_RUNTIME_DIR=/run/user/100000 WAYLAND_DISPLAY=../../display/wayland-0 QT_QPA_PLATFORM=wayland QT_LOGGING_TO_CONSOLE=1 env $(cat /tmp/shot-lang 2>/dev/null) nohup /usr/bin/harbour-salichess >/home/defaultuser/log.txt 2>&1 &' </dev/null
     sleep $3
     su -s /bin/sh -g privileged defaultuser -c "XDG_RUNTIME_DIR=/run/user/100000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/100000/dbus/user_bus_socket dbus-send --print-reply --session --dest=org.nemomobile.lipstick /org/nemomobile/lipstick/screenshot org.nemomobile.lipstick.saveScreenshot string:/home/defaultuser/shots/$1.png" >/dev/null </dev/null
     echo "$1: $(grep -ci 'qml.*\(error\|warn\)\|TypeError\|ReferenceError' /home/defaultuser/log.txt) QML message(s)"
