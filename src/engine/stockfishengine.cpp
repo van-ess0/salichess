@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "stockfishengine.h"
+#include "core/logging.h"
 
 #include "nnueweights.h"
 #include "chess/chessposition.h"
@@ -132,12 +133,12 @@ bool StockfishEngine::ensureEngine()
         const QString text =
                 QString::fromUtf8(message.data(), int(message.size())).trimmed();
         if (text.contains(QLatin1String("ERROR"))) {
-            qWarning("Stockfish: %s", qPrintable(text));
+            qCWarning(lcEngine, "Stockfish: %s", qPrintable(text));
             return;
         }
         if (m_verifyMessages < 2) {
             ++m_verifyMessages; // one for each of the two networks
-            qDebug("Stockfish: %s", qPrintable(text));
+            qCDebug(lcEngine, "Stockfish: %s", qPrintable(text));
         }
     });
 

@@ -4,6 +4,7 @@
 #include "session.h"
 
 #include "lichessapi.h"
+#include "logging.h"
 #include "tokenstore.h"
 
 #include <QJsonObject>
@@ -17,6 +18,7 @@ Session::Session(LichessApi *api, TokenStore *tokenStore, QObject *parent)
         // While logging out, logout() handles the answers itself.
         if (!m_loggedIn || m_busy)
             return;
+        qCInfo(lcSession, "The token was rejected (401), logging out locally");
         clearLocalState();
         emit loginFailed(tr("Your Lichess login has expired or was revoked. Please log in again."));
     });
@@ -80,6 +82,7 @@ void Session::restore()
     const QString token = m_tokenStore->load();
     if (token.isEmpty())
         return;
+    qCDebug(lcSession, "Restored a saved login");
     m_api->setToken(token);
     setLoggedIn(true);
     refreshAccount();
@@ -96,10 +99,12 @@ void Session::login(const QString &accessToken)
     m_api->get(QStringLiteral("/api/account"), QUrlQuery(), this, [this, accessToken](const ApiResult &result) {
         setBusy(false);
         if (!result.ok()) {
+            qCInfo(lcSession, "Login failed (status %d)", result.status);
             m_api->setToken(QString());
             emit loginFailed(result.errorString);
             return;
         }
+        qCInfo(lcSession, "Logged in");
         m_tokenStore->save(accessToken);
         m_account = result.json.object().toVariantMap();
         emit accountChanged();
@@ -117,10 +122,12 @@ void Session::logout()
     m_api->deleteResource(QStringLiteral("/api/token"), this, [this](const ApiResult &result) {
         setBusy(false);
         if (!result.ok() && result.status != 401) {
+            qCInfo(lcSession, "Logout not confirmed (status %d)", result.status);
             emit logoutFailed(tr("You are still logged in, because Lichess did not confirm the logout: %1")
                               .arg(result.errorString));
             return;
         }
+        qCInfo(lcSession, "Logged out");
         clearLocalState();
     });
 }

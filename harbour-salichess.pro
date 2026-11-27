@@ -59,6 +59,7 @@ HEADERS += \
     src/engine/stockfishengine.h \
     src/core/appactivation.h \
     src/core/lichessapi.h \
+    src/core/logging.h \
     src/core/ndjsonstream.h \
     src/core/pieceimageprovider.h \
     src/core/secretstokenstore.h \
@@ -101,6 +102,7 @@ SOURCES += \
     src/engine/stockfishengine.cpp \
     src/core/appactivation.cpp \
     src/core/lichessapi.cpp \
+    src/core/logging.cpp \
     src/core/ndjsonstream.cpp \
     src/core/pieceimageprovider.cpp \
     src/core/secretstokenstore.cpp \

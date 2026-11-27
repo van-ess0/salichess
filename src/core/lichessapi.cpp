@@ -3,6 +3,7 @@
 
 #include "lichessapi.h"
 
+#include "logging.h"
 #include "ndjsonstream.h"
 
 #include <QCoreApplication>
@@ -10,6 +11,7 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QSet>
 #include <QUrl>
 
 namespace {
@@ -42,6 +44,35 @@ bool isConnectivityError(QNetworkReply::NetworkError error)
     default:
         return false;
     }
+}
+
+// The path for the log: only the fixed words of the API's routes are kept,
+// anything else (user names, game and puzzle ids, search terms) becomes "*",
+// and the query string is dropped. Nothing personal can get into the log by
+// way of a route that was not thought of.
+QString loggablePath(const QUrl &url)
+{
+    static const QSet<QString> known = {
+        QStringLiteral("api"), QStringLiteral("account"), QStringLiteral("token"),
+        QStringLiteral("board"), QStringLiteral("game"), QStringLiteral("stream"),
+        QStringLiteral("event"), QStringLiteral("seek"), QStringLiteral("challenge"),
+        QStringLiteral("ai"), QStringLiteral("accept"), QStringLiteral("decline"),
+        QStringLiteral("cancel"), QStringLiteral("puzzle"), QStringLiteral("batch"),
+        QStringLiteral("dashboard"), QStringLiteral("activity"), QStringLiteral("daily"),
+        QStringLiteral("tv"), QStringLiteral("feed"), QStringLiteral("user"),
+        QStringLiteral("rating-history"), QStringLiteral("games"), QStringLiteral("export"),
+        QStringLiteral("cloud-eval"), QStringLiteral("player"), QStringLiteral("autocomplete"),
+        QStringLiteral("crosstable"), QStringLiteral("following"), QStringLiteral("move"),
+        QStringLiteral("resign"), QStringLiteral("abort"), QStringLiteral("draw"),
+        QStringLiteral("takeback"), QStringLiteral("claim-victory"), QStringLiteral("chat"),
+        QStringLiteral("request-analysis"), QStringLiteral("social"), QStringLiteral("users"),
+    };
+    QStringList parts = url.path().split(QLatin1Char('/'), QString::SkipEmptyParts);
+    for (QString &part : parts) {
+        if (!known.contains(part))
+            part = QStringLiteral("*");
+    }
+    return QLatin1Char('/') + parts.join(QLatin1Char('/'));
 }
 
 QString errorFromBody(const QJsonDocument &json)
@@ -137,6 +168,7 @@ NdjsonStream *LichessApi::openStream(const QString &path, const QUrlQuery &query
 {
     QNetworkRequest request = makeRequest(path, query);
     request.setRawHeader("Accept", "application/x-ndjson");
+    qCDebug(lcApi, "stream GET %s", qPrintable(loggablePath(request.url())));
     return new NdjsonStream(m_nam->get(request), idleTimeoutMs);
 }
 
@@ -145,6 +177,7 @@ NdjsonStream *LichessApi::openPostStream(const QString &path, const QUrlQuery &f
     QNetworkRequest request = makeRequest(path, QUrlQuery());
     request.setRawHeader("Accept", "application/x-ndjson");
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/x-www-form-urlencoded"));
+    qCDebug(lcApi, "stream POST %s", qPrintable(loggablePath(request.url())));
     return new NdjsonStream(m_nam->post(request, form.query(QUrl::FullyEncoded).toUtf8()), idleTimeoutMs);
 }
 
@@ -176,6 +209,8 @@ void LichessApi::startNext()
         return;
 
     m_current = m_queue.dequeue();
+    qCDebug(lcApi, "%s %s (%d queued)", m_current.verb.constData(),
+            qPrintable(loggablePath(m_current.request.url())), int(m_queue.size()));
     // Qt 5.6 has no sendCustomRequest() overload taking a QByteArray body.
     if (m_current.verb == "POST")
         m_activeReply = m_nam->post(m_current.request, m_current.body);
@@ -215,10 +250,16 @@ void LichessApi::onReplyFinished(QNetworkReply *reply)
         }
     }
 
+    // Only the status: error texts from the server can name users.
+    qCDebug(lcApi, "%s %s -> %d", m_current.verb.constData(),
+            qPrintable(loggablePath(m_current.request.url())),
+            result.status > 0 ? result.status : -int(reply->error()));
+
     Pending finished = std::move(m_current);
     m_current = Pending();
 
     if (result.status == 429) {
+        qCWarning(lcApi, "Rate limited, pausing requests for %d s", RateLimitPauseMs / 1000);
         m_rateLimited = true;
         emit rateLimitedChanged();
         m_rateLimitTimer.start();
@@ -239,5 +280,6 @@ void LichessApi::setOffline(bool offline)
     if (m_offline == offline)
         return;
     m_offline = offline;
+    qCDebug(lcApi, "%s", offline ? "offline" : "back online");
     emit offlineChanged();
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "outgoingchallenge.h"
+#include "core/logging.h"
 
 #include "eventstream.h"
 #include "core/lichessapi.h"
@@ -135,6 +136,7 @@ void OutgoingChallenge::setState(State state)
     if (m_state == state)
         return;
     m_state = state;
+    qCDebug(lcGame, "challenge state %d", int(state));
     emit stateChanged();
 }
 

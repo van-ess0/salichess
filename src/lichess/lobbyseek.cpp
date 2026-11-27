@@ -5,6 +5,7 @@
 
 #include "eventstream.h"
 #include "core/lichessapi.h"
+#include "core/logging.h"
 #include "core/ndjsonstream.h"
 #include "core/services.h"
 #include "core/session.h"
@@ -112,6 +113,8 @@ void LobbySeek::create(const QVariantMap &options)
         return;
     }
     setState(Seeking);
+    qCDebug(lcGame, "seeking: %s, %s, %s", qPrintable(m_speed),
+            m_rated ? "rated" : "casual", m_correspondence ? "correspondence" : "real time");
 
     if (m_correspondence) {
         m_api->postForm(QStringLiteral("/api/board/seek"), form, this, [this](const ApiResult &result) {
@@ -188,6 +191,7 @@ void LobbySeek::setState(State state)
     if (m_state == state)
         return;
     m_state = state;
+    qCDebug(lcGame, "seek state %d", int(state));
     emit stateChanged();
 }
 

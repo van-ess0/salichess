@@ -36,6 +36,7 @@ HEADERS += \
     $$SRC/engine/nnueweights.h \
     $$SRC/engine/stockfishengine.h \
     $$SRC/core/lichessapi.h \
+    $$SRC/core/logging.h \
     $$SRC/core/ndjsonstream.h \
     $$SRC/core/services.h \
     $$SRC/core/session.h \
@@ -81,6 +82,7 @@ SOURCES += \
     $$SRC/engine/nnueweights.cpp \
     $$SRC/engine/stockfishengine.cpp \
     $$SRC/core/lichessapi.cpp \
+    $$SRC/core/logging.cpp \
     $$SRC/core/ndjsonstream.cpp \
     $$SRC/core/services.cpp \
     $$SRC/core/session.cpp \

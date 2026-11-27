@@ -19,6 +19,7 @@
 #include "chess/piecesmodel.h"
 #include "core/appsettings.h"
 #include "core/appactivation.h"
+#include "core/logging.h"
 #include "core/lichessapi.h"
 #include "core/pieceimageprovider.h"
 #include "core/services.h"
@@ -48,12 +49,19 @@
 
 int main(int argc, char *argv[])
 {
+    // --log-level=DEBUG (or log_level=DEBUG); before anything can log.
+    QStringList arguments;
+    for (int i = 0; i < argc; ++i)
+        arguments << QString::fromLocal8Bit(argv[i]);
+    Logging::configure(arguments);
+
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
     // Must match the [X-Sailjail] section of the .desktop file: these decide
     // the config/data paths the sandbox allows.
     app->setOrganizationName(QStringLiteral("io.github.vaness0"));
     app->setApplicationName(QStringLiteral("harbour-salichess"));
     app->setApplicationVersion(QStringLiteral(APP_VERSION)); // from the spec, via the .pro
+    qCInfo(lcSession, "salichess %s, Qt %s", APP_VERSION, qVersion());
 
     const char *uri = "harbour.salichess";
     qmlRegisterType<GameController>(uri, 1, 0, "GameController");

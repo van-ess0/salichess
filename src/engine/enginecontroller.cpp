@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "enginecontroller.h"
+#include "core/logging.h"
 
 #include "chess/chessgame.h"
 #include "chess/chessposition.h"
@@ -179,6 +180,7 @@ void EngineController::restart()
         return;
     }
     if (!m_thread) {
+        qCDebug(lcEngine, "analysis engine thread started");
         m_thread = new QThread(this);
         m_thread->setObjectName(QStringLiteral("stockfish"));
         m_engine = new StockfishEngine;
@@ -214,6 +216,7 @@ void EngineController::restart()
     m_pendingFen.clear();
     m_depth = 0;
     m_searching = true;
+    qCDebug(lcEngine, "analysis search, depth %d", m_settings->engineDepth());
     setError(QString());
     emit stateChanged();
     QMetaObject::invokeMethod(m_engine, "search", Qt::QueuedConnection,

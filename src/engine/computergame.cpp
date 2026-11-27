@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "computergame.h"
+#include "core/logging.h"
 
 #include "chess/chessgame.h"
 #include "chess/chessposition.h"
@@ -145,6 +146,7 @@ void ComputerGame::start(const QString &color)
     m_winner.clear();
     m_error.clear();
     m_state = Playing;
+    qCDebug(lcGame, "computer game: level %d, player is %s", m_level, qPrintable(m_playerColor));
     emit stateChanged();
     requestEngineMove();
 }
@@ -240,6 +242,7 @@ void ComputerGame::requestEngineMove()
     // No networks, no engine: Stockfish would end the whole app. Wait, and
     // say so; downloading them (or leaving) is up to the player.
     if (!engineAvailable()) {
+        qCDebug(lcGame, "computer game: waiting for the networks");
         m_waiting = true;
         emit stateChanged();
         return;
@@ -295,6 +298,7 @@ void ComputerGame::onEngineFailed(const QString &error)
 {
     if (m_state != Playing || (m_requestId == 0 && !m_loading && !m_waiting))
         return;
+    qCWarning(lcEngine, "computer game: the engine failed: %s", qPrintable(error));
     m_requestId = 0;
     m_loading = false;
     m_waiting = false;
@@ -326,6 +330,7 @@ void ComputerGame::checkOutcome()
 void ComputerGame::finish(const QString &status, const QString &winner)
 {
     cancelRequest();
+    qCDebug(lcGame, "computer game over: %s", qPrintable(status));
     m_status = status;
     m_winner = winner;
     m_state = Finished;

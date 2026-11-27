@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "puzzlestore.h"
+#include "core/logging.h"
 
 #include "core/appsettings.h"
 #include "core/lichessapi.h"
@@ -155,6 +156,7 @@ void PuzzleStore::refill()
             m_puzzles.append(puzzle);
             ++added;
         }
+        qCDebug(lcPuzzle, "offline pool: %d added, %d now", added, int(m_puzzles.size()));
         if (added > 0)
             save();
         emit changed();
@@ -203,6 +205,8 @@ void PuzzleStore::flushResults()
     m_api->postJson(QStringLiteral("/api/puzzle/batch/") + angle, query, QJsonDocument(body), this,
                     [this, sent](const ApiResult &result) {
         m_flushing = false;
+        qCDebug(lcPuzzle, "sent %d stored result(s): %s", int(sent.size()),
+                result.ok() ? "ok" : "failed, kept");
         if (!result.ok())
             return; // keep them for the next attempt
         for (int i = m_results.size() - 1; i >= 0; --i) {

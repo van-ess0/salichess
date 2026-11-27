@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "nnueweights.h"
+#include "core/logging.h"
 
 #include "core/lichessapi.h"
 #include "core/services.h"
@@ -129,6 +130,7 @@ void NnueWeights::download()
         emit changed();
         return;
     }
+    qCDebug(lcEngine, "downloading %d network file(s)", int(m_queue.size()));
     m_error.clear();
     m_doneBytes = 0;
     m_currentBytes = 0;
@@ -224,6 +226,10 @@ void NnueWeights::fetch(const QString &fileName)
 
 void NnueWeights::finish(const QString &error)
 {
+    if (!error.isEmpty())
+        qCWarning(lcEngine, "network download failed: %s", qPrintable(error));
+    else
+        qCDebug(lcEngine, "network download finished or stopped");
     m_error = error;
     m_queue.clear();
     m_currentBytes = 0;

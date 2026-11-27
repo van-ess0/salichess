@@ -6,6 +6,7 @@
 #include "chatmodel.h"
 #include "chess/chessgame.h"
 #include "gameinfo.h"
+#include "core/logging.h"
 #include "core/lichessapi.h"
 #include "core/ndjsonstream.h"
 #include "core/services.h"
@@ -61,6 +62,7 @@ void GameController::setGameId(const QString &id)
     emit gameIdChanged();
     if (!m_gameId.isEmpty()) {
         m_failures = 0;
+        qCDebug(lcGame, "watching a game");
         setLoading(true);
         connectStream();
     }
@@ -256,6 +258,8 @@ void GameController::closeStream()
 void GameController::onMessage(const QJsonObject &message)
 {
     const QString type = message.value(QStringLiteral("type")).toString();
+    if (type != QLatin1String("chatLine"))
+        qCDebug(lcGame, "game message: %s", qPrintable(type));
     if (type == QLatin1String("gameFull")) {
         applyGameFull(message);
     } else if (type == QLatin1String("gameState")) {
@@ -280,6 +284,7 @@ void GameController::onStreamFinished(int status, const QString &error)
     setConnected(false);
     setLoading(false);
 
+    qCDebug(lcGame, "game stream ended (status %d, failures %d)", status, m_failures);
     if (status >= 400 && status < 500 && status != 429) {
         // Not our game, not playable through the Board API, or gone.
         setError(error.isEmpty() ? tr("This game cannot be played in salichess.") : error);

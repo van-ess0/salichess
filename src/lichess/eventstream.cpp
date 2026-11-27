@@ -4,6 +4,7 @@
 #include "eventstream.h"
 
 #include "core/lichessapi.h"
+#include "core/logging.h"
 #include "core/ndjsonstream.h"
 
 #include <QJsonObject>
@@ -66,6 +67,7 @@ void EventStream::onMessage(const QJsonObject &message)
 {
     const QString type = message.value(QStringLiteral("type")).toString();
     const QVariantMap data = message.toVariantMap();
+    qCDebug(lcGame, "event: %s", qPrintable(type));
     if (type == QLatin1String("gameStart"))
         emit gameStarted(data.value(QStringLiteral("game")).toMap());
     else if (type == QLatin1String("gameFinish"))
@@ -81,6 +83,7 @@ void EventStream::onMessage(const QJsonObject &message)
 void EventStream::onFinished(int status, const QString &error)
 {
     Q_UNUSED(error)
+    qCDebug(lcApi, "event stream ended (status %d)", status);
     if (m_stream)
         m_stream->deleteLater();
     m_stream.clear();
@@ -103,5 +106,6 @@ void EventStream::setConnected(bool connected)
     if (m_connected == connected)
         return;
     m_connected = connected;
+    qCDebug(lcApi, "event stream %s", connected ? "open" : "closed");
     emit connectedChanged();
 }
