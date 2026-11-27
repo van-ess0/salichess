@@ -110,10 +110,6 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
         <translation>Wyłącz Stockfisha</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Włącz Stockfisha (pobieranie 75 MB)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Włącz Stockfisha</translation>
     </message>
@@ -148,6 +144,10 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
     <message>
         <source>Set up this position</source>
         <translation>Ustaw tę pozycję</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Włącz Stockfisha (pobieranie 94 MB)</translation>Włącz Stockfisha (pobieranie 75 MB) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
         <translation>Pobieranie silnika…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish potrzebuje swoich sieci neuronowych, około %1 MB, pobieranych jednorazowo. Zostają na telefonie.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>Anuluj pobieranie</translation>
     </message>
@@ -587,6 +583,10 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
     <message>
         <source>Play</source>
         <translation>Graj</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish potrzebuje swojej sieci neuronowej (ok. %1 MB), pobieranej jednorazowo. Zostaje w telefonie.</translation>
     </message>
 </context>
 <context>
@@ -1705,6 +1705,13 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Odpowiedź Lichess jest zbyt duża</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1812,6 +1819,18 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
     <message>
         <source>The downloaded network is not usable</source>
         <translation>Pobrana sieć nie nadaje się do użycia</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>Pobieranie zostało przekierowane gdzie indziej</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>Pobrana sieć jest zbyt duża</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>Pobrana sieć jest uszkodzona</translation>
     </message>
 </context>
 <context>
@@ -2920,10 +2939,6 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
         <translation>Na szachownicy analizy, przy użyciu %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Wymaga jednorazowego pobrania około 75 MB</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>Zatrzymaj pobieranie</translation>
     </message>
@@ -2955,13 +2970,13 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
         <source>Memory for the engine</source>
         <translation>Pamięć dla silnika</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Wymaga jednorazowego pobrania ok. 94 MB</translation>Wymaga jednorazowego pobrania około 75 MB {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Brakuje sieci silnika</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish nie może przeanalizować tej pozycji</translation>
@@ -2969,6 +2984,10 @@ Kod źródłowy, zgłoszenia błędów i tłumaczenia: https://github.com/van-es
     <message>
         <source>The engine is not ready</source>
         <translation>Silnik nie jest gotowy</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>Brakuje sieci silnika</translation>
     </message>
 </context>
 <context>

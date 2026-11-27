@@ -19,6 +19,11 @@ namespace {
 // stepping through a game would otherwise start a search per move.
 const int RestartDelayMs = 250;
 
+// The engine rests this long without being wanted before it is freed. Short
+// enough that a page left behind does not hold 220 MB, long enough that
+// stepping back and forth between pages does not reload the network each time.
+const int ReleaseAfterIdleMs = 20 * 1000;
+
 // Longer lines are unreadable on a phone.
 const int PvMovesShown = 8;
 
@@ -52,10 +57,16 @@ EngineController::EngineController(AppSettings *settings, NnueWeights *weights, 
     m_debounce.setSingleShot(true);
     m_debounce.setInterval(RestartDelayMs);
     connect(&m_debounce, &QTimer::timeout, this, &EngineController::restart);
+    m_idleRelease.setSingleShot(true);
+    m_idleRelease.setInterval(ReleaseAfterIdleMs);
+    connect(&m_idleRelease, &QTimer::timeout, this, [this]() {
+        if (!wantsEngine())
+            release();
+    });
 
     connect(m_weights, &NnueWeights::readyChanged, this, [this]() {
         emit availableChanged();
-        // Switching the engine on before the networks arrived leaves it
+        // Switching the engine on before the network arrived leaves it
         // waiting for them; this is when it can finally start.
         if (available())
             restart();
@@ -78,12 +89,25 @@ EngineController::EngineController(AppSettings *settings, NnueWeights *weights, 
 
 EngineController::~EngineController()
 {
-    if (m_thread) {
-        // The engine must be taken down on its own thread, where it was made.
-        QMetaObject::invokeMethod(m_engine, "unload", Qt::BlockingQueuedConnection);
-        m_thread->quit();
-        m_thread->wait();
-    }
+    release();
+}
+
+void EngineController::release()
+{
+    m_idleRelease.stop();
+    if (!m_thread)
+        return;
+    qCDebug(lcEngine, "analysis engine freed");
+    stop();
+    // The engine must be taken down on its own thread, where it was made.
+    QMetaObject::invokeMethod(m_engine, "unload", Qt::BlockingQueuedConnection);
+    m_thread->quit();
+    m_thread->wait();
+    // Its deleteLater() ran as the thread ended; nothing may reach it now.
+    m_engine = nullptr;
+    delete m_thread;
+    m_thread = nullptr;
+    m_engineReady = false;
 }
 
 bool EngineController::enabled() const
@@ -172,13 +196,14 @@ void EngineController::restart()
         return;
     }
     if (!available()) {
-        // Switched on without the networks on the phone: fetch them. The
+        // Switched on without the network on the phone: fetch it. The
         // search follows when they arrive.
         if (!m_weights->downloading())
             m_weights->download();
         stop();
         return;
     }
+    m_idleRelease.stop();
     if (!m_thread) {
         qCDebug(lcEngine, "analysis engine thread started");
         m_thread = new QThread(this);
@@ -202,11 +227,10 @@ void EngineController::restart()
     }
 
     if (!m_engineReady) {
-        // Reading the networks takes a moment; the search follows once the
+        // Reading the network takes a moment; the search follows once the
         // engine says it is ready.
         QMetaObject::invokeMethod(m_engine, "load", Qt::QueuedConnection,
-                                  Q_ARG(QString, m_weights->bigPath()),
-                                  Q_ARG(QString, m_weights->smallPath()));
+                                  Q_ARG(QString, m_weights->networkPath()));
         return;
     }
 
@@ -226,6 +250,9 @@ void EngineController::restart()
 
 void EngineController::stop()
 {
+    // Whatever stops the engine, an engine that nobody comes back to is freed.
+    if (m_thread && !wantsEngine())
+        m_idleRelease.start();
     m_debounce.stop();
     m_pendingFen.clear();
     m_searchFen.clear();

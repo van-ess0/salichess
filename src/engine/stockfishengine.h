@@ -20,13 +20,13 @@ class Score;
 // commands to another process: Harbour allows the app one binary, and the
 // engine is part of it.
 //
-// This object does the slow work — starting the engine, reading the networks
+// This object does the slow work — starting the engine, reading the network
 // in, searching — so it is meant to live on a thread of its own, with
 // EngineController calling into it from the UI thread. Its signals carry
 // nothing but values, so they cross back safely.
 //
 // Careful: Stockfish ends the process if a search is started before its
-// networks are in. load() is the only thing that opens the gate, and a
+// network is in. load() is the only thing that opens the gate, and a
 // search before it succeeds is refused here.
 class StockfishEngine : public QObject
 {
@@ -38,9 +38,9 @@ public:
     bool isReady() const { return m_ready; }
 
 public slots:
-    // Starts the engine if it is not running yet and reads the two networks.
-    // Both paths must already have been checked with NnueWeights.
-    void load(const QString &bigNetwork, const QString &smallNetwork);
+    // Starts the engine if it is not running yet and reads the network.
+    // The path must already have been checked with NnueWeights.
+    void load(const QString &network);
     // Frees the engine and everything it holds.
     void unload();
     void setThreads(int threads);
@@ -79,7 +79,7 @@ private:
     void applyOption(const char *name, int value);
 
     std::unique_ptr<Stockfish::Engine> m_engine;
-    bool m_ready = false;      // networks in, searching allowed
+    bool m_ready = false;      // network in, searching allowed
     bool m_searching = false;
     int m_threads = 1;
     int m_hashMb = 16;
@@ -87,7 +87,7 @@ private:
     int m_skill = 20;
     // Set before each play() search, read by the callback of its thread.
     std::atomic<int> m_requestId{0};
-    int m_verifyMessages = 0;  // how many "networks are fine" lines were logged
+    int m_verifyMessages = 0;  // how many "network is fine" lines were logged
 };
 
 #endif // STOCKFISHENGINE_H

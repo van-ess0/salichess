@@ -110,10 +110,6 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
         <translation>Spegni Stockfish</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Accendi Stockfish (download di 75 MB)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Accendi Stockfish</translation>
     </message>
@@ -148,6 +144,10 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
     <message>
         <source>Set up this position</source>
         <translation>Imposta questa posizione</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Attiva Stockfish (download di 94 MB)</translation>Accendi Stockfish (download di 75 MB) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
         <translation>Download del motore in corso…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish ha bisogno delle sue reti neurali, circa %1 MB, scaricate una sola volta. Restano sul telefono.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>Annulla download</translation>
     </message>
@@ -587,6 +583,10 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
     <message>
         <source>Play</source>
         <translation>Gioca</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish ha bisogno della sua rete neurale, di circa %1 MB, scaricata una sola volta. Resta sul telefono.</translation>
     </message>
 </context>
 <context>
@@ -1703,6 +1703,13 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>La risposta di Lichess è troppo grande</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1810,6 +1817,18 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
     <message>
         <source>The downloaded network is not usable</source>
         <translation>La rete scaricata non è utilizzabile</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>Il download è stato reindirizzato altrove</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>La rete scaricata è troppo grande</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>La rete scaricata è danneggiata</translation>
     </message>
 </context>
 <context>
@@ -2910,10 +2929,6 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
         <translation>Sulla scacchiera di analisi, con %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Richiede un download una tantum di circa 75 MB</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>Interrompi il download</translation>
     </message>
@@ -2945,13 +2960,13 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
         <source>Memory for the engine</source>
         <translation>Memoria per il motore</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Richiede un download una tantum di circa 94 MB</translation>Richiede un download una tantum di circa 75 MB {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Mancano le reti del motore</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish non può analizzare questa posizione</translation>
@@ -2959,6 +2974,10 @@ Codice sorgente, segnalazioni di errori e traduzioni: https://github.com/van-ess
     <message>
         <source>The engine is not ready</source>
         <translation>Il motore non è pronto</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>La rete del motore manca</translation>
     </message>
 </context>
 <context>

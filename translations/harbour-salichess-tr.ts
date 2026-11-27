@@ -110,10 +110,6 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
         <translation>Stockfish&apos;i kapat</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Stockfish&apos;i aç (75 MB indirme)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Stockfish&apos;i aç</translation>
     </message>
@@ -148,6 +144,10 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
     <message>
         <source>Set up this position</source>
         <translation>Bu konumu kur</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Stockfish'i aç (94 MB indirme)</translation>Stockfish&apos;i aç (75 MB indirme) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
         <translation>Motor indiriliyor…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish&apos;in yaklaşık %1 MB&apos;lık sinir ağlarına ihtiyacı var; bir kez indirilir ve telefonda kalır.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>İndirmeyi iptal et</translation>
     </message>
@@ -587,6 +583,10 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
     <message>
         <source>Play</source>
         <translation>Oyna</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish'in yaklaşık %1 MB'lık sinir ağına ihtiyacı var; bir kez indirilir ve telefonda kalır.</translation>
     </message>
 </context>
 <context>
@@ -1701,6 +1701,13 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Lichess yanıtı çok büyük</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1808,6 +1815,18 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
     <message>
         <source>The downloaded network is not usable</source>
         <translation>İndirilen ağ kullanılamıyor</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>İndirme başka bir yere yönlendirildi</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>İndirilen ağ çok büyük</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>İndirilen ağ bozuk</translation>
     </message>
 </context>
 <context>
@@ -2900,10 +2919,6 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
         <translation>Analiz tahtasında, %1 kullanılarak</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Bir kerelik yaklaşık 75 MB indirme gerekir</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>İndirmeyi durdur</translation>
     </message>
@@ -2935,13 +2950,13 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
         <source>Memory for the engine</source>
         <translation>Motor için bellek</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Yaklaşık 94 MB'lık tek seferlik indirme gerekir</translation>Bir kerelik yaklaşık 75 MB indirme gerekir {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Motor ağları eksik</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish bu konumu analiz edemiyor</translation>
@@ -2949,6 +2964,10 @@ Kaynak kodu, hata bildirimleri ve çeviriler: https://github.com/van-ess0/salich
     <message>
         <source>The engine is not ready</source>
         <translation>Motor hazır değil</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>Motorun ağı eksik</translation>
     </message>
 </context>
 <context>

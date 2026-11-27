@@ -8,6 +8,7 @@
 #include "chess/chessposition.h"
 #include "core/appsettings.h"
 #include "core/services.h"
+#include "enginecontroller.h"
 #include "lichess/gameinfo.h"
 #include "nnueweights.h"
 #include "stockfishengine.h"
@@ -74,7 +75,7 @@ ComputerGame::ComputerGame(QObject *parent)
     if (m_weights) {
         connect(m_weights, &NnueWeights::readyChanged, this, [this]() {
             emit engineAvailableChanged();
-            // A game that was waiting for the networks goes on by itself.
+            // A game that was waiting for the network goes on by itself.
             if (m_waiting && engineAvailable())
                 requestEngineMove();
         });
@@ -83,12 +84,22 @@ ComputerGame::ComputerGame(QObject *parent)
 
 ComputerGame::~ComputerGame()
 {
-    if (m_thread) {
-        // The engine must be taken down on its own thread, where it was made.
-        QMetaObject::invokeMethod(m_engine, "unload", Qt::BlockingQueuedConnection);
-        m_thread->quit();
-        m_thread->wait();
-    }
+    freeEngine();
+}
+
+void ComputerGame::freeEngine()
+{
+    if (!m_thread)
+        return;
+    // The engine must be taken down on its own thread, where it was made.
+    QMetaObject::invokeMethod(m_engine, "unload", Qt::BlockingQueuedConnection);
+    m_thread->quit();
+    m_thread->wait();
+    m_engine = nullptr; // deleted as its thread ended
+    delete m_thread;
+    m_thread = nullptr;
+    m_engineReady = false;
+    m_loading = false;
 }
 
 void ComputerGame::setLevel(int level)
@@ -209,6 +220,9 @@ void ComputerGame::ensureEngine()
 {
     if (m_thread)
         return;
+    // Not two engines at once: each holds the whole network.
+    if (EngineController *analysis = Services::engine())
+        analysis->release();
     m_thread = new QThread(this);
     m_thread->setObjectName(QStringLiteral("stockfish-play"));
     m_engine = new StockfishEngine;
@@ -239,10 +253,10 @@ void ComputerGame::requestEngineMove()
         return;
     m_error.clear();
 
-    // No networks, no engine: Stockfish would end the whole app. Wait, and
+    // No network, no engine: Stockfish would end the whole app. Wait, and
     // say so; downloading them (or leaving) is up to the player.
     if (!engineAvailable()) {
-        qCDebug(lcGame, "computer game: waiting for the networks");
+        qCDebug(lcGame, "computer game: waiting for the network");
         m_waiting = true;
         emit stateChanged();
         return;
@@ -250,14 +264,13 @@ void ComputerGame::requestEngineMove()
 
     ensureEngine();
     if (!m_engineReady) {
-        // Reading the networks takes a moment; the move follows when the
+        // Reading the network takes a moment; the move follows when the
         // engine says it is ready.
         m_waiting = true;
         if (!m_loading) {
             m_loading = true;
             QMetaObject::invokeMethod(m_engine, "load", Qt::QueuedConnection,
-                                      Q_ARG(QString, m_weights->bigPath()),
-                                      Q_ARG(QString, m_weights->smallPath()));
+                                      Q_ARG(QString, m_weights->networkPath()));
         }
         emit stateChanged();
         return;
@@ -334,6 +347,9 @@ void ComputerGame::finish(const QString &status, const QString &winner)
     m_status = status;
     m_winner = winner;
     m_state = Finished;
+    // A finished game has no use for the engine, and the analysis board
+    // (one tap away) needs the memory for its own.
+    freeEngine();
     emit stateChanged();
 }
 

@@ -48,6 +48,7 @@ class AppSettings : public QObject
     Q_PROPERTY(int engineThreads READ engineThreads WRITE setEngineThreads NOTIFY engineThreadsChanged)
     // Transposition table size in MB.
     Q_PROPERTY(int engineHash READ engineHash WRITE setEngineHash NOTIFY engineHashChanged)
+    Q_PROPERTY(int maxEngineHash READ maxEngineHash CONSTANT)
 
 public:
     explicit AppSettings(QObject *parent = nullptr);
@@ -103,7 +104,9 @@ public:
     static int maxEngineLines() { return 5; }
     static int maxEngineDepth() { return 30; }
     static int maxEngineThreads() { return 4; }
-    static int maxEngineHash() { return 128; }
+    // The transposition table, in MB. A 32-bit process has under 3 GB of
+    // address space and also holds the network, so it gets far less.
+    static int maxEngineHash() { return sizeof(void *) > 4 ? 1024 : 256; }
 
     // The most puzzles that can be kept, so a slip of the finger cannot ask
     // Lichess for thousands.

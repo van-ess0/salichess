@@ -110,10 +110,6 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
         <translation>Sammuta Stockfish</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Ota Stockfish käyttöön (75 Mt:n lataus)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Ota Stockfish käyttöön</translation>
     </message>
@@ -148,6 +144,10 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
     <message>
         <source>Set up this position</source>
         <translation>Aseta tämä asema</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Ota Stockfish käyttöön (94 Mt:n lataus)</translation>Ota Stockfish käyttöön (75 Mt:n lataus) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
         <translation>Ladataan moottoria…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish tarvitsee neuroverkkonsa, noin %1 Mt, ladataan kerran. Ne pysyvät puhelimessa.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>Peruuta lataus</translation>
     </message>
@@ -587,6 +583,10 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
     <message>
         <source>Play</source>
         <translation>Pelaa</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish tarvitsee neuroverkkonsa, noin %1 Mt, joka ladataan kerran. Se pysyy puhelimessa.</translation>
     </message>
 </context>
 <context>
@@ -1703,6 +1703,13 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Lichessin vastaus on liian suuri</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1810,6 +1817,18 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
     <message>
         <source>The downloaded network is not usable</source>
         <translation>Ladattu verkko ei ole käyttökelpoinen</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>Lataus ohjattiin muualle</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>Ladattu verkko on liian suuri</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>Ladattu verkko on vioittunut</translation>
     </message>
 </context>
 <context>
@@ -2910,10 +2929,6 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
         <translation>Analyysilaudalla, käytössä %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Vaatii kertaluonteisen noin 75 Mt:n latauksen</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>Pysäytä lataus</translation>
     </message>
@@ -2945,13 +2960,13 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
         <source>Memory for the engine</source>
         <translation>Moottorin muisti</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Vaatii kertaluonteisen noin 94 Mt:n latauksen</translation>Vaatii kertaluonteisen noin 75 Mt:n latauksen {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Moottorin verkot puuttuvat</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish ei voi analysoida tätä asemaa</translation>
@@ -2959,6 +2974,10 @@ Lähdekoodi, virheraportit ja käännökset: https://github.com/van-ess0/saliche
     <message>
         <source>The engine is not ready</source>
         <translation>Moottori ei ole valmis</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>Moottorin verkko puuttuu</translation>
     </message>
 </context>
 <context>

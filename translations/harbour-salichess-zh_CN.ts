@@ -110,10 +110,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>关闭 Stockfish</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>开启 Stockfish（需下载 75 MB）</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>开启 Stockfish</translation>
     </message>
@@ -148,6 +144,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Set up this position</source>
         <translation>设置此局面</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>启用 Stockfish（下载 94 MB）</translation>开启 Stockfish（需下载 75 MB） {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>正在下载引擎…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish 需要其神经网络，约 %1 MB，仅需下载一次，并会保存在手机上。</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>取消下载</translation>
     </message>
@@ -587,6 +583,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Play</source>
         <translation>开始</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish 需要其神经网络（约 %1 MB），只需下载一次，并保存在手机上。</translation>
     </message>
 </context>
 <context>
@@ -1701,6 +1701,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Lichess 的响应过大</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1808,6 +1815,18 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The downloaded network is not usable</source>
         <translation>下载的神经网络不可用</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>下载被重定向到了别处</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>下载的网络文件过大</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>下载的网络文件已损坏</translation>
     </message>
 </context>
 <context>
@@ -2900,10 +2919,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>在分析棋盘上使用 %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>需要一次性下载约 75 MB</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>停止下载</translation>
     </message>
@@ -2935,13 +2950,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Memory for the engine</source>
         <translation>引擎内存</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>需要一次性下载约 94 MB</translation>需要一次性下载约 75 MB {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>缺少引擎的神经网络</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish 无法分析此局面</translation>
@@ -2949,6 +2964,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The engine is not ready</source>
         <translation>引擎尚未就绪</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>缺少引擎网络文件</translation>
     </message>
 </context>
 <context>

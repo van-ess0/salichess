@@ -16,7 +16,7 @@
 #include "engine/nnueweights.h"
 #include "engine/stockfishengine.h"
 
-// Stockfish itself. Searching needs the networks, which are more than 60 MB
+// Stockfish itself. Searching needs the network, which is close to 100 MB
 // and are not in the repository, so those tests run only where they have
 // already been downloaded:
 //
@@ -33,9 +33,8 @@ private:
         return QString::fromLocal8Bit(qgetenv("SALICHESS_NNUE_DIR"));
     }
 
-    // The two networks, biggest first: which is which is decided by size,
-    // not by the order the directory happens to list them in. Handing the
-    // small one to Stockfish as the big one makes it refuse both.
+    // The networks in the directory, biggest first. There should be exactly
+    // one, the one this Stockfish version uses.
     static QStringList networks()
     {
         const QDir dir(netDir());
@@ -73,7 +72,7 @@ private slots:
         QSignalSpy failed(&engine, &StockfishEngine::failed);
         QSignalSpy info(&engine, &StockfishEngine::info);
 
-        engine.load(QStringLiteral("/nowhere/big.nnue"), QStringLiteral("/nowhere/small.nnue"));
+        engine.load(QStringLiteral("/nowhere/net.nnue"));
         QCOMPARE(failed.count(), 1);
         QVERIFY(!engine.isReady());
 
@@ -86,16 +85,14 @@ private slots:
     void findsTheBestMove()
     {
         const QStringList nets = networks();
-        if (nets.size() < 2)
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
-        const QString big = nets.first();
-        const QString small = nets.last();
-        QVERIFY(NnueWeights::looksUsable(big));
-        QVERIFY(NnueWeights::looksUsable(small));
+        if (nets.isEmpty())
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
+        const QString net = nets.first();
+        QVERIFY(NnueWeights::looksUsable(net));
 
         StockfishEngine engine;
         QSignalSpy ready(&engine, &StockfishEngine::readyChanged);
-        engine.load(big, small);
+        engine.load(net);
         QTRY_COMPARE(ready.count(), 1);
         QVERIFY(engine.isReady());
 
@@ -134,21 +131,17 @@ private slots:
     void resumesAfterTheAppComesBack()
     {
         const QStringList nets = networks();
-        if (nets.size() < 2)
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+        if (nets.isEmpty())
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
 
-        // Put the networks where NnueWeights looks, so nothing is downloaded.
+        // Put the network where NnueWeights looks, so nothing is downloaded.
         const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
                 + QStringLiteral("/nnue");
         QDir().mkpath(dir);
         AppSettings settings;
         NnueWeights weights;
-        for (const QString &net : nets) {
-            const QString target = net.endsWith(QFileInfo(weights.bigPath()).fileName())
-                    ? weights.bigPath() : weights.smallPath();
-            QFile::remove(target);
-            QVERIFY(QFile::link(net, target));
-        }
+        QFile::remove(weights.networkPath());
+        QVERIFY(QFile::link(nets.first(), weights.networkPath()));
         QVERIFY(weights.ready());
 
         settings.setEngineEnabled(true);
@@ -177,10 +170,10 @@ private slots:
     void handlesPositionsWithNoMoves()
     {
         const QStringList nets = networks();
-        if (nets.size() < 2)
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+        if (nets.isEmpty())
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
         StockfishEngine engine;
-        engine.load(nets.first(), nets.last());
+        engine.load(nets.first());
         QVERIFY(engine.isReady());
 
         QSignalSpy info(&engine, &StockfishEngine::info);
@@ -207,10 +200,10 @@ private slots:
     void refusesPositionsItCannotHold()
     {
         const QStringList nets = networks();
-        if (nets.size() < 2)
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+        if (nets.isEmpty())
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
         StockfishEngine engine;
-        engine.load(nets.first(), nets.last());
+        engine.load(nets.first());
         QVERIFY(engine.isReady());
 
         QSignalSpy failed(&engine, &StockfishEngine::failed);
@@ -234,10 +227,10 @@ private slots:
     void stopsOnDemand()
     {
         const QStringList nets = networks();
-        if (nets.size() < 2)
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+        if (nets.isEmpty())
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
         StockfishEngine engine;
-        engine.load(nets.first(), nets.last());
+        engine.load(nets.first());
         QVERIFY(engine.isReady());
 
         QSignalSpy finished(&engine, &StockfishEngine::searchFinished);

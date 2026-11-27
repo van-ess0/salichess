@@ -20,7 +20,7 @@ class StockfishEngine;
 //
 // A page hands it the game it is showing and takes it back again when it
 // leaves, which is what starts and stops the analysis. The engine itself
-// lives on a thread of its own: reading its networks and searching must not
+// lives on a thread of its own: reading its network and searching must not
 // hold up the UI.
 class EngineController : public QObject
 {
@@ -30,7 +30,7 @@ class EngineController : public QObject
     // The engine is switched on in the settings; a page can still be showing
     // without it running.
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-    // The networks are on the phone, so the engine can be switched on.
+    // The network is on the phone, so the engine can be switched on.
     Q_PROPERTY(bool available READ available NOTIFY availableChanged)
     Q_PROPERTY(bool searching READ searching NOTIFY stateChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY stateChanged)
@@ -70,7 +70,7 @@ public:
     int bestMoveFrom() const;
     int bestMoveTo() const;
 
-    // Downloading the networks and switching the engine on are one step for
+    // Downloading the network and switching the engine on are one step for
     // the user; this is what the button on the analysis page calls.
     Q_INVOKABLE void enableWithDownload();
 
@@ -78,6 +78,10 @@ public:
     // rests while the app is away and picks the same board up again when it
     // comes back. main() keeps this in step with the application state.
     void setApplicationActive(bool active);
+
+    // Gives the engine and its memory back (Stockfish 19 holds about 220 MB
+    // with its network). It starts again by itself when the engine is wanted.
+    void release();
 
 signals:
     void gameChanged();
@@ -106,6 +110,8 @@ private:
     ChessGame *m_game = nullptr;
 
     QTimer m_debounce;
+    // Once nothing wants the engine for a while it is freed, not only stopped.
+    QTimer m_idleRelease;
     QVariantList m_lines;
     // The position the lines belong to; results for anything else are stale.
     QString m_searchFen;

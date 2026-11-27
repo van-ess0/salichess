@@ -110,10 +110,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>Выключить Stockfish</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Включить Stockfish (загрузка 75 МБ)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Включить Stockfish</translation>
     </message>
@@ -148,6 +144,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Set up this position</source>
         <translation>Расставить позицию</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Включить Stockfish (загрузка 94 МБ)</translation>Включить Stockfish (загрузка 75 МБ) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>Загрузка движка…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish нужны нейросети, около %1 МБ; они загружаются один раз и остаются на телефоне.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>Отменить загрузку</translation>
     </message>
@@ -587,6 +583,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Play</source>
         <translation>Играть</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish нужна нейросеть, около %1 МБ, которая загружается один раз. Она остаётся на телефоне.</translation>
     </message>
 </context>
 <context>
@@ -1705,6 +1705,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Ответ Lichess слишком большой</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1812,6 +1819,18 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The downloaded network is not usable</source>
         <translation>Загруженная сеть непригодна</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>Загрузка была перенаправлена в другое место</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>Загруженная сеть слишком большая</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>Загруженная сеть повреждена</translation>
     </message>
 </context>
 <context>
@@ -2920,10 +2939,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>На доске анализа, с использованием: %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Нужна разовая загрузка около 75 МБ</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>Остановить загрузку</translation>
     </message>
@@ -2955,13 +2970,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Memory for the engine</source>
         <translation>Память для движка</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Требуется однократная загрузка около 94 МБ</translation>Нужна разовая загрузка около 75 МБ {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Сети движка отсутствуют</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish не может проанализировать эту позицию</translation>
@@ -2969,6 +2984,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The engine is not ready</source>
         <translation>Движок не готов</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>Сеть движка отсутствует</translation>
     </message>
 </context>
 <context>

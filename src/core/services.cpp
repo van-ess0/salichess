@@ -9,6 +9,7 @@ Session *s_session = nullptr;
 AppSettings *s_settings = nullptr;
 PuzzleStore *s_puzzles = nullptr;
 NnueWeights *s_weights = nullptr;
+EngineController *s_engine = nullptr;
 }
 
 namespace Services {
@@ -48,6 +49,16 @@ PuzzleStore *puzzles()
 NnueWeights *weights()
 {
     return s_weights;
+}
+
+EngineController *engine()
+{
+    return s_engine;
+}
+
+void setEngine(EngineController *engine)
+{
+    s_engine = engine;
 }
 
 } // namespace Services

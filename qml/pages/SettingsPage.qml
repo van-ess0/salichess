@@ -125,7 +125,7 @@ Page {
                         return engineWeights.errorString
                     if (engineWeights.ready)
                         return qsTr("On the analysis board, using %1").arg(sizeText(engineWeights.storedBytes))
-                    return qsTr("Needs a one-off download of about 75 MB")
+                    return qsTr("Needs a one-off download of about 94 MB")
                 }
                 automaticCheck: false
                 checked: appSettings.engineEnabled
@@ -206,7 +206,7 @@ Page {
                 width: parent.width
                 visible: appSettings.engineEnabled
                 minimumValue: 8
-                maximumValue: 128
+                maximumValue: appSettings.maxEngineHash
                 stepSize: 8
                 value: appSettings.engineHash
                 label: qsTr("Memory for the engine")

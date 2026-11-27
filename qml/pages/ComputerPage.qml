@@ -88,8 +88,8 @@ Page {
                             return engineWeights.errorString
                         if (engineWeights.downloading)
                             return qsTr("Downloading the engine…")
-                        return qsTr("Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.")
-                               .arg(Math.round((engineWeights.totalBytes > 0 ? engineWeights.totalBytes : 78 * 1024 * 1024) / 1048576))
+                        return qsTr("Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.")
+                               .arg(Math.round((engineWeights.totalBytes > 0 ? engineWeights.totalBytes : 94 * 1024 * 1024) / 1048576))
                     }
                 }
 

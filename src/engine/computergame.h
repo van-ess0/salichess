@@ -105,6 +105,7 @@ private:
 
     ChessGame *m_game;
     NnueWeights *m_weights;
+    void freeEngine();
     QThread *m_thread = nullptr;
     StockfishEngine *m_engine = nullptr;
     bool m_engineReady = false;

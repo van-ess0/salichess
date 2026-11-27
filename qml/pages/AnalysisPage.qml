@@ -141,7 +141,7 @@ Page {
         if (engine.enabled)
             return qsTr("Turn Stockfish off")
         if (!engine.available)
-            return qsTr("Turn Stockfish on (75 MB download)")
+            return qsTr("Turn Stockfish on (94 MB download)")
         return qsTr("Turn Stockfish on")
     }
 

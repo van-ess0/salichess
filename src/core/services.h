@@ -5,6 +5,7 @@
 #define SERVICES_H
 
 class AppSettings;
+class EngineController;
 class LichessApi;
 class NnueWeights;
 class PuzzleStore;
@@ -24,6 +25,11 @@ AppSettings *settings();
 PuzzleStore *puzzles();
 // The engine networks; null where there is no engine (some tests).
 NnueWeights *weights();
+// The analysis engine, or null where there is none. A game against the
+// computer asks it to give its memory back first: Stockfish 19 holds about
+// 220 MB, and a phone should not hold two of them.
+EngineController *engine();
+void setEngine(EngineController *engine);
 
 } // namespace Services
 

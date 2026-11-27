@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
     NnueWeights engineWeights;
     Services::init(&api, &session, &settings, &puzzleStore, &engineWeights);
     EngineController engine(&settings, &engineWeights);
+    Services::setEngine(&engine);
 
     auto onLoginChanged = [&]() {
         if (session.loggedIn()) {

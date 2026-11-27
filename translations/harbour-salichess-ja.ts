@@ -110,10 +110,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>Stockfish をオフにする</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Stockfish をオンにする（75 MB のダウンロード）</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Stockfish をオンにする</translation>
     </message>
@@ -148,6 +144,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Set up this position</source>
         <translation>この局面を設定する</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Stockfish をオンにする（94 MB のダウンロード）</translation>Stockfish をオンにする（75 MB のダウンロード） {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -208,11 +208,11 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>ポーンは最初と最後のランクには置けません</translation>
     </message>
     <message>
-        <source>Black is in check, but it is White's move</source>
+        <source>Black is in check, but it is White&apos;s move</source>
         <translation>黒がチェックされていますが、白の手番です</translation>
     </message>
     <message>
-        <source>White is in check, but it is Black's move</source>
+        <source>White is in check, but it is Black&apos;s move</source>
         <translation>白がチェックされていますが、黒の手番です</translation>
     </message>
     <message>
@@ -529,10 +529,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>エンジンをダウンロード中…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish にはニューラルネットワークが必要です（約 %1 MB、ダウンロードは 1 回のみ）。端末内に保存されます。</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>ダウンロードをキャンセル</translation>
     </message>
@@ -587,6 +583,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Play</source>
         <translation>プレイ</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish にはニューラルネットワーク（約 %1 MB）が必要です。一度だけダウンロードされ、端末に保存されます。</translation>
     </message>
 </context>
 <context>
@@ -647,7 +647,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>追加時間（秒）</translation>
     </message>
     <message>
-        <source>Blitz and bullet games can't be played with random opponents through the Lichess Board API. Add time or increment.</source>
+        <source>Blitz and bullet games can&apos;t be played with random opponents through the Lichess Board API. Add time or increment.</source>
         <translation>Lichess Board API では、ブリッツとブレットのランダム対戦はできません。持ち時間か追加時間を増やしてください。</translation>
     </message>
     <message>
@@ -714,7 +714,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n game(s) with you</source>
-        <translation><numerusform>あなたとの対局 %n 局</numerusform></translation>
+        <translation>
+            <numerusform>あなたとの対局 %n 局</numerusform>
+        </translation>
     </message>
     <message>
         <source>No games with you yet</source>
@@ -932,7 +934,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>対局を中止しました</translation>
     </message>
     <message>
-        <source>%1 didn't move</source>
+        <source>%1 didn&apos;t move</source>
         <translation>%1 は手を指しませんでした</translation>
     </message>
     <message>
@@ -1226,7 +1228,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>交代で対局</translation>
     </message>
     <message>
-        <source>Two players share this phone. Lay it on the table between you: each side's pieces face its own player, and each of you gets a clock on your own edge of the screen.</source>
+        <source>Two players share this phone. Lay it on the table between you: each side&apos;s pieces face its own player, and each of you gets a clock on your own edge of the screen.</source>
         <translation>2 人でこの端末を共有します。2 人の間のテーブルに置いてください。各自の駒は自分の側を向き、画面の自分側の端にそれぞれの時計が表示されます。</translation>
     </message>
     <message>
@@ -1609,7 +1611,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>進行中の対局</translation>
     </message>
     <message>
-        <source>This game's time control is too fast to be played in salichess.</source>
+        <source>This game&apos;s time control is too fast to be played in salichess.</source>
         <translation>この対局の持時間は短すぎて salichess ではプレイできません。</translation>
     </message>
     <message>
@@ -1689,11 +1691,20 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n puzzle(s) are ready to play offline</source>
-        <translation><numerusform>オフラインでプレイできる問題が %n 問あります</numerusform></translation>
+        <translation>
+            <numerusform>オフラインでプレイできる問題が %n 問あります</numerusform>
+        </translation>
     </message>
     <message>
         <source>Games and puzzles need a connection</source>
         <translation>対局と問題には接続が必要です</translation>
+    </message>
+</context>
+<context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Lichess からの応答が大きすぎます</translation>
     </message>
 </context>
 <context>
@@ -1767,11 +1778,11 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>レート戦</translation>
     </message>
     <message>
-        <source>The result affects both players' ratings</source>
+        <source>The result affects both players&apos; ratings</source>
         <translation>結果は両者のレーティングに影響します</translation>
     </message>
     <message>
-        <source>Bullet games can't be played through the Lichess Board API. Add time or increment.</source>
+        <source>Bullet games can&apos;t be played through the Lichess Board API. Add time or increment.</source>
         <translation>Lichess Board API では、ブレットの対局はできません。持ち時間か追加時間を増やしてください。</translation>
     </message>
     <message>
@@ -1804,6 +1815,18 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The downloaded network is not usable</source>
         <translation>ダウンロードしたネットワークは使用できません</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>ダウンロードが別の場所に転送されました</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>ダウンロードしたネットワークが大きすぎます</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>ダウンロードしたネットワークが壊れています</translation>
     </message>
 </context>
 <context>
@@ -1842,7 +1865,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
 <context>
     <name>OutgoingChallenge</name>
     <message>
-        <source>"%1" is not a valid Lichess username.</source>
+        <source>&quot;%1&quot; is not a valid Lichess username.</source>
         <translation>「%1」は有効な Lichess ユーザー名ではありません。</translation>
     </message>
     <message>
@@ -1933,7 +1956,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n game(s)</source>
-        <translation><numerusform>%n 局</numerusform></translation>
+        <translation>
+            <numerusform>%n 局</numerusform>
+        </translation>
     </message>
     <message>
         <source>Rating history</source>
@@ -2065,7 +2090,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>Last %n day(s)</source>
-        <translation><numerusform>過去 %n 日</numerusform></translation>
+        <translation>
+            <numerusform>過去 %n 日</numerusform>
+        </translation>
     </message>
     <message>
         <source>Loading…</source>
@@ -2147,7 +2174,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>最善手です！その調子で…</translation>
     </message>
     <message>
-        <source>That's not the move! Try something else.</source>
+        <source>That&apos;s not the move! Try something else.</source>
         <translation>その手は違います！別の手をどうぞ。</translation>
     </message>
     <message>
@@ -2227,7 +2254,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <name>PuzzleThemeRow</name>
     <message numerus="yes">
         <source>%n puzzle(s)</source>
-        <translation><numerusform>%n 問</numerusform></translation>
+        <translation>
+            <numerusform>%n 問</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2421,7 +2450,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>5 手以上メイト</translation>
     </message>
     <message>
-        <source>Anastasia's mate</source>
+        <source>Anastasia&apos;s mate</source>
         <translation>アナスタシアのメイト</translation>
     </message>
     <message>
@@ -2433,7 +2462,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>バックランク・メイト</translation>
     </message>
     <message>
-        <source>Boden's mate</source>
+        <source>Boden&apos;s mate</source>
         <translation>ボーデンのメイト</translation>
     </message>
     <message>
@@ -2565,7 +2594,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n puzzle(s) are ready to play offline</source>
-        <translation><numerusform>オフラインでプレイできる問題が %n 問あります</numerusform></translation>
+        <translation>
+            <numerusform>オフラインでプレイできる問題が %n 問あります</numerusform>
+        </translation>
     </message>
     <message>
         <source>Keep puzzles on the phone in the settings</source>
@@ -2573,7 +2604,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>A bit of everything • %n stored</source>
-        <translation><numerusform>いろいろな問題を少しずつ • %n 問保存済み</numerusform></translation>
+        <translation>
+            <numerusform>いろいろな問題を少しずつ • %n 問保存済み</numerusform>
+        </translation>
     </message>
     <message>
         <source>Dashboard</source>
@@ -2675,7 +2708,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>%1日</translation>
     </message>
     <message>
-        <source>A correspondence seek stays in the Lichess lobby until someone joins. salichess can't withdraw it; that is only possible on lichess.org.</source>
+        <source>A correspondence seek stays in the Lichess lobby until someone joins. salichess can&apos;t withdraw it; that is only possible on lichess.org.</source>
         <translation>通信チェスのシークは、誰かが参加するまで Lichess のロビーに残ります。salichess では取り下げられません。取り下げは lichess.org でのみ可能です。</translation>
     </message>
     <message>
@@ -2829,7 +2862,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n puzzle(s)</source>
-        <translation><numerusform>%n 問</numerusform></translation>
+        <translation>
+            <numerusform>%n 問</numerusform>
+        </translation>
     </message>
     <message>
         <source>Off</source>
@@ -2841,7 +2876,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n of %1 downloaded</source>
-        <translation><numerusform>%n / %1 ダウンロード済み</numerusform></translation>
+        <translation>
+            <numerusform>%n / %1 ダウンロード済み</numerusform>
+        </translation>
     </message>
     <message>
         <source>Downloading…</source>
@@ -2853,7 +2890,9 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
     <message numerus="yes">
         <source>%n result(s) to send</source>
-        <translation><numerusform>送信待ちの結果 %n 件</numerusform></translation>
+        <translation>
+            <numerusform>送信待ちの結果 %n 件</numerusform>
+        </translation>
     </message>
     <message>
         <source>%1 MB</source>
@@ -2878,10 +2917,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>On the analysis board, using %1</source>
         <translation>棋譜解析の盤で %1 を使用</translation>
-    </message>
-    <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>約 75 MB の一度きりのダウンロードが必要です</translation>
     </message>
     <message>
         <source>Stop the download</source>
@@ -2915,13 +2950,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Memory for the engine</source>
         <translation>エンジン用メモリ</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>約 94 MB の初回ダウンロードが必要です</translation>約 75 MB の一度きりのダウンロードが必要です {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>エンジンのネットワークがありません</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish はこの局面を解析できません</translation>
@@ -2929,6 +2964,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The engine is not ready</source>
         <translation>エンジンの準備ができていません</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>エンジンのネットワークがありません</translation>
     </message>
 </context>
 <context>
@@ -3023,7 +3062,7 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
 <context>
     <name>UserProfile</name>
     <message>
-        <source>"%1" is not a valid Lichess username.</source>
+        <source>&quot;%1&quot; is not a valid Lichess username.</source>
         <translation>「%1」は有効な Lichess ユーザー名ではありません。</translation>
     </message>
     <message>

@@ -110,10 +110,6 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
         <translation>Stockfish ausschalten</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Stockfish einschalten (75 MB Download)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Stockfish einschalten</translation>
     </message>
@@ -148,6 +144,10 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
     <message>
         <source>Set up this position</source>
         <translation>Diese Stellung aufbauen</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Stockfish einschalten (94 MB Download)</translation>Stockfish einschalten (75 MB Download) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
         <translation>Engine wird heruntergeladen…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish braucht seine neuronalen Netze, etwa %1 MB, die einmalig heruntergeladen werden. Sie bleiben auf dem Telefon.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>Download abbrechen</translation>
     </message>
@@ -587,6 +583,10 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
     <message>
         <source>Play</source>
         <translation>Spielen</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish braucht sein neuronales Netz (ca. %1 MB), das einmal heruntergeladen wird. Es bleibt auf dem Telefon.</translation>
     </message>
 </context>
 <context>
@@ -1703,6 +1703,13 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>Die Antwort von Lichess ist zu groß</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1810,6 +1817,18 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
     <message>
         <source>The downloaded network is not usable</source>
         <translation>Das heruntergeladene Netz ist nicht verwendbar</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>Der Download wurde woandershin umgeleitet</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>Das heruntergeladene Netz ist zu groß</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>Das heruntergeladene Netz ist beschädigt</translation>
     </message>
 </context>
 <context>
@@ -2910,10 +2929,6 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
         <translation>Auf dem Analysebrett, mit %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Erfordert einen einmaligen Download von etwa 75 MB</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>Download stoppen</translation>
     </message>
@@ -2945,13 +2960,13 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
         <source>Memory for the engine</source>
         <translation>Speicher für die Engine</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Benötigt einen einmaligen Download von etwa 94 MB</translation>Erfordert einen einmaligen Download von etwa 75 MB {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Die Netze der Engine fehlen</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish kann diese Stellung nicht analysieren</translation>
@@ -2959,6 +2974,10 @@ Quellcode, Fehlerberichte und Übersetzungen: https://github.com/van-ess0/salich
     <message>
         <source>The engine is not ready</source>
         <translation>Die Engine ist nicht bereit</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>Das Netz der Engine fehlt</translation>
     </message>
 </context>
 <context>

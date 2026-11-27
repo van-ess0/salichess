@@ -110,10 +110,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>إيقاف Stockfish</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>تشغيل Stockfish (تنزيل 75 MB)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>تشغيل Stockfish</translation>
     </message>
@@ -148,6 +144,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Set up this position</source>
         <translation>جهّز هذا الوضع</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>تشغيل Stockfish (تنزيل 94 ميغابايت)</translation>تشغيل Stockfish (تنزيل 75 MB) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>جارٍ تنزيل المحرك…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>يحتاج Stockfish إلى شبكاته العصبية، حوالي %1 MB، وتُنزَّل مرة واحدة وتبقى على الهاتف.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>إلغاء التنزيل</translation>
     </message>
@@ -587,6 +583,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>Play</source>
         <translation>العب</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>يحتاج Stockfish إلى شبكته العصبية (نحو %1 ميغابايت) وتُنزَّل مرة واحدة وتبقى على الهاتف.</translation>
     </message>
 </context>
 <context>
@@ -1711,6 +1711,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>استجابة Lichess كبيرة جدًا</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1818,6 +1825,18 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The downloaded network is not usable</source>
         <translation>الشبكة التي نُزّلت غير صالحة للاستخدام</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>أُعيد توجيه التنزيل إلى مكان آخر</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>الشبكة المنزّلة كبيرة جدًا</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>الشبكة المنزّلة تالفة</translation>
     </message>
 </context>
 <context>
@@ -2950,10 +2969,6 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <translation>على لوحة التحليل، باستخدام %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>يحتاج إلى تنزيل لمرة واحدة بحجم 75 MB تقريبًا</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>أوقف التنزيل</translation>
     </message>
@@ -2985,13 +3000,13 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
         <source>Memory for the engine</source>
         <translation>ذاكرة المحرك</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>يتطلب تنزيلًا لمرة واحدة بحجم نحو 94 ميغابايت</translation>يحتاج إلى تنزيل لمرة واحدة بحجم 75 MB تقريبًا {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>شبكات المحرك مفقودة</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>لا يستطيع Stockfish تحليل هذا الوضع</translation>
@@ -2999,6 +3014,10 @@ Source code, bug reports and translations: https://github.com/van-ess0/salichess
     <message>
         <source>The engine is not ready</source>
         <translation>المحرك غير جاهز</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>شبكة المحرك مفقودة</translation>
     </message>
 </context>
 <context>

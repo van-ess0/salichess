@@ -110,10 +110,6 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
         <translation>Désactiver Stockfish</translation>
     </message>
     <message>
-        <source>Turn Stockfish on (75 MB download)</source>
-        <translation>Activer Stockfish (téléchargement de 75 Mo)</translation>
-    </message>
-    <message>
         <source>Turn Stockfish on</source>
         <translation>Activer Stockfish</translation>
     </message>
@@ -148,6 +144,10 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
     <message>
         <source>Set up this position</source>
         <translation>Mettre en place cette position</translation>
+    </message>
+    <message>
+        <source>Turn Stockfish on (94 MB download)</source>
+        <translation>Activer Stockfish (téléchargement de 94 Mo)</translation>Activer Stockfish (téléchargement de 75 Mo) {94 ?}</translation>
     </message>
 </context>
 <context>
@@ -529,10 +529,6 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
         <translation>Téléchargement du moteur…</translation>
     </message>
     <message>
-        <source>Stockfish needs its neural networks, about %1 MB, downloaded once. They stay on the phone.</source>
-        <translation>Stockfish a besoin de ses réseaux de neurones, environ %1 Mo, téléchargés une seule fois. Ils restent sur le téléphone.</translation>
-    </message>
-    <message>
         <source>Cancel download</source>
         <translation>Annuler le téléchargement</translation>
     </message>
@@ -587,6 +583,10 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
     <message>
         <source>Play</source>
         <translation>Jouer</translation>
+    </message>
+    <message>
+        <source>Stockfish needs its neural network, about %1 MB, downloaded once. It stays on the phone.</source>
+        <translation>Stockfish a besoin de son réseau de neurones, d'environ %1 Mo, téléchargé une seule fois. Il reste sur le téléphone.</translation>
     </message>
 </context>
 <context>
@@ -1703,6 +1703,13 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
     </message>
 </context>
 <context>
+    <name>NdjsonStream</name>
+    <message>
+        <source>The response from Lichess is too large</source>
+        <translation>La réponse de Lichess est trop volumineuse</translation>
+    </message>
+</context>
+<context>
     <name>NewChallengeDialog</name>
     <message>
         <source>Challenge</source>
@@ -1810,6 +1817,18 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
     <message>
         <source>The downloaded network is not usable</source>
         <translation>Le réseau téléchargé est inutilisable</translation>
+    </message>
+    <message>
+        <source>The download was sent somewhere else</source>
+        <translation>Le téléchargement a été redirigé ailleurs</translation>
+    </message>
+    <message>
+        <source>The downloaded network is too large</source>
+        <translation>Le réseau téléchargé est trop volumineux</translation>
+    </message>
+    <message>
+        <source>The downloaded network is corrupt</source>
+        <translation>Le réseau téléchargé est corrompu</translation>
     </message>
 </context>
 <context>
@@ -2910,10 +2929,6 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
         <translation>Sur l&apos;échiquier d&apos;analyse, avec %1</translation>
     </message>
     <message>
-        <source>Needs a one-off download of about 75 MB</source>
-        <translation>Nécessite un téléchargement unique d&apos;environ 75 Mo</translation>
-    </message>
-    <message>
         <source>Stop the download</source>
         <translation>Arrêter le téléchargement</translation>
     </message>
@@ -2945,13 +2960,13 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
         <source>Memory for the engine</source>
         <translation>Mémoire pour le moteur</translation>
     </message>
+    <message>
+        <source>Needs a one-off download of about 94 MB</source>
+        <translation>Nécessite un téléchargement unique d'environ 94 Mo</translation>Nécessite un téléchargement unique d&apos;environ 75 Mo {94 ?}</translation>
+    </message>
 </context>
 <context>
     <name>StockfishEngine</name>
-    <message>
-        <source>The engine networks are missing</source>
-        <translation>Les réseaux du moteur sont manquants</translation>
-    </message>
     <message>
         <source>Stockfish cannot analyse this position</source>
         <translation>Stockfish ne peut pas analyser cette position</translation>
@@ -2959,6 +2974,10 @@ Code source, rapports de bogues et traductions : https://github.com/van-ess0/sal
     <message>
         <source>The engine is not ready</source>
         <translation>Le moteur n&apos;est pas prêt</translation>
+    </message>
+    <message>
+        <source>The engine network is missing</source>
+        <translation>Le réseau du moteur est absent</translation>
     </message>
 </context>
 <context>

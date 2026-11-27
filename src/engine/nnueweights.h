@@ -12,9 +12,9 @@
 
 class QFile;
 
-// Stockfish's neural networks, kept on the phone next to the app's data.
+// Stockfish's neural network, kept on the phone next to the app's data.
 //
-// They are more than 60 MB together, far too much to put in the package, so
+// It is close to 100 MB, far too much to put in the package, so
 // they are downloaded the first time the user switches the engine on, the
 // same way the Lichess mobile app fetches them. Exposed to QML as
 // "engineWeights".
@@ -26,10 +26,10 @@ class QFile;
 class NnueWeights : public QObject
 {
     Q_OBJECT
-    // Both networks are in place and usable.
+    // The network is in place and usable.
     Q_PROPERTY(bool ready READ ready NOTIFY changed)
     Q_PROPERTY(bool downloading READ downloading NOTIFY changed)
-    // 0..1 over both files together.
+    // 0..1 over the download.
     Q_PROPERTY(qreal progress READ progress NOTIFY progressChanged)
     // What a download will cost, in bytes, and what is already there.
     Q_PROPERTY(qint64 totalBytes READ totalBytes NOTIFY progressChanged)
@@ -47,9 +47,8 @@ public:
     qint64 storedBytes() const;
     QString errorString() const { return m_error; }
 
-    // Where the files are, whether or not they exist yet.
-    QString bigPath() const;
-    QString smallPath() const;
+    // Where the file is, whether or not it exists yet.
+    QString networkPath() const;
 
     Q_INVOKABLE void download();
     Q_INVOKABLE void cancel();
@@ -66,6 +65,7 @@ signals:
     void readyChanged();
 
 private:
+    void removeObsolete();
     void startNext();
     void fetch(const QString &fileName);
     void finish(const QString &error);

@@ -19,7 +19,7 @@
 #include <QStandardPaths>
 #include <QUrl>
 
-#include "evaluate.h"          // EvalFileDefaultNameBig / ...Small
+#include "evaluate.h"          // EvalFileDefaultName
 #include "nnue/nnue_common.h"  // the version every readable network starts with
 
 namespace {
@@ -48,16 +48,11 @@ QString expectedHashPrefix(const QString &fileName)
 
 // Only used to tell the user what the download will cost before it starts;
 // the real sizes come from the server.
-const qint64 ExpectedTotalBytes = 65 * 1024 * 1024;
+const qint64 ExpectedTotalBytes = 94 * 1024 * 1024;
 
-QString bigName()
+QString networkName()
 {
-    return QString::fromLatin1(EvalFileDefaultNameBig);
-}
-
-QString smallName()
-{
-    return QString::fromLatin1(EvalFileDefaultNameSmall);
+    return QString::fromLatin1(EvalFileDefaultName);
 }
 
 } // namespace
@@ -65,6 +60,7 @@ QString smallName()
 NnueWeights::NnueWeights(QObject *parent)
     : QObject(parent)
 {
+    removeObsolete();
     m_wasReady = ready();
 }
 
@@ -84,14 +80,22 @@ QString NnueWeights::pathFor(const QString &fileName) const
     return directory() + QLatin1Char('/') + fileName;
 }
 
-QString NnueWeights::bigPath() const
+QString NnueWeights::networkPath() const
 {
-    return pathFor(bigName());
+    return pathFor(networkName());
 }
 
-QString NnueWeights::smallPath() const
+void NnueWeights::removeObsolete()
 {
-    return pathFor(smallName());
+    // Networks of earlier Stockfish versions, and downloads that never
+    // finished: nothing can use them, and each is tens of megabytes.
+    const QDir dir(directory());
+    const QStringList names = dir.entryList({ QStringLiteral("nn-*.nnue"), QStringLiteral("nn-*.nnue.part") },
+                                            QDir::Files);
+    for (const QString &name : names) {
+        if (name != networkName())
+            QFile::remove(dir.filePath(name));
+    }
 }
 
 bool NnueWeights::looksUsable(const QString &path)
@@ -113,12 +117,12 @@ bool NnueWeights::looksUsable(const QString &path)
 
 bool NnueWeights::ready() const
 {
-    return looksUsable(bigPath()) && looksUsable(smallPath());
+    return looksUsable(networkPath());
 }
 
 qint64 NnueWeights::storedBytes() const
 {
-    return QFileInfo(bigPath()).size() + QFileInfo(smallPath()).size();
+    return QFileInfo(networkPath()).size();
 }
 
 qreal NnueWeights::progress() const
@@ -131,10 +135,8 @@ qreal NnueWeights::progress() const
 QStringList NnueWeights::missingFiles() const
 {
     QStringList missing;
-    if (!looksUsable(bigPath()))
-        missing.append(bigName());
-    if (!looksUsable(smallPath()))
-        missing.append(smallName());
+    if (!looksUsable(networkPath()))
+        missing.append(networkName());
     return missing;
 }
 
@@ -312,7 +314,6 @@ void NnueWeights::cancel()
 void NnueWeights::remove()
 {
     cancel();
-    QFile::remove(bigPath());
-    QFile::remove(smallPath());
+    QFile::remove(networkPath());
     finish(QString());
 }

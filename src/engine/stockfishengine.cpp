@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "stockfishengine.h"
+#include "core/appsettings.h"
 #include "core/logging.h"
 
 #include "nnueweights.h"
@@ -9,6 +10,7 @@
 
 #include <QDebug>
 
+#include "attacks.h"
 #include "bitboard.h"
 #include "engine.h"
 #include "misc.h"
@@ -43,7 +45,7 @@ void initStockfishTables()
 {
     static std::once_flag once;
     std::call_once(once, []() {
-        Stockfish::Bitboards::init();
+        Stockfish::Attacks::init();
         Stockfish::Position::init();
     });
 }
@@ -81,8 +83,8 @@ bool StockfishEngine::ensureEngine()
     if (m_engine)
         return true;
     initStockfishTables();
-    // Without a path Stockfish looks for its networks in the working
-    // directory, which is not where ours are; they are named in full later.
+    // Without a path Stockfish looks for its network in the working
+    // directory, which is not where ours is; it is named in full later.
     m_engine.reset(new Stockfish::Engine());
     // Stockfish's search constants are tunable at run time, and the tuner
     // has to be told about the options once the engine owns them.
@@ -125,19 +127,22 @@ bool StockfishEngine::ensureEngine()
         emit searchFinished();
     });
 
-    // Stockfish checks its networks before every single search and says so
+    // Called when a search starts, before anything else.
+    m_engine->set_on_start([]() {});
+
+    // Stockfish checks its network before every single search and says so
     // each time. Only the complaint matters: it ends the process right after
-    // making it. The rest is the same two lines over and over, so they are
+    // making it. The rest is the same few lines over and over, so they are
     // kept to once per load and out of the warnings.
-    m_engine->set_on_verify_networks([this](std::string_view message) {
+    m_engine->set_on_verify_network([this](std::string_view message) {
         const QString text =
                 QString::fromUtf8(message.data(), int(message.size())).trimmed();
         if (text.contains(QLatin1String("ERROR"))) {
             qCWarning(lcEngine, "Stockfish: %s", qPrintable(text));
             return;
         }
-        if (m_verifyMessages < 2) {
-            ++m_verifyMessages; // one for each of the two networks
+        if (m_verifyMessages < 3) {
+            ++m_verifyMessages; // the network itself, and where it is held
             qCDebug(lcEngine, "Stockfish: %s", qPrintable(text));
         }
     });
@@ -165,22 +170,21 @@ void StockfishEngine::applyOption(const char *name, int value)
     applyOption(name, std::to_string(value));
 }
 
-void StockfishEngine::load(const QString &bigNetwork, const QString &smallNetwork)
+void StockfishEngine::load(const QString &network)
 {
     // Stockfish calls exit() when a search starts without a network, so the
-    // files are checked here before it ever sees them.
-    if (!NnueWeights::looksUsable(bigNetwork) || !NnueWeights::looksUsable(smallNetwork)) {
+    // file is checked here before it ever sees it.
+    if (!NnueWeights::looksUsable(network)) {
         m_ready = false;
         emit readyChanged(false);
-        emit failed(tr("The engine networks are missing"));
+        emit failed(tr("The engine network is missing"));
         return;
     }
     if (!ensureEngine())
         return;
 
-    m_verifyMessages = 0; // say which networks these are, once
-    applyOption("EvalFile", bigNetwork.toStdString());
-    applyOption("EvalFileSmall", smallNetwork.toStdString());
+    m_verifyMessages = 0; // say which network this is, once
+    applyOption("EvalFile", network.toStdString());
 
     m_ready = true;
     emit readyChanged(true);
@@ -208,7 +212,7 @@ void StockfishEngine::setThreads(int threads)
 
 void StockfishEngine::setHashSize(int megabytes)
 {
-    m_hashMb = qBound(1, megabytes, 256);
+    m_hashMb = qBound(1, megabytes, AppSettings::maxEngineHash());
     applyOption("Hash", m_hashMb);
 }
 
@@ -265,7 +269,12 @@ void StockfishEngine::startSearch(const QString &fen, const QStringList &moves, 
     uciMoves.reserve(moves.size());
     for (const QString &move : moves)
         uciMoves.push_back(move.toStdString());
-    m_engine->set_position(start ? std::string(StartFen) : fen.toStdString(), uciMoves);
+    if (m_engine->set_position(start ? std::string(StartFen) : fen.toStdString(), uciMoves)) {
+        // Stockfish 19 checks positions and moves itself and says no.
+        emit failed(tr("Stockfish cannot analyse this position"));
+        emit searchFinished();
+        return;
+    }
 
     Stockfish::Search::LimitsType limits;
     limits.startTime = Stockfish::now();

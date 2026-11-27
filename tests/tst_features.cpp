@@ -69,26 +69,24 @@ private:
         return QString::fromLocal8Bit(qgetenv("SALICHESS_NNUE_DIR"));
     }
 
-    // Links the networks from SALICHESS_NNUE_DIR to where NnueWeights looks,
+    // Links the network from SALICHESS_NNUE_DIR to where NnueWeights looks,
     // so the engine can be used without downloading anything. False if the
     // variable is not set.
     bool installNetworks()
     {
         if (netDir().isEmpty())
             return false;
-        QDir().mkpath(QFileInfo(weights->bigPath()).absolutePath());
-        for (const QString &path : {weights->bigPath(), weights->smallPath()}) {
-            QFile::remove(path);
-            if (!QFile::link(netDir() + QLatin1Char('/') + QFileInfo(path).fileName(), path))
-                return false;
-        }
+        const QString path = weights->networkPath();
+        QDir().mkpath(QFileInfo(path).absolutePath());
+        QFile::remove(path);
+        if (!QFile::link(netDir() + QLatin1Char('/') + QFileInfo(path).fileName(), path))
+            return false;
         return weights->ready();
     }
 
     void removeNetworks()
     {
-        QFile::remove(weights->bigPath());
-        QFile::remove(weights->smallPath());
+        QFile::remove(weights->networkPath());
     }
 
 private slots:
@@ -233,7 +231,7 @@ private slots:
     void computerGamePlays()
     {
         if (netDir().isEmpty())
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
 
         ComputerGame game;
         game.setLevel(1);
@@ -268,7 +266,7 @@ private slots:
     void computerGameFinishesAGame()
     {
         if (netDir().isEmpty())
-            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the two Stockfish networks");
+            QSKIP("set SALICHESS_NNUE_DIR to a directory holding the Stockfish network");
         QVERIFY(installNetworks());
 
         ComputerGame game;
