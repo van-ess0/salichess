@@ -3,6 +3,13 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Fri Nov 27 2026 van-ess0 <https://github.com/van-ess0> 0.11-1
+- Debug logging: start the app with --log-level=DEBUG (or log_level=DEBUG)
+  to see what it does, such as requests, logins and game and engine events.
+  INFO, WARNING (the default) and ERROR also work. The log has no access
+  tokens, user names, game ids or query strings, so it can be attached to a
+  bug report.
+
 * Fri Nov 06 2026 van-ess0 <https://github.com/van-ess0> 0.10-1
 - salichess is now in German, Spanish, French, Finnish, Italian, Polish,
   Brazilian and European Portuguese, Russian, Turkish, Simplified Chinese,

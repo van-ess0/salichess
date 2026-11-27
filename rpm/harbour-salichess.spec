@@ -4,7 +4,7 @@
 Name:       harbour-salichess
 
 Summary:    Unofficial Lichess client for Sailfish OS
-Version:    0.10
+Version:    0.11
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3+
