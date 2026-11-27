@@ -3,6 +3,27 @@
 #
 # Newest entries first. The version-release must match the spec.
 
+* Sat Nov 28 2026 van-ess0 <https://github.com/van-ess0> 1.0-1
+- Stockfish 19 (was 17.1): a stronger engine for analysis and for playing
+  the computer on the phone. It uses one neural network, about 94 MB, which
+  is downloaded again once when you next switch the engine on; the old
+  networks are deleted. The downloaded network is checked against the
+  checksum in its name, and a download that is sent elsewhere or is too large
+  is refused. The memory setting for the engine now goes up to 1 GB.
+- The engine gives its memory back when it is not needed: a finished game
+  against the computer frees it, and so does an analysis board that has been
+  left. Two engines at once ran low-memory devices out of memory.
+- Less battery and fewer requests: game clocks stop ticking while the app is
+  in the background, the friends list remembers what it learned about each
+  friend for ten minutes, waiting for a game analysis backs off instead of
+  asking every four seconds, and requests whose page has been closed are no
+  longer sent.
+- Safer: names and ids in requests are encoded so they cannot change the
+  route, a game id from outside the app is checked, oversized server answers
+  are cut off, and the offline puzzles are saved so that a crash cannot
+  leave them half-written.
+- The rules library is updated to chess-library 0.9.12.
+
 * Fri Nov 27 2026 van-ess0 <https://github.com/van-ess0> 0.11-1
 - Debug logging: start the app with --log-level=DEBUG (or log_level=DEBUG)
   to see what it does, such as requests, logins and game and engine events.
