@@ -4,6 +4,7 @@
 #include "appactivation.h"
 
 #include <QDBusConnection>
+#include <QRegularExpression>
 
 AppActivation::AppActivation(QObject *parent)
     : QObject(parent)
@@ -48,6 +49,11 @@ void AppActivationAdaptor::activate()
 
 void AppActivationAdaptor::openGame(const QString &gameId)
 {
+    // Anything on the session bus can call this; the id ends up in request
+    // paths, so only what a Lichess game id looks like gets through.
+    static const QRegularExpression validId(QStringLiteral("^[A-Za-z0-9]{8,12}$"));
+    if (!validId.match(gameId).hasMatch())
+        return;
     emit m_activation->openGameRequested(gameId);
 }
 

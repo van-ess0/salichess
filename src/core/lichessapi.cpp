@@ -134,6 +134,11 @@ QString LichessApi::siteUrl()
     return QStringLiteral("https://lichess.org");
 }
 
+QString LichessApi::segment(const QString &value)
+{
+    return QString::fromLatin1(QUrl::toPercentEncoding(value));
+}
+
 void LichessApi::setToken(const QString &token)
 {
     m_token = token;
@@ -205,7 +210,14 @@ void LichessApi::enqueue(const QByteArray &verb, const QNetworkRequest &request,
 
 void LichessApi::startNext()
 {
-    if (m_activeReply || m_rateLimited || m_queue.isEmpty())
+    if (m_activeReply || m_rateLimited)
+        return;
+    // Nobody is waiting for the answer to a request whose page is gone.
+    while (!m_queue.isEmpty() && m_queue.head().hasContext && m_queue.head().context.isNull()) {
+        qCDebug(lcApi, "dropped a queued request: its owner is gone");
+        m_queue.dequeue();
+    }
+    if (m_queue.isEmpty())
         return;
 
     m_current = m_queue.dequeue();

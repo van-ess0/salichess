@@ -4,6 +4,7 @@
 #ifndef NNUEWEIGHTS_H
 #define NNUEWEIGHTS_H
 
+#include <QCryptographicHash>
 #include <QNetworkReply>
 #include <QObject>
 #include <QPointer>
@@ -74,6 +75,9 @@ private:
 
     QPointer<QNetworkReply> m_reply;
     QFile *m_file = nullptr;      // the part being written
+    bool m_redirectRefused = false;
+    bool m_tooLarge = false;
+    QCryptographicHash m_hash { QCryptographicHash::Sha256 }; // of what was written so far
     QString m_current;            // file name being downloaded
     QStringList m_queue;
     QString m_error;

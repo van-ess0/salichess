@@ -44,6 +44,7 @@ private:
     QTimer m_idleTimer;
     int m_status = 0;
     bool m_done = false;
+    bool m_overflow = false; // closed because the buffer grew too large
 };
 
 #endif // NDJSONSTREAM_H

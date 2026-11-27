@@ -22,6 +22,7 @@ Page {
     GameController {
         id: controller
         gameId: page.gameId
+        clockActive: Qt.application.state === Qt.ApplicationActive
         onMoveRejected: app.notice(qsTr("Move rejected: %1").arg(error))
         onActionFailed: app.notice(error)
         onStateChanged: {

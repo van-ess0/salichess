@@ -46,6 +46,9 @@ class GameController : public QObject
     Q_PROPERTY(int whiteTime READ whiteTime NOTIFY clockChanged) // ms
     Q_PROPERTY(int blackTime READ blackTime NOTIFY clockChanged)
     Q_PROPERTY(QString runningClock READ runningClock NOTIFY clockChanged) // "white", "black" or ""
+    // False while the app is in the background: the clocks then stop ticking
+    // in the UI (the times are still right when it returns).
+    Q_PROPERTY(bool clockActive READ clockActive WRITE setClockActive NOTIFY clockActiveChanged)
 
     Q_PROPERTY(QString status READ status NOTIFY stateChanged)
     Q_PROPERTY(QString winner READ winner NOTIFY stateChanged)
@@ -88,6 +91,8 @@ public:
     int whiteTime() const;
     int blackTime() const;
     QString runningClock() const;
+    bool clockActive() const { return m_clockActive; }
+    void setClockActive(bool active);
 
     QString status() const { return m_status; }
     QString winner() const { return m_winner; }
@@ -121,6 +126,7 @@ signals:
     void errorStringChanged();
     void infoChanged();
     void clockChanged();
+    void clockActiveChanged();
     void stateChanged();
     void moveRejected(const QString &error);
     void actionFailed(const QString &error);
@@ -166,6 +172,7 @@ private:
     qint64 m_blackTime = 0;
     QElapsedTimer m_clockStamp;
     QTimer m_clockTimer;
+    bool m_clockActive = true;
 
     QStringList m_serverMoves;
     QString m_pendingMove; // sent but not yet confirmed by the server

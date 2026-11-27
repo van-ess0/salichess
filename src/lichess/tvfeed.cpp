@@ -158,7 +158,7 @@ void TvFeed::connectFeed()
         return;
     const QString path = m_channel == QLatin1String("best")
             ? QStringLiteral("/api/tv/feed")
-            : QStringLiteral("/api/tv/%1/feed").arg(m_channel);
+            : QStringLiteral("/api/tv/%1/feed").arg(LichessApi::segment(m_channel));
     m_stream = Services::api()->openStream(path, QUrlQuery(), IdleTimeoutMs);
     m_stream->setParent(this);
     connect(m_stream.data(), &NdjsonStream::opened, this, [this]() {

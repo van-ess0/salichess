@@ -334,7 +334,7 @@ void OngoingGamesModel::fetchDeadline(const QString &gameId, const QString &move
     query.addQueryItem(QStringLiteral("clocks"), QStringLiteral("false"));
     query.addQueryItem(QStringLiteral("evals"), QStringLiteral("false"));
     query.addQueryItem(QStringLiteral("opening"), QStringLiteral("false"));
-    m_api->get(QStringLiteral("/game/export/%1").arg(gameId), query, this,
+    m_api->get(QStringLiteral("/game/export/%1").arg(LichessApi::segment(gameId)), query, this,
                [this, gameId, move](const ApiResult &result) {
         const auto it = m_deadlines.find(gameId);
         if (it == m_deadlines.end() || it->pendingMove != move)

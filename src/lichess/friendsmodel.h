@@ -72,6 +72,16 @@ private:
         qint64 seenAt = 0;
     };
 
+    // What was learnt about a friend's games, kept for a while so that
+    // opening the page again does not ask for all of it anew.
+    struct Details {
+        int games = -1;
+        qint64 lastGameAt = 0;
+        qint64 fetchedAt = 0; // ms since the epoch
+    };
+    bool hasFreshDetails(const QString &id) const;
+    void rememberDetails(int index);
+
     void fetchStatuses(int from, int generation);
     void publish();
     void fetchDetails(int index, int generation);
@@ -85,6 +95,7 @@ private:
     QPointer<NdjsonStream> m_gameStream;
     // Bumped whenever the list is replaced, so a late answer for an old list is dropped.
     int m_generation = 0;
+    QHash<QString, Details> m_detailCache;
     QVector<Friend> m_pending;
     QVector<Friend> m_friends;
     bool m_loading = false;

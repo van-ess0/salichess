@@ -71,7 +71,7 @@ void OutgoingChallenge::create(const QString &username, const QVariantMap &optio
     form.addQueryItem(QStringLiteral("keepAliveStream"), QStringLiteral("true"));
 
     setState(Creating);
-    m_stream = m_api->openPostStream(QStringLiteral("/api/challenge/%1").arg(m_opponent), form);
+    m_stream = m_api->openPostStream(QStringLiteral("/api/challenge/%1").arg(LichessApi::segment(m_opponent)), form);
     m_stream->setParent(this);
 
     connect(m_stream.data(), &NdjsonStream::message, this, [this](const QJsonObject &message) {
@@ -126,7 +126,7 @@ void OutgoingChallenge::cancel()
     if (m_state != Creating && m_state != Waiting)
         return;
     if (!m_challengeId.isEmpty())
-        m_api->postForm(QStringLiteral("/api/challenge/%1/cancel").arg(m_challengeId), QUrlQuery(), nullptr, nullptr);
+        m_api->postForm(QStringLiteral("/api/challenge/%1/cancel").arg(LichessApi::segment(m_challengeId)), QUrlQuery(), nullptr, nullptr);
     closeStream();
     setState(Canceled);
 }

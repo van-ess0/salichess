@@ -83,7 +83,7 @@ void UserProfile::reload()
 
     const int generation = m_generation;
     setLoading(true);
-    Services::api()->get(QStringLiteral("/api/user/") + m_username, QUrlQuery(), this,
+    Services::api()->get(QStringLiteral("/api/user/") + LichessApi::segment(m_username), QUrlQuery(), this,
                          [this, generation](const ApiResult &result) {
         if (generation != m_generation)
             return;
@@ -94,7 +94,7 @@ void UserProfile::reload()
         }
         applyProfile(result.json.object());
         // The graph is a bonus: failing to get it leaves the rest as it is.
-        Services::api()->get(QStringLiteral("/api/user/%1/rating-history").arg(m_username), QUrlQuery(), this,
+        Services::api()->get(QStringLiteral("/api/user/%1/rating-history").arg(LichessApi::segment(m_username)), QUrlQuery(), this,
                              [this, generation](const ApiResult &history) {
             if (generation == m_generation && history.ok())
                 applyHistory(history.json.array());

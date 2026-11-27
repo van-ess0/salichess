@@ -32,14 +32,19 @@ void setLevel(Level level)
 bool configure(const QStringList &arguments)
 {
     QString value;
+    bool valueIsNext = false; // after a bare --log-level
     for (int i = 1; i < arguments.size(); ++i) {
         const QString &argument = arguments.at(i);
-        if (argument == QLatin1String("--log-level") && i + 1 < arguments.size())
-            value = arguments.at(++i);
-        else if (argument.startsWith(QLatin1String("--log-level=")))
+        if (valueIsNext) {
+            value = argument;
+            valueIsNext = false;
+        } else if (argument == QLatin1String("--log-level")) {
+            valueIsNext = true;
+        } else if (argument.startsWith(QLatin1String("--log-level="))) {
             value = argument.mid(int(qstrlen("--log-level=")));
-        else if (argument.startsWith(QLatin1String("log_level=")))
+        } else if (argument.startsWith(QLatin1String("log_level="))) {
             value = argument.mid(int(qstrlen("log_level=")));
+        }
     }
 
     Level level = Warning;

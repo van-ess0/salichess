@@ -47,6 +47,8 @@ public:
 
     // The Lichess website, for links shown to the user and OAuth endpoints.
     static QString siteUrl();
+    // A value for one path segment: nothing in it can change the route.
+    static QString segment(const QString &value);
 
     // Where API requests go; siteUrl() unless changed (tests use a local
     // fake server).

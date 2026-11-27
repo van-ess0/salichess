@@ -7,12 +7,15 @@
 #include "core/ndjsonstream.h"
 #include "core/session.h"
 
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
 
 #include <algorithm>
 
 namespace {
+// How long what was learnt about a friend's games stays good.
+const qint64 DetailsMaxAgeMs = 10 * 60 * 1000;
 const int StatusBatch = 100; // max ids per /api/users/status call
 
 int perfRating(const QJsonObject &user, const char *perf)
@@ -114,6 +117,7 @@ void FriendsModel::clear()
         m_stream.clear();
     }
     m_pending.clear();
+    m_detailCache.clear(); // they belong to the account that was logged in
     abortGameStream();
     beginResetModel();
     m_friends.clear();
@@ -163,6 +167,13 @@ void FriendsModel::publish()
             return a.online;
         return a.name.compare(b.name, Qt::CaseInsensitive) < 0;
     });
+    for (Friend &f : m_pending) {
+        const auto cached = m_detailCache.constFind(f.id);
+        if (cached != m_detailCache.constEnd()) {
+            f.games = cached->games;
+            f.lastGameAt = cached->lastGameAt;
+        }
+    }
     beginResetModel();
     m_friends = m_pending;
     endResetModel();
@@ -191,10 +202,14 @@ void FriendsModel::abortGameStream()
 void FriendsModel::fetchDetails(int index, int generation)
 {
     const QString me = m_session->userId();
+    // Friends looked at a moment ago keep what is known of them.
+    while (index < m_friends.size() && hasFreshDetails(m_friends.at(index).id))
+        ++index;
     if (generation != m_generation || index >= m_friends.size() || me.isEmpty())
         return;
     // The crosstable counts the games the two have played against each other.
-    m_api->get(QStringLiteral("/api/crosstable/") + me + QLatin1Char('/') + m_friends.at(index).id,
+    m_api->get(QStringLiteral("/api/crosstable/") + LichessApi::segment(me) + QLatin1Char('/')
+                   + LichessApi::segment(m_friends.at(index).id),
                QUrlQuery(), this, [this, index, generation](const ApiResult &result) {
         if (generation != m_generation)
             return;
@@ -213,6 +228,7 @@ void FriendsModel::fetchLastGame(int index, int generation)
     if (generation != m_generation || index >= m_friends.size())
         return;
     if (m_friends.at(index).games <= 0) {
+        rememberDetails(index);
         fetchDetails(index + 1, generation);
         return;
     }
@@ -222,7 +238,7 @@ void FriendsModel::fetchLastGame(int index, int generation)
     query.addQueryItem(QStringLiteral("vs"), id);
     query.addQueryItem(QStringLiteral("max"), QStringLiteral("1"));
     query.addQueryItem(QStringLiteral("moves"), QStringLiteral("false"));
-    m_gameStream = m_api->openStream(QStringLiteral("/api/games/user/") + m_session->userId(), query);
+    m_gameStream = m_api->openStream(QStringLiteral("/api/games/user/") + LichessApi::segment(m_session->userId()), query);
     m_gameStream->setParent(this);
     connect(m_gameStream.data(), &NdjsonStream::message, this, [this, id, generation](const QJsonObject &game) {
         if (generation != m_generation)
@@ -241,8 +257,24 @@ void FriendsModel::fetchLastGame(int index, int generation)
             return;
         m_gameStream->deleteLater();
         m_gameStream.clear();
+        rememberDetails(index);
         fetchDetails(index + 1, generation);
     });
+}
+
+bool FriendsModel::hasFreshDetails(const QString &id) const
+{
+    const auto cached = m_detailCache.constFind(id);
+    return cached != m_detailCache.constEnd()
+            && QDateTime::currentMSecsSinceEpoch() - cached->fetchedAt < DetailsMaxAgeMs;
+}
+
+void FriendsModel::rememberDetails(int index)
+{
+    if (index >= m_friends.size() || m_friends.at(index).games < 0)
+        return; // the count could not be read: ask again next time
+    const Friend &f = m_friends.at(index);
+    m_detailCache.insert(f.id, Details { f.games, f.lastGameAt, QDateTime::currentMSecsSinceEpoch() });
 }
 
 void FriendsModel::setLoading(bool loading)

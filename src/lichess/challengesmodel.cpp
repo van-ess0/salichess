@@ -135,7 +135,7 @@ void ChallengesModel::refresh()
 
 void ChallengesModel::accept(const QString &challengeId)
 {
-    m_api->postForm(QStringLiteral("/api/challenge/%1/accept").arg(challengeId), QUrlQuery(), this,
+    m_api->postForm(QStringLiteral("/api/challenge/%1/accept").arg(LichessApi::segment(challengeId)), QUrlQuery(), this,
                     [this, challengeId](const ApiResult &result) {
         if (!result.ok()) {
             emit errorOccurred(result.errorString);
@@ -152,7 +152,7 @@ void ChallengesModel::decline(const QString &challengeId, const QString &reason)
     QUrlQuery form;
     if (!reason.isEmpty())
         form.addQueryItem(QStringLiteral("reason"), reason);
-    m_api->postForm(QStringLiteral("/api/challenge/%1/decline").arg(challengeId), form, this,
+    m_api->postForm(QStringLiteral("/api/challenge/%1/decline").arg(LichessApi::segment(challengeId)), form, this,
                     [this, challengeId](const ApiResult &result) {
         if (!result.ok())
             emit errorOccurred(result.errorString);
@@ -162,7 +162,7 @@ void ChallengesModel::decline(const QString &challengeId, const QString &reason)
 
 void ChallengesModel::cancel(const QString &challengeId)
 {
-    m_api->postForm(QStringLiteral("/api/challenge/%1/cancel").arg(challengeId), QUrlQuery(), this,
+    m_api->postForm(QStringLiteral("/api/challenge/%1/cancel").arg(LichessApi::segment(challengeId)), QUrlQuery(), this,
                     [this, challengeId](const ApiResult &result) {
         if (!result.ok())
             emit errorOccurred(result.errorString);

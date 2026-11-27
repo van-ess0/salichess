@@ -7,6 +7,7 @@
 #include "core/lichessapi.h"
 #include "core/services.h"
 
+#include <QCryptographicHash>
 #include <QDataStream>
 #include <QDir>
 #include <QFile>
@@ -14,6 +15,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QUrl>
 
@@ -28,6 +30,21 @@ const char NetworkUrlBase[] = "https://data.stockfishchess.org/nn/";
 // A network is a few megabytes at the very least; anything smaller is an
 // error page that came back with the wrong status.
 const qint64 SmallestNetwork = 1024 * 1024;
+
+// No network comes anywhere near this; a download growing past it is not one.
+const qint64 LargestNetwork = 160LL * 1024 * 1024;
+
+// Where the networks may come from, redirects included.
+const char NetworkHost[] = "data.stockfishchess.org";
+
+// Stockfish names a network "nn-<first 12 hex digits of its SHA-256>.nnue".
+// Empty if the name does not follow that.
+QString expectedHashPrefix(const QString &fileName)
+{
+    static const QRegularExpression pattern(QStringLiteral("^nn-([0-9a-f]{12})\\.nnue$"));
+    const QRegularExpressionMatch match = pattern.match(fileName);
+    return match.hasMatch() ? match.captured(1) : QString();
+}
 
 // Only used to tell the user what the download will cost before it starts;
 // the real sizes come from the server.
@@ -168,18 +185,38 @@ void NnueWeights::fetch(const QString &fileName)
 
     m_current = fileName;
     m_currentBytes = 0;
+    m_redirectRefused = false;
+    m_tooLarge = false;
+    m_hash.reset();
     QNetworkRequest request(QUrl(QString::fromLatin1(NetworkUrlBase) + fileName));
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     m_reply = nam->get(request);
     emit changed();
 
     connect(m_reply.data(), &QNetworkReply::readyRead, this, [this]() {
-        if (m_file)
-            m_file->write(m_reply->readAll());
+        if (!m_file)
+            return;
+        const QByteArray chunk = m_reply->readAll();
+        m_hash.addData(chunk);
+        m_file->write(chunk);
+    });
+    // The token is never sent here, but a network must still only come from
+    // the Stockfish server, over https.
+    connect(m_reply.data(), &QNetworkReply::redirected, this, [this](const QUrl &url) {
+        if (url.scheme() != QLatin1String("https") || url.host() != QLatin1String(NetworkHost)) {
+            m_redirectRefused = true;
+            if (m_reply)
+                m_reply->abort();
+        }
     });
     connect(m_reply.data(), &QNetworkReply::downloadProgress, this,
             [this](qint64 received, qint64 total) {
         m_currentBytes = received;
+        if (received > LargestNetwork && m_reply) {
+            m_tooLarge = true;
+            m_reply->abort();
+            return;
+        }
         // The first answer says how big this file really is; the other one
         // is guessed at until its turn comes.
         if (total > 0 && m_queue.isEmpty() && m_doneBytes + total > 0)
@@ -193,16 +230,28 @@ void NnueWeights::fetch(const QString &fileName)
         if (!m_file)
             return; // cancelled
 
-        m_file->write(reply->readAll());
+        const QByteArray rest = reply->readAll();
+        m_hash.addData(rest);
+        m_file->write(rest);
         const QString partPath = m_file->fileName();
-        const bool complete = reply->error() == QNetworkReply::NoError;
+        const bool complete = reply->error() == QNetworkReply::NoError
+                && !m_redirectRefused && !m_tooLarge;
         m_file->close();
         delete m_file;
         m_file = nullptr;
 
         if (!complete) {
             QFile::remove(partPath);
-            finish(reply->errorString());
+            finish(m_redirectRefused ? tr("The download was sent somewhere else")
+                   : m_tooLarge ? tr("The downloaded network is too large")
+                   : reply->errorString());
+            return;
+        }
+        const QString wanted = expectedHashPrefix(m_current);
+        if (!wanted.isEmpty()
+                && !QString::fromLatin1(m_hash.result().toHex()).startsWith(wanted)) {
+            QFile::remove(partPath);
+            finish(tr("The downloaded network is corrupt"));
             return;
         }
         if (!looksUsable(partPath)) {

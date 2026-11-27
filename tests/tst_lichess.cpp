@@ -185,6 +185,29 @@ private slots:
         QCOMPARE(finished.first().at(1).toString(), QString());
     }
 
+    void streamClosesOnEndlessLine()
+    {
+        server->streamRoute("GET", "/stream");
+        QScopedPointer<NdjsonStream> stream(api->openStream(QStringLiteral("/stream")));
+        QSignalSpy finished(stream.data(), &NdjsonStream::finished);
+        QTRY_COMPARE(server->openStreams("/stream"), 1);
+
+        // Never a newline: the buffer would grow for as long as it is fed.
+        const QByteArray chunk(512 * 1024, 'x');
+        for (int i = 0; i < 6 && finished.isEmpty(); ++i) {
+            server->push("/stream", chunk);
+            QTest::qWait(50);
+        }
+        QTRY_COMPARE(finished.count(), 1);
+        QVERIFY(!finished.first().at(1).toString().isEmpty());
+    }
+
+    void pathSegmentsAreEncoded()
+    {
+        QCOMPARE(LichessApi::segment(QStringLiteral("abcd1234")), QStringLiteral("abcd1234"));
+        QCOMPARE(LichessApi::segment(QStringLiteral("../token?x#y")), QStringLiteral("..%2Ftoken%3Fx%23y"));
+    }
+
     void streamReportsHttpErrors()
     {
         QScopedPointer<NdjsonStream> stream(api->openStream(QStringLiteral("/nowhere")));

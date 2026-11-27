@@ -12,6 +12,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QSaveFile>
 #include <QStandardPaths>
 #include <QUrlQuery>
 
@@ -259,10 +260,14 @@ void PuzzleStore::save()
     stored.insert(QStringLiteral("puzzles"), puzzles);
     stored.insert(QStringLiteral("results"), results);
 
-    QFile file(storePath());
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+    // Written beside the file and moved over it, so a crash mid-write cannot
+    // leave a cut-off pool or lose the results waiting to be sent.
+    QSaveFile file(storePath());
+    if (!file.open(QIODevice::WriteOnly)) {
         qWarning("Could not write %s", qPrintable(storePath()));
         return;
     }
     file.write(QJsonDocument(stored).toJson(QJsonDocument::Compact));
+    if (!file.commit())
+        qWarning("Could not write %s", qPrintable(storePath()));
 }

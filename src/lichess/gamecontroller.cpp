@@ -162,7 +162,7 @@ void GameController::move(const QString &uci)
     updateClockTimer();
     emit clockChanged();
 
-    Services::api()->postForm(QStringLiteral("/api/board/game/%1/move/%2").arg(m_gameId, m_pendingMove),
+    Services::api()->postForm(QStringLiteral("/api/board/game/%1/move/%2").arg(LichessApi::segment(m_gameId), LichessApi::segment(m_pendingMove)),
                               QUrlQuery(), this, [this](const ApiResult &result) {
         if (result.ok())
             return;
@@ -232,7 +232,7 @@ void GameController::connectStream()
 {
     if (m_gameId.isEmpty() || m_stream || !Services::api())
         return;
-    m_stream = Services::api()->openStream(QStringLiteral("/api/board/game/stream/%1").arg(m_gameId),
+    m_stream = Services::api()->openStream(QStringLiteral("/api/board/game/stream/%1").arg(LichessApi::segment(m_gameId)),
                                            QUrlQuery(), IdleTimeoutMs);
     m_stream->setParent(this);
     connect(m_stream.data(), &NdjsonStream::opened, this, [this]() {
@@ -374,7 +374,7 @@ void GameController::loadChatHistory()
     if (m_chatLoaded || m_myColor.isEmpty())
         return;
     m_chatLoaded = true;
-    Services::api()->get(QStringLiteral("/api/board/game/%1/chat").arg(m_gameId), QUrlQuery(), this,
+    Services::api()->get(QStringLiteral("/api/board/game/%1/chat").arg(LichessApi::segment(m_gameId)), QUrlQuery(), this,
                          [this](const ApiResult &result) {
         if (!result.ok())
             return;
@@ -395,16 +395,27 @@ void GameController::post(const QString &action, const QUrlQuery &form)
 {
     if (m_gameId.isEmpty())
         return;
-    Services::api()->postForm(QStringLiteral("/api/board/game/%1/%2").arg(m_gameId, action), form, this,
+    Services::api()->postForm(QStringLiteral("/api/board/game/%1/%2").arg(LichessApi::segment(m_gameId), action), form, this,
                               [this](const ApiResult &result) {
         if (!result.ok())
             emit actionFailed(result.errorString);
     });
 }
 
+void GameController::setClockActive(bool active)
+{
+    if (m_clockActive == active)
+        return;
+    m_clockActive = active;
+    updateClockTimer();
+    if (active)
+        emit clockChanged(); // catch up at once
+    emit clockActiveChanged();
+}
+
 void GameController::updateClockTimer()
 {
-    if (runningClock().isEmpty()) {
+    if (!m_clockActive || runningClock().isEmpty()) {
         m_clockTimer.stop();
         return;
     }

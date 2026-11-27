@@ -112,7 +112,7 @@ void PuzzleController::loadPuzzle(const QString &id)
         setError(tr("Invalid puzzle id."));
         return;
     }
-    fetchSingle(QStringLiteral("/api/puzzle/") + id, false);
+    fetchSingle(QStringLiteral("/api/puzzle/") + LichessApi::segment(id), false);
 }
 
 void PuzzleController::move(const QString &uci)
@@ -281,7 +281,7 @@ void PuzzleController::fetchBatch()
     if (!difficulty.isEmpty())
         query.addQueryItem(QStringLiteral("difficulty"), difficulty);
     const QString key = m_queueKey;
-    Services::api()->get(QStringLiteral("/api/puzzle/batch/") + m_angle, query, this,
+    Services::api()->get(QStringLiteral("/api/puzzle/batch/") + LichessApi::segment(m_angle), query, this,
                          [this, key](const ApiResult &result) {
         if (key != m_queueKey)
             return; // theme or difficulty changed meanwhile
@@ -369,7 +369,7 @@ void PuzzleController::submitResult(bool win)
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("nb"), QStringLiteral("0"));
     const QString puzzleId = m_puzzleId;
-    Services::api()->postJson(QStringLiteral("/api/puzzle/batch/") + resultAngle, query,
+    Services::api()->postJson(QStringLiteral("/api/puzzle/batch/") + LichessApi::segment(resultAngle), query,
                               QJsonDocument(body), this,
                               [this, puzzleId, resultAngle, win, rated, store](const ApiResult &result) {
         if (!result.ok()) {

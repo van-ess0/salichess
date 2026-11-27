@@ -6,6 +6,12 @@
 #include <QJsonDocument>
 #include <QNetworkReply>
 
+namespace {
+// The longest line (or error page) held in memory. Real lines are a few
+// kilobytes; a server that never ends one is not sending ndjson.
+const int MaxBufferBytes = 2 * 1024 * 1024;
+}
+
 NdjsonStream::NdjsonStream(QNetworkReply *reply, int idleTimeoutMs, QObject *parent)
     : QObject(parent)
     , m_reply(reply)
@@ -57,8 +63,13 @@ void NdjsonStream::onReadyRead()
 
     m_buffer += m_reply->readAll();
     // Error responses are plain JSON, not ndjson; onFinished() parses them.
-    if (m_status < 200 || m_status >= 300)
+    if (m_status < 200 || m_status >= 300) {
+        if (m_buffer.size() > MaxBufferBytes) {
+            m_overflow = true;
+            m_reply->abort();
+        }
         return;
+    }
 
     // A signal handler may abort or even delete this stream.
     QPointer<NdjsonStream> self(this);
@@ -75,6 +86,10 @@ void NdjsonStream::onReadyRead()
             processLine(line);
         if (!self || m_done)
             return;
+    }
+    if (m_buffer.size() > MaxBufferBytes) {
+        m_overflow = true;
+        m_reply->abort();
     }
 }
 
@@ -98,7 +113,9 @@ void NdjsonStream::onFinished()
             if (!self)
                 return;
         }
-        if (m_reply->error() != QNetworkReply::NoError
+        if (m_overflow)
+            error = tr("The response from Lichess is too large");
+        else if (m_reply->error() != QNetworkReply::NoError
                 && m_reply->error() != QNetworkReply::RemoteHostClosedError)
             error = m_reply->errorString();
     } else {

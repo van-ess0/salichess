@@ -26,7 +26,10 @@ const int MateCp = 10000;
 // rather than over a websocket, which would be a protocol of its own just to
 // draw a progress bar.
 const int AnalysisPollMs = 4000;
-const int AnalysisPolls = 75; // five minutes' worth
+// Each poll waits half as long again as the one before, up to this; the export
+// carries every move and evaluation, so it is not fetched more often than needed.
+const int AnalysisPollMaxMs = 30 * 1000;
+const int AnalysisPolls = 15; // about five minutes' worth
 
 } // namespace
 
@@ -58,7 +61,7 @@ void GameAnalysis::requestAnalysis()
     emit requestChanged();
 
     const QString id = m_gameId;
-    api->postForm(QLatin1Char('/') + id + QStringLiteral("/request-analysis"), QUrlQuery(), this,
+    api->postForm(QLatin1Char('/') + LichessApi::segment(id) + QStringLiteral("/request-analysis"), QUrlQuery(), this,
                   [this, id](const ApiResult &result) {
         if (id != m_gameId)
             return;
@@ -72,6 +75,7 @@ void GameAnalysis::requestAnalysis()
             return;
         }
         m_pollsLeft = AnalysisPolls;
+        m_pollTimer.setInterval(AnalysisPollMs);
         m_pollTimer.start();
     });
 }
@@ -82,6 +86,7 @@ void GameAnalysis::pollForAnalysis()
         endRequest(tr("Lichess is taking a long time. Try again later."));
         return;
     }
+    m_pollTimer.setInterval(qMin(AnalysisPollMaxMs, m_pollTimer.interval() * 3 / 2));
     if (!m_loading)
         fetch();
 }
@@ -182,7 +187,7 @@ void GameAnalysis::fetch()
     query.addQueryItem(QStringLiteral("moves"), QStringLiteral("true"));
     query.addQueryItem(QStringLiteral("tags"), QStringLiteral("false"));
     const QString id = m_gameId;
-    api->get(QStringLiteral("/game/export/") + id, query, this, [this, id](const ApiResult &result) {
+    api->get(QStringLiteral("/game/export/") + LichessApi::segment(id), query, this, [this, id](const ApiResult &result) {
         if (id != m_gameId)
             return; // another game was opened while this was on its way
         setLoading(false);
